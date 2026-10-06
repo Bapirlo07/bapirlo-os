@@ -1,0 +1,228 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — wallpaper accent sync (matugen).
+
+The black base (#0E0A0D…) and crimson main accent (#E11D2E / ember #FF4655) NEVER change.
+What follows the wallpaper is the *second* accent (the role sakura #F08AA4 plays in the
+Kuro palette) plus a third one for the terminal's cyan slot:
+
+  top bar   occupied workspace dots, running-app dots, mini-player cover ring, Eco chip
+  dock      running indicators + secondary drawing colour (dash2dock-lite)
+  terminal  magenta/cyan (+ bright) and hint colours (Alacritty import, ddterm palette)
+  MangoHud  frame-time graph + CPU colours (picked up on the next game launch)
+
+  bapirlo-autotheme apply [IMAGE]   regenerate now (default: current wallpaper)
+  bapirlo-autotheme watch           follow wallpaper changes (bapirlo-autotheme.service)
+  bapirlo-autotheme reset           back to the stock Kuro accents (sakura / teal)
+
+Cheap by design: matugen runs once per wallpaper change (cached by path+mtime), the watcher
+is an idle `gsettings monitor` pipe, the shell reloads one small stylesheet.
+"""
+import colorsys
+import hashlib
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import urllib.parse
+from pathlib import Path
+
+STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "bapirlo/accent"
+CACHE = STATE / "last.json"
+ALACRITTY = STATE / "alacritty.toml"
+SHELL_CSS = STATE / "shell.css"
+MANGO = Path.home() / ".config/MangoHud/MangoHud.conf"
+STOCK = {"accent2": "#F08AA4", "accent2_bright": "#FFB3C6", "accent3": "#6FC7C2", "accent3_bright": "#9EE6E1"}
+CRIMSON, EMBER, INK = "#E11D2E", "#FF4655", "#0E0A0D"
+
+
+def log(*a):
+    print("bapirlo-autotheme:", *a, flush=True)
+
+
+def hex_to_rgb(h):
+    h = h.lstrip("#")
+    return tuple(int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
+
+
+def rgb_to_hex(r, g, b):
+    return "#{:02X}{:02X}{:02X}".format(*(round(max(0, min(1, c)) * 255) for c in (r, g, b)))
+
+
+def tune(h, l_min, l_max, s_min):
+    """Keep an accent readable on the ink base: clamp lightness, give it some colour."""
+    hh, ll, ss = colorsys.rgb_to_hls(*hex_to_rgb(h))
+    return rgb_to_hex(*colorsys.hls_to_rgb(hh, max(l_min, min(l_max, ll)), max(s_min, ss)))
+
+
+def rgba(h, a):
+    r, g, b = (round(c * 255) for c in hex_to_rgb(h))
+    return f"rgba({r}, {g}, {b}, {a})"
+
+
+def wallpaper():
+    scheme = subprocess.run(["gsettings", "get", "org.gnome.desktop.interface", "color-scheme"],
+                            capture_output=True, text=True).stdout.strip()
+    key = "picture-uri-dark" if "dark" in scheme else "picture-uri"
+    uri = subprocess.run(["gsettings", "get", "org.gnome.desktop.background", key],
+                         capture_output=True, text=True).stdout.strip().strip("'")
+    if not uri.startswith("file://"):
+        return None
+    p = Path(urllib.parse.unquote(uri[len("file://"):]))
+    if p.suffix.lower() == ".xml":          # GNOME slideshow / day-night XML → first image in it
+        m = re.search(r"<file>([^<]+)</file>", p.read_text(errors="ignore")) if p.exists() else None
+        p = Path(m.group(1)) if m else p
+    return p if p.exists() else None
+
+
+def matugen_colors(img):
+    exe = shutil.which("matugen")
+    if not exe:
+        raise RuntimeError("matugen not installed")
+    out = subprocess.run([exe, "image", str(img), "--json", "hex", "--dry-run", "--mode", "dark",
+                          "--prefer", "saturation"],
+                         capture_output=True, text=True, timeout=60)
+    if out.returncode:
+        raise RuntimeError(out.stderr.strip() or "matugen failed")
+    data = json.loads(out.stdout[out.stdout.index("{"):])
+    cols = data.get("colors", data)
+
+    def pick(name):
+        v = cols.get(name)
+        if isinstance(v, dict):                 # matugen 2.x: colors.primary.dark
+            v = v.get("dark") or v.get("default", {}).get("color") or next(iter(v.values()))
+            if isinstance(v, dict):
+                v = v.get("color") or v.get("hex")
+        if v is None and isinstance(cols.get("dark"), dict):   # 3.x: colors.dark.primary
+            v = cols["dark"].get(name)
+        return v
+    a2, a3 = pick("primary"), pick("tertiary")
+    if not (a2 and a3):
+        raise RuntimeError(f"unexpected matugen output keys: {list(cols)[:8]}")
+    return a2, a3
+
+
+def derive(a2, a3):
+    return {
+        "accent2": tune(a2, 0.62, 0.78, 0.45),
+        "accent2_bright": tune(a2, 0.78, 0.88, 0.45),
+        "accent3": tune(a3, 0.58, 0.72, 0.35),
+        "accent3_bright": tune(a3, 0.74, 0.86, 0.35),
+    }
+
+
+def write_atomic(path, text):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text)
+    os.replace(tmp, path)      # one rename → watchers never see a half-written file
+
+
+def render(c):
+    a2, a2b, a3, a3b = c["accent2"], c["accent2_bright"], c["accent3"], c["accent3_bright"]
+    write_atomic(SHELL_CSS, f"""/* generated by bapirlo-autotheme — second accent from the wallpaper ({a2}).
+   Base + crimson main accent are fixed in the Bapirlo-Kuro theme. */
+.bapirlo-ws-dot.occupied {{ background-color: {a2}; border-color: {a2}; }}
+.bapirlo-launcher-dot {{ background-color: {a2}; }}
+.bapirlo-launcher-dot.focused {{ background-color: {CRIMSON}; }}
+.bapirlo-mini-art {{ border-color: {rgba(a2, 0.6)}; }}
+.bapirlo-power-chip.eco .bapirlo-power-label, #panel .bapirlo-power-chip.eco .bapirlo-power-icon {{ color: {a2}; }}
+.bm-chip.bm-chip-playing StIcon {{ color: {a2}; }}
+""")
+    write_atomic(ALACRITTY, f"""# generated by bapirlo-autotheme — wallpaper accents (imported by alacritty.toml)
+[colors.normal]
+magenta = "{a2}"
+cyan = "{a3}"
+
+[colors.bright]
+magenta = "{a2b}"
+cyan = "{a3b}"
+
+[colors.hints.start]
+foreground = "{INK}"
+background = "{a2}"
+""")
+    dock = "/org/gnome/shell/extensions/dash2dock-lite/"
+    for key, col in (("running-indicator-color", a2), ("drawing-secondary-color", a2)):
+        r, g, b = hex_to_rgb(col)
+        subprocess.run(["dconf", "write", dock + key, f"({r:.3f}, {g:.3f}, {b:.3f}, 1.0)"], check=False)
+    ddterm_palette(c)
+    mangohud(c)
+
+
+def ddterm_palette(c):
+    # ddterm keeps a 16-colour palette in its own dconf schema (only if installed/used)
+    path = "/com/github/amezin/ddterm/palette"
+    cur = subprocess.run(["dconf", "read", path], capture_output=True, text=True).stdout.strip()
+    if not cur:
+        return
+    try:
+        pal = [p.strip(" '") for p in cur.strip("[]").split(",")]
+        if len(pal) != 16:
+            return
+        pal[5], pal[6], pal[13], pal[14] = c["accent2"], c["accent3"], c["accent2_bright"], c["accent3_bright"]
+        subprocess.run(["dconf", "write", path, "[" + ", ".join(f"'{p}'" for p in pal) + "]"], check=False)
+    except Exception as e:     # never let a terminal palette stop the rest
+        log("ddterm palette skipped:", e)
+
+
+def mangohud(c):
+    if not MANGO.exists():
+        return
+    text = MANGO.read_text()
+    for key, val in (("frametime_color", c["accent2"]), ("cpu_color", c["accent2"])):
+        text = re.sub(rf"^{key}=.*$", f"{key}={val.lstrip('#')}", text, flags=re.M)
+    write_atomic(MANGO, text)
+
+
+def apply(img=None, force=False):
+    img = Path(img) if img else wallpaper()
+    if not img or not img.exists():
+        log("no image wallpaper (colour/animated?) — keeping current accents")
+        return
+    st = img.stat()
+    key = hashlib.sha1(f"{img}:{st.st_mtime_ns}:{st.st_size}".encode()).hexdigest()
+    try:
+        last = json.loads(CACHE.read_text())
+    except Exception:
+        last = {}
+    if not force and last.get("key") == key and SHELL_CSS.exists():
+        return
+    try:
+        a2, a3 = matugen_colors(img)
+        c = derive(a2, a3)
+    except Exception as e:
+        log("matugen failed, using stock accents:", e)
+        c = dict(STOCK)
+    render(c)
+    write_atomic(CACHE, json.dumps({"key": key, "image": str(img), **c}, indent=2))
+    log(f"{img.name}: accent2 {c['accent2']} accent3 {c['accent3']}")
+
+
+def watch():
+    apply()
+    proc = subprocess.Popen(["gsettings", "monitor", "org.gnome.desktop.background"],
+                            stdout=subprocess.PIPE, text=True)
+    for line in proc.stdout:     # blocks idle until GNOME reports a change
+        if line.split(":")[0].strip() in ("picture-uri", "picture-uri-dark"):
+            apply()
+
+
+def reset():
+    render(dict(STOCK))
+    CACHE.unlink(missing_ok=True)
+    log("stock Kuro accents restored")
+
+
+if __name__ == "__main__":
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "apply"
+    if cmd == "apply":
+        apply(sys.argv[2] if len(sys.argv) > 2 else None, force=True)
+    elif cmd == "watch":
+        watch()
+    elif cmd == "reset":
+        reset()
+    else:
+        print(__doc__)
+        sys.exit(1)

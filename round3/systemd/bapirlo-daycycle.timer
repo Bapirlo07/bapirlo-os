@@ -1,0 +1,11 @@
+[Unit]
+Description=Bapirlo day/night check every 10 minutes
+PartOf=graphical-session.target
+
+[Timer]
+OnStartupSec=15
+OnCalendar=*:0/10
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

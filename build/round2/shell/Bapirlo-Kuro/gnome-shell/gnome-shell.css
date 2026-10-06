@@ -1,0 +1,300 @@
+/* Bapirlo OS "Kuro" shell theme — v3 polish (70-polish.sh)
+   Round 2 (bigger bar): 44px bar · 12pt text · 22px icons · 13pt bold clock.
+   Base: WhiteSur-Dark-red. Same palette / layout as v2; every surface now shares one set of tokens:
+     radius   surface 16 · bar 16 · item 10 · chip 8
+     surface  rgba(22,16,21,0.94) · hairline 1px rgba(225,29,46,0.28) · shadow 0 8px 24px rgba(0,0,0,0.45)
+     hover    rgba(225,29,46,0.20) · active #E11D2E + white · accent text #FF4655
+     motion   180ms for hover/press */
+@import url("@HOME@/.themes/WhiteSur-Dark-red/gnome-shell/gnome-shell.css");
+
+/* =========================================================== top bar */
+#panelBox { padding: 8px 10px 0 10px; }
+#panel {
+  height: 44px !important;
+  border-radius: 16px;
+  background-color: rgba(14, 10, 13, 0.60);
+  border: 1px solid rgba(225, 29, 46, 0.28);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.40);
+  font-family: "Inter", sans-serif;
+  font-size: 12pt;
+  font-weight: 500;
+  color: #F2E9EC;
+  transition-duration: 250ms;
+}
+#panel:overview, #panel.unlock-screen, #panel.login-screen {
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+#panel .panel-corner { -panel-corner-radius: 0; -panel-corner-opacity: 0; }
+#panel #panelLeft, #panel #panelCenter, #panel #panelRight { spacing: 4px; }
+#panel #panelLeft { padding-left: 3px; }
+#panel #panelRight { padding-right: 3px; }
+
+/* buttons: 5px inset from the bar edge → radius 11 is concentric with the bar's 16 */
+#panel .panel-button {
+  color: #F2E9EC;
+  border-radius: 11px;
+  border: 0;
+  margin: 5px 1px;
+  -natural-hpadding: 11px;
+  -minimum-hpadding: 7px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);   /* keeps labels crisp over bright wallpaper areas */
+  box-shadow: inset 0 0 0 100px transparent;
+  transition-duration: 180ms;
+}
+#panel .panel-button:hover, #panel .panel-button:focus {
+  color: #ffffff;
+  box-shadow: inset 0 0 0 100px rgba(225, 29, 46, 0.20);
+}
+#panel .panel-button:active, #panel .panel-button:checked,
+#panel .panel-button:active:hover, #panel .panel-button:checked:hover {
+  color: #ffffff;
+  box-shadow: inset 0 0 0 100px #E11D2E;
+}
+#panel .panel-button .system-status-icon,
+#panel .panel-button StIcon {
+  icon-size: 22px;
+  color: #F2E9EC;
+  icon-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+#panel .panel-status-indicators-box, #panel .panel-button .panel-status-menu-box { spacing: 10px; }
+
+/* ArcMenu logo */
+#panel .arcmenu-menu-button StIcon, #panel .panel-button .arcmenu-menu-button { color: #FF4655; }
+#panel .panel-button:hover .arcmenu-menu-button StIcon,
+#panel .panel-button:checked .arcmenu-menu-button StIcon { color: #ffffff; }
+
+/* workspace indicator — GNOME stretches the active dot into a pill and fades the rest to 50%.
+   Ember (not crimson) so the faded dots still read on the dark bar; no glow (it blurs when scaled). */
+#panel .panel-button#panelActivities StBoxLayout { spacing: 5px; padding: 0 2px; }
+#panel .panel-button#panelActivities .workspace-dot {
+  background-color: #FF4655;
+  min-width: 6px;
+  min-height: 6px;
+  border-radius: 99px;
+  box-shadow: none;
+}
+#panel .panel-button#panelActivities:checked .workspace-dot,
+#panel .panel-button#panelActivities:active .workspace-dot { background-color: #ffffff; }
+
+/* clock — one capsule, tabular figures, no border/glow stacking */
+#panel .panel-button.clock-display .clock {
+  font-feature-settings: "tnum";
+  font-size: 13pt;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #F2E9EC;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 0;
+  background-color: rgba(242, 233, 236, 0.07);
+  transition-duration: 180ms;
+}
+#panel .panel-button.clock-display { box-shadow: none; }
+#panel .panel-button.clock-display:hover .clock { background-color: rgba(225, 29, 46, 0.24); color: #ffffff; }
+#panel .panel-button.clock-display:active .clock,
+#panel .panel-button.clock-display:checked .clock { background-color: #E11D2E; color: #ffffff; }
+#panel .panel-button.clock-display .messages-indicator { color: #FF4655; }
+#panel .screencast-indicator, #panel .remote-access-indicator { color: #FF4655; }
+
+/* =========================================================== shared surface */
+.popup-menu-boxpointer .popup-menu-content, .candidate-popup-content,
+.quick-settings, .notification-banner, .osd-window, .workspace-switcher,
+.switcher-list, .modal-dialog, .resize-popup {
+  background-color: rgba(22, 16, 21, 0.94) !important;
+  border: 1px solid rgba(225, 29, 46, 0.28) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+  color: #F2E9EC;
+}
+.popup-menu-boxpointer .popup-menu-content { padding: 6px; }
+.quick-settings { padding: 12px !important; }
+
+/* menu items (right-click menus, app menus, calendar, quick settings sub-menus) */
+.popup-menu-item {
+  border-radius: 10px !important;
+  padding: 7px 10px;
+  transition-duration: 180ms;
+}
+.popup-menu-item:hover, .popup-menu-item:focus { background-color: rgba(225, 29, 46, 0.20); color: #ffffff; }
+.popup-menu-item:active, .popup-menu-item:checked { background-color: #E11D2E; color: #ffffff; }
+.popup-menu-item:insensitive { color: rgba(242, 233, 236, 0.45); }
+.popup-separator-menu-item .popup-separator-menu-item-separator { background-color: rgba(242, 233, 236, 0.08); }
+.popup-sub-menu { background-color: rgba(242, 233, 236, 0.04); border-radius: 0 0 10px 10px; }
+
+/* quick settings */
+.quick-toggle, .quick-menu-toggle .quick-toggle, .quick-menu-toggle .quick-toggle-arrow,
+.quick-settings .icon-button, .quick-settings .button {
+  border-radius: 10px !important;
+  transition-duration: 180ms;
+}
+.quick-toggle, .quick-menu-toggle .quick-toggle, .quick-menu-toggle .quick-toggle-arrow {
+  background-color: rgba(242, 233, 236, 0.07) !important;
+}
+.quick-toggle:hover, .quick-menu-toggle .quick-toggle:hover, .quick-menu-toggle .quick-toggle-arrow:hover {
+  background-color: rgba(242, 233, 236, 0.12) !important;
+}
+.quick-toggle:checked, .quick-menu-toggle .quick-toggle:checked, .quick-menu-toggle .quick-toggle-arrow:checked {
+  background-color: #E11D2E !important;
+  color: #ffffff;
+}
+.quick-toggle:checked:hover, .quick-menu-toggle .quick-toggle:checked:hover,
+.quick-menu-toggle .quick-toggle-arrow:checked:hover { background-color: #FF4655 !important; }
+.quick-toggle-menu { border-radius: 16px !important; background-color: rgba(242, 233, 236, 0.05) !important; }
+.slider {
+  -barlevel-height: 4px;
+  -barlevel-background-color: rgba(242, 233, 236, 0.16);
+  -barlevel-active-background-color: #E11D2E;
+  -slider-handle-radius: 8px;
+  color: #ffffff;
+}
+.toggle-switch:checked { background-color: #E11D2E; }
+
+/* calendar / date menu */
+.datemenu-today-button .date-label { font-weight: 700; }
+.datemenu-today-button .day-label { color: #FF4655; font-weight: 600; }
+.calendar-day, .calendar-day-base { border-radius: 8px !important; font-feature-settings: "tnum"; }
+.calendar .calendar-today, .calendar .calendar-today:selected { background-color: #E11D2E; color: #ffffff; font-weight: 700; }
+.calendar .calendar-day:selected { background-color: rgba(225, 29, 46, 0.35); color: #ffffff; }
+.calendar-weekend { color: rgba(242, 233, 236, 0.60); }
+.events-button, .world-clocks-button, .weather-button, .message-list .message {
+  border-radius: 10px !important;
+  background-color: rgba(242, 233, 236, 0.05);
+}
+.events-button:hover, .world-clocks-button:hover, .weather-button:hover, .message-list .message:hover {
+  background-color: rgba(225, 29, 46, 0.18);
+}
+
+/* =========================================================== notifications */
+.notification-banner { padding: 6px !important; }
+.notification-banner .message, .notification-banner .notification { background-color: transparent; border-radius: 10px; }
+.message .message-title, .message-title { font-weight: 600; color: #ffffff; }
+.message .message-body, .message-body { color: rgba(242, 233, 236, 0.80); }
+.message-source-title, .message-header { color: rgba(242, 233, 236, 0.65); }
+.message .message-close-button, .message .message-expand-button,
+.message-notification-group .message-collapse-button { border-radius: 99px !important; }
+.notification-banner .notification-button, .message .notification-button {
+  border-radius: 8px !important;
+  background-color: rgba(242, 233, 236, 0.08);
+}
+.notification-banner .notification-button:hover { background-color: rgba(225, 29, 46, 0.30); }
+
+/* =========================================================== OSD (volume / brightness / keyboard) */
+.osd-window { padding: 14px 18px !important; spacing: 12px; }
+.osd-window StIcon { icon-size: 28px; color: #F2E9EC; }
+.osd-window .level {
+  height: 4px;
+  -barlevel-height: 4px;
+  -barlevel-background-color: rgba(242, 233, 236, 0.16);
+  -barlevel-active-background-color: #E11D2E;
+  -barlevel-overdrive-color: #FF4655;
+  border-radius: 99px;
+}
+.osd-window .osd-monitor-label { font-weight: 600; }
+
+/* workspace switcher popup (Super+PgUp/PgDn) */
+.workspace-switcher { padding: 10px !important; spacing: 8px; }
+.ws-switcher-indicator { border-radius: 10px; background-color: rgba(242, 233, 236, 0.07); }
+.ws-switcher-indicator:active { background-color: #E11D2E; border: 0; }
+
+/* =========================================================== Alt+Tab */
+.switcher-list { padding: 12px !important; }
+.switcher-list .item-box {
+  border-radius: 10px !important;
+  padding: 8px;
+  transition-duration: 180ms;
+}
+.switcher-list .item-box:outlined { background-color: rgba(242, 233, 236, 0.07); border: 0; }
+.switcher-list .item-box:selected { background-color: rgba(225, 29, 46, 0.30); border: 0; }
+.switcher-list .thumbnail-box { padding: 2px; }
+.switcher-list .separator { background-color: rgba(242, 233, 236, 0.10); }
+.switcher-popup .switcher-arrow, .switcher-arrow { color: rgba(242, 233, 236, 0.55); }
+.switcher-arrow:highlighted { color: #FF4655; }
+.switcher-list .item-box .app-well-app .overview-label,
+.switcher-popup .label, .app-switcher-label { font-weight: 600; color: #F2E9EC; }
+
+/* =========================================================== dialogs (polkit, logout, run) */
+.modal-dialog { padding: 0 !important; }
+.modal-dialog .modal-dialog-content-box { padding: 24px 28px 12px; }
+.modal-dialog-button-box { padding: 12px; spacing: 8px; background-color: transparent; }
+.modal-dialog-button-box .modal-dialog-button { border-radius: 10px !important; padding: 9px 16px; }
+.modal-dialog-button-box .modal-dialog-button:default,
+.modal-dialog-button-box .modal-dialog-button:focus { background-color: #E11D2E; color: #ffffff; }
+.modal-dialog-button-box .modal-dialog-button:default:hover { background-color: #FF4655; }
+.message-dialog-title, .headline { font-weight: 700; }
+.modal-dialog .modal-dialog-linked-button { border-radius: 10px !important; }
+
+/* =========================================================== tooltips & dock labels */
+.dash-label, .window-caption {
+  background-color: rgba(22, 16, 21, 0.94) !important;
+  border: 1px solid rgba(225, 29, 46, 0.28);
+  border-radius: 8px !important;
+  color: #F2E9EC;
+  font-weight: 500;
+  padding: 5px 10px !important;
+}
+
+/* =========================================================== overview & search */
+.search-entry {
+  border-radius: 12px !important;
+  background-color: rgba(22, 16, 21, 0.80);
+  border: 1px solid rgba(242, 233, 236, 0.10);
+  transition-duration: 180ms;
+}
+.search-entry:focus { border-color: #E11D2E; box-shadow: none; }
+.app-well-app .overview-icon, .overview-tile, .grid-search-result, .list-search-result, .search-provider-icon {
+  border-radius: 16px !important;
+  transition-duration: 180ms;
+}
+.app-well-app:hover .overview-icon, .overview-tile:hover, .grid-search-result:hover, .list-search-result:hover {
+  background-color: rgba(225, 29, 46, 0.18) !important;
+}
+.app-well-app:selected .overview-icon, .overview-tile:selected, .grid-search-result:selected,
+.list-search-result:selected, .app-well-app:focus .overview-icon {
+  background-color: rgba(225, 29, 46, 0.32) !important;
+}
+.app-well-app .overview-label, .overview-tile .overview-label {
+  color: #F2E9EC;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.app-folder-dialog { border-radius: 16px !important; background-color: rgba(22, 16, 21, 0.94) !important; }
+.workspace-background { border-radius: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); }
+.window-clone-border { border: 3px solid #E11D2E; border-radius: 14px; }
+
+/* =========================================================== scrollbars */
+StScrollBar { padding: 2px; }
+StScrollView StScrollBar { min-width: 6px; min-height: 6px; }
+StScrollBar StBin#trough { background-color: transparent; border-radius: 99px; }
+StScrollBar StButton#vhandle, StScrollBar StButton#hhandle {
+  background-color: rgba(242, 233, 236, 0.25);
+  border-radius: 99px;
+  border: 0;
+}
+StScrollBar StButton#vhandle:hover, StScrollBar StButton#hhandle:hover { background-color: rgba(242, 233, 236, 0.45); }
+StScrollBar StButton#vhandle:active, StScrollBar StButton#hhandle:active { background-color: #E11D2E; }
+
+/* lock/login prompt accents */
+.unlock-dialog .login-dialog-prompt-entry:focus, .login-dialog-prompt-entry:focus { border-color: #E11D2E; }
+.unlock-dialog .clock-time, .unlock-dialog-clock .unlock-dialog-clock-time { font-weight: 300; font-feature-settings: "tnum"; }
+
+/* =========================================================== Tiling Shell (round 2)
+   Its own stylesheet loads after the theme, so these use a type selector to win on specificity. */
+StWidget.snap-assistant {
+  background-color: rgba(22, 16, 21, 0.94);
+  border: 1px solid rgba(225, 29, 46, 0.28);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+StWidget.snap-assist-tile, StWidget.snap-assist-tile.dark {
+  background-color: rgba(242, 233, 236, 0.10);
+  border-color: rgba(242, 233, 236, 0.18);
+}
+StWidget.snap-assist-tile:hover, StWidget.snap-assist-tile.dark:hover {
+  background-color: rgba(225, 29, 46, 0.55);
+  border-color: #FF4655;
+}
+StWidget.custom-tile-preview, .tile-preview {
+  background-color: rgba(225, 29, 46, 0.16);
+  border: 2px solid rgba(255, 70, 85, 0.70);
+}

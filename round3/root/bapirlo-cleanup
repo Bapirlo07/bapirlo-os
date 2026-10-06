@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+# Bapirlo OS — monthly cleanup (bapirlo-cleanup.timer, runs as root at idle priority).
+#
+#   1. pacman package cache: keep the last 2 versions of installed packages, and nothing of
+#      packages that are no longer installed            (paccache -rk2 / -ruk0)
+#   2. orphans: packages installed only as a dependency that nothing needs any more
+#      (pacman -Qdtq — optional dependencies of installed packages are NOT orphans and stay)
+#      Packages listed in /etc/bapirlo/cleanup-keep are never removed.
+#   3. old logs: systemd journal older than 1 month, rotated /var/log files older than 30 days,
+#      crash dumps older than 30 days
+#
+#   sudo bapirlo-cleanup --dry-run   show what WOULD go, change nothing
+#   sudo bapirlo-cleanup             clean now
+# Every run writes a report to /var/log/bapirlo-cleanup.log (the last run also to
+# /var/lib/bapirlo/cleanup-last.txt) and sends you a desktop notification with the summary.
+# Removed orphans are listed with versions — reinstall with `sudo pacman -S <name>`.
+# Off: sudo systemctl disable --now bapirlo-cleanup.timer
+set -uo pipefail
+DRY=0; [ "${1:-}" = "--dry-run" ] && DRY=1
+[ "$(id -u)" -eq 0 ] || { echo "run with sudo"; exit 1; }
+LOG=/var/log/bapirlo-cleanup.log
+LAST=/var/lib/bapirlo/cleanup-last.txt
+KEEPF=/etc/bapirlo/cleanup-keep
+mkdir -p /var/lib/bapirlo
+REPORT=$(mktemp)
+say() { echo "$*" | tee -a "$REPORT"; }
+human() { numfmt --to=iec --suffix=B "${1:-0}" 2>/dev/null || echo "${1}B"; }
+
+pacman_busy() { [ -e /var/lib/pacman/db.lck ]; }
+if pacman_busy; then echo "pacman is running — skipping this time"; exit 0; fi
+
+say "== Bapirlo cleanup $(date '+%Y-%m-%d %H:%M')$([ $DRY = 1 ] && echo '  (DRY RUN — nothing removed)')"
+
+# ---- 1. package cache
+cache_before=$(du -sb /var/cache/pacman/pkg 2>/dev/null | cut -f1)
+flag=-r; [ $DRY = 1 ] && flag=-d
+c1=$(paccache $flag -k2 2>&1 | tail -1)
+c2=$(paccache $flag -uk0 2>&1 | tail -1)
+cache_after=$(du -sb /var/cache/pacman/pkg 2>/dev/null | cut -f1)
+say "-- package cache (kept last 2 versions)"
+say "   installed pkgs, old versions:  ${c1:-nothing}"
+say "   uninstalled pkgs:              ${c2:-nothing}"
+[ $DRY = 0 ] && say "   cache $(human "$cache_before") → $(human "$cache_after")"
+
+# ---- 2. orphans
+mapfile -t orphans < <(pacman -Qdtq 2>/dev/null)
+keep=()
+[ -f "$KEEPF" ] && mapfile -t keep < <(grep -vE '^\s*(#|$)' "$KEEPF")
+rm_list=()
+for o in "${orphans[@]}"; do
+  skip=0; for k in "${keep[@]}"; do [ "$o" = "$k" ] && skip=1; done
+  [ $skip = 0 ] && rm_list+=("$o")
+done
+say "-- orphan packages"
+if [ ${#rm_list[@]} -eq 0 ]; then
+  say "   none"
+else
+  for o in "${rm_list[@]}"; do say "   $(pacman -Q "$o")"; done
+  if [ $DRY = 0 ]; then
+    if pacman -Rns --noconfirm "${rm_list[@]}" >>"$LOG" 2>&1; then
+      say "   removed ${#rm_list[@]} (reinstall any with: sudo pacman -S NAME)"
+    else
+      say "   removal FAILED — nothing removed (details in $LOG)"
+    fi
+  fi
+fi
+
+# ---- 3. logs
+say "-- logs"
+j_before=$(journalctl --disk-usage 2>/dev/null | grep -oE '[0-9.]+[KMGT]?B?' | head -1)
+if [ $DRY = 0 ]; then
+  journalctl --vacuum-time=1month -q >/dev/null 2>&1
+  say "   journal ${j_before:-?} → $(journalctl --disk-usage 2>/dev/null | grep -oE '[0-9.]+[KMGT]?B?' | head -1) (kept last month)"
+else
+  say "   journal ${j_before:-?} — entries older than 1 month would go"
+fi
+mapfile -t oldlogs < <(find /var/log -xdev -type f \( -name '*.old' -o -name '*.[0-9]' -o -name '*.gz' -o -name '*.xz' -o -name '*.zst' \) \
+                       -not -path '/var/log/journal/*' -mtime +30 2>/dev/null)
+mapfile -t dumps < <(find /var/lib/systemd/coredump -type f -mtime +30 2>/dev/null)
+files=("${oldlogs[@]}" "${dumps[@]}")
+if [ ${#files[@]} -eq 0 ]; then
+  say "   old rotated logs / crash dumps: none"
+else
+  sz=$(du -cb "${files[@]}" 2>/dev/null | tail -1 | cut -f1)
+  say "   old rotated logs / crash dumps: ${#files[@]} files, $(human "$sz")"
+  for f in "${files[@]:0:15}"; do say "     $f"; done
+  [ $DRY = 0 ] && rm -f -- "${files[@]}"
+fi
+
+cat "$REPORT" >> "$LOG"; echo >> "$LOG"
+[ $DRY = 0 ] && cp "$REPORT" "$LAST"
+
+# ---- tell the logged-in user
+if [ $DRY = 0 ]; then
+  freed=$(( ${cache_before:-0} - ${cache_after:-0} ))
+  body="Package cache: freed $(human $freed)
+Orphans removed: ${#rm_list[@]}$([ ${#rm_list[@]} -gt 0 ] && echo " (${rm_list[*]:0:6})")
+Old logs/dumps: ${#files[@]} files
+Full report: /var/log/bapirlo-cleanup.log"
+  for uid in $(loginctl list-users --no-legend 2>/dev/null | awk '$1 >= 1000 {print $1}'); do
+    u=$(id -nu "$uid")
+    [ -S "/run/user/$uid/bus" ] || continue
+    runuser -u "$u" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+      notify-send -a "Bapirlo OS" -i user-trash-full-symbolic "Monthly cleanup done" "$body" 2>/dev/null || true
+  done
+fi
+rm -f "$REPORT"

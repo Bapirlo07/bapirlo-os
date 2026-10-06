@@ -1,0 +1,10 @@
+[Unit]
+Description=Bapirlo wallpaper + Night Light follow sunrise/sunset
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/bapirlo-os/bin/bapirlo-daycycle
+Nice=10
+IOSchedulingClass=idle

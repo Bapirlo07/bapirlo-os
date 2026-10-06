@@ -1,0 +1,632 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — Welcome / control centre (GTK4 + libadwaita, Kuro styling).
+
+  bapirlo-welcome           open it
+  bapirlo-welcome --daily   what the login autostart runs: opens only on the first login of the day
+                            (and only if "Show at first login of the day" is on)
+
+Shows: clock + greeting · weather (Open-Meteo, location taken from the SimpleWeather top-bar
+extension or ~/.config/bapirlo/location.json) · today's events from every calendar GNOME knows
+(Evolution Data Server: Online Accounts → Google, local calendars, birthdays) · battery, CPU
+temperature, power mode, storage, pending updates · your dock favourites as quick launchers ·
+Gaming / Quiet / Do Not Disturb switches (bapirlo-mode).
+
+Cheap by design: nothing runs when the window is closed; network and calendar work happens in
+threads; while open it refreshes sysfs readings every 5 s. It never wakes the NVIDIA GPU.
+"""
+import datetime
+import json
+import os
+import shutil
+import subprocess
+import sys
+import threading
+import urllib.request
+
+import gi
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
+from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
+try:
+    gi.require_version("GioUnix", "2.0")
+    from gi.repository import GioUnix  # noqa: E402
+    DesktopAppInfo = GioUnix.DesktopAppInfo
+except (ValueError, ImportError):
+    DesktopAppInfo = Gio.DesktopAppInfo
+
+APP_ID = "os.bapirlo.Welcome"
+HERE = os.path.dirname(os.path.realpath(__file__))
+ROOT = os.path.dirname(HERE)
+BIN = os.path.join(ROOT, "bin")
+STATE = os.path.join(GLib.get_user_state_dir(), "bapirlo")
+CONF = os.path.join(GLib.get_user_config_dir(), "bapirlo")
+DAY_FILE = os.path.join(STATE, "welcome-last-day")
+OFF_FILE = os.path.join(CONF, "welcome-no-autostart")
+BAT = "/sys/class/power_supply/BAT1"
+
+CSS = """
+window.bapirlo-welcome { background-color: #0E0A0D; color: #F2E9EC; }
+.hero {
+  background-image: linear-gradient(160deg, rgba(225,29,46,0.32), rgba(14,10,13,0.0) 70%),
+                    radial-gradient(circle at 12% 0%, rgba(255,70,85,0.30), transparent 55%);
+  border: 1px solid rgba(225,29,46,0.28); border-radius: 16px; padding: 22px 26px;
+}
+.brand { font-family: Bangers; font-size: 15pt; letter-spacing: 3px; color: #FF4655; }
+.greet { font-size: 15pt; font-weight: 600; color: #F2E9EC; }
+.clock { font-family: Bangers; font-size: 66pt; letter-spacing: 3px; color: #FFFFFF;
+         text-shadow: 4px 4px 0 #7A0F1A; }
+.date { color: #CAB5BF; font-weight: 600; font-size: 12pt; }
+.card { background-color: rgba(22,16,21,0.94); border: 1px solid rgba(225,29,46,0.28);
+        border-radius: 16px; padding: 16px 18px; }
+.weather { background-color: rgba(14,10,13,0.55); }
+.heading { font-family: Bangers; font-size: 15pt; letter-spacing: 1.5px; color: #FF4655; }
+.big-temp { font-size: 30pt; font-weight: 800; color: #FFFFFF; }
+.dim { color: #CAB5BF; }
+.faint { color: #857079; }
+.value { font-weight: 700; color: #F2E9EC; }
+.wx-icon { color: #FF4655; }
+.event-time { font-family: monospace; font-weight: 700; color: #FF4655; min-width: 64px; }
+.event-title { font-weight: 600; }
+progressbar trough { background-color: rgba(242,233,236,0.08); border-radius: 4px; min-height: 6px; }
+progressbar progress { background-color: #E11D2E; border-radius: 4px; min-height: 6px; }
+progressbar.low progress { background-color: #FFB020; }
+button.kuro { border-radius: 10px; padding: 7px 14px; background-color: rgba(242,233,236,0.07);
+              color: #F2E9EC; font-weight: 600; transition: 180ms; }
+button.kuro:hover { background-color: rgba(225,29,46,0.22); }
+button.kuro.accent { background-color: #E11D2E; color: #FFFFFF; }
+button.kuro.accent:hover { background-color: #FF4655; }
+button.app { border-radius: 14px; padding: 10px 6px 8px 6px; background: transparent; min-width: 92px; }
+button.app:hover { background-color: rgba(225,29,46,0.16); }
+button.app label { font-size: 9.5pt; color: #CAB5BF; }
+togglebutton.mode, button.mode { border-radius: 14px; padding: 14px 16px; background-color: rgba(242,233,236,0.05);
+          border: 1px solid rgba(242,233,236,0.06); transition: 200ms; }
+button.mode:hover { background-color: rgba(225,29,46,0.14); }
+button.mode:checked { background-color: rgba(225,29,46,0.30); border-color: #E11D2E;
+                      box-shadow: inset 0 0 0 1px rgba(255,70,85,0.5); }
+button.mode .mode-icon { color: #CAB5BF; }
+button.mode:checked .mode-icon { color: #FF4655; }
+button.mode .mode-title { font-weight: 800; font-size: 12pt; }
+button.mode .mode-sub { color: #CAB5BF; font-size: 9.5pt; }
+button.mode .mode-state { font-family: Bangers; letter-spacing: 1px; font-size: 11pt; color: #857079; }
+button.mode:checked .mode-state { color: #FF4655; }
+.footer { color: #CAB5BF; }
+switch:checked { background-color: #E11D2E; }
+"""
+
+WMO = {  # Open-Meteo weather code → (label, icon base)
+    0: ("Clear", "weather-clear"), 1: ("Mostly clear", "weather-few-clouds"),
+    2: ("Partly cloudy", "weather-few-clouds"), 3: ("Overcast", "weather-overcast"),
+    45: ("Fog", "weather-fog"), 48: ("Freezing fog", "weather-fog"),
+    51: ("Light drizzle", "weather-showers-scattered"), 53: ("Drizzle", "weather-showers-scattered"),
+    55: ("Heavy drizzle", "weather-showers"), 56: ("Freezing drizzle", "weather-showers"),
+    57: ("Freezing drizzle", "weather-showers"), 61: ("Light rain", "weather-showers-scattered"),
+    63: ("Rain", "weather-showers"), 65: ("Heavy rain", "weather-showers"),
+    66: ("Freezing rain", "weather-showers"), 67: ("Freezing rain", "weather-showers"),
+    71: ("Light snow", "weather-snow"), 73: ("Snow", "weather-snow"), 75: ("Heavy snow", "weather-snow"),
+    77: ("Snow grains", "weather-snow"), 80: ("Rain showers", "weather-showers-scattered"),
+    81: ("Rain showers", "weather-showers"), 82: ("Violent showers", "weather-showers"),
+    85: ("Snow showers", "weather-snow"), 86: ("Snow showers", "weather-snow"),
+    95: ("Thunderstorm", "weather-storm"), 96: ("Thunderstorm, hail", "weather-storm"),
+    99: ("Thunderstorm, hail", "weather-storm"),
+}
+PROFILE_NAMES = {"performance": "Performance · MSI Turbo", "balanced": "Balanced · MSI Comfort",
+                 "power-saver": "Power saver · MSI Eco"}
+
+
+def read(path):
+    try:
+        with open(path) as f:
+            return f.read().strip()
+    except OSError:
+        return None
+
+
+def run(*cmd, timeout=10):
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout).stdout
+    except (OSError, subprocess.SubprocessError):
+        return ""
+
+
+def in_thread(work, done):
+    """Run work() off the main loop, hand its result to done() on the main loop."""
+    def target():
+        try:
+            res = work()
+        except Exception as e:  # noqa: BLE001 — shown in the card instead of crashing
+            res = e
+        GLib.idle_add(lambda: (done(res), False)[1])
+    threading.Thread(target=target, daemon=True).start()
+
+
+# ---------------------------------------------------------------- data
+def location():
+    """SimpleWeather's main location (no location is stored in this repo)."""
+    ext = os.path.expanduser("~/.local/share/gnome-shell/extensions/simple-weather@romanlefler.com/schemas")
+    try:
+        src = Gio.SettingsSchemaSource.new_from_directory(ext, Gio.SettingsSchemaSource.get_default(), False)
+        schema = src.lookup("org.gnome.shell.extensions.simple-weather", False)
+        if schema:
+            s = Gio.Settings.new_full(schema, None, None)
+            locs = [json.loads(x) for x in s.get_strv("locations")]
+            if locs:
+                loc = locs[min(s.get_int64("main-location-index"), len(locs) - 1)]
+                return {"name": loc.get("name", ""), "lat": loc["lat"], "lon": loc["lon"]}
+    except (GLib.Error, ValueError, KeyError, TypeError):
+        pass
+    try:
+        with open(os.path.join(CONF, "location.json")) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
+def fetch_weather():
+    loc = location()
+    if not loc:
+        raise RuntimeError("No location — set one in the weather extension's settings")
+    url = ("https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}"
+           "&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m"
+           "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max"
+           "&timezone=auto&forecast_days=1").format(**loc)
+    with urllib.request.urlopen(url, timeout=8) as r:
+        data = json.load(r)
+    data["_name"] = loc.get("name", "")
+    return data
+
+
+def fetch_events():
+    gi.require_version("EDataServer", "1.2")
+    gi.require_version("ECal", "2.0")
+    from gi.repository import ECal, EDataServer
+    reg = EDataServer.SourceRegistry.new_sync(None)
+    now = datetime.datetime.now().astimezone()
+    start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end = start + datetime.timedelta(days=1)
+    events, n_cals = [], 0
+    for src in reg.list_enabled(EDataServer.SOURCE_EXTENSION_CALENDAR):
+        try:
+            client = ECal.Client.connect_sync(src, ECal.ClientSourceType.EVENTS, 5, None)
+        except GLib.Error:
+            continue
+        n_cals += 1
+        cal = src.get_display_name()
+
+        def cb(icomp, istart, iend, *_):
+            all_day = istart.is_date()
+            when = datetime.datetime.fromtimestamp(istart.as_timet_with_zone(istart.get_timezone())
+                                                   if istart.get_timezone() else istart.as_timet())
+            events.append({"title": icomp.get_summary() or "(no title)", "all_day": all_day,
+                           "start": when, "cal": cal, "where": icomp.get_location() or ""})
+            return True
+        try:
+            client.generate_instances_sync(int(start.timestamp()), int(end.timestamp()), None, cb)
+        except (GLib.Error, TypeError, AttributeError):
+            continue
+    events.sort(key=lambda e: (not e["all_day"], e["start"]))
+    return events, n_cals
+
+
+def fetch_updates():
+    repo = [line for line in run("checkupdates", timeout=60).splitlines() if line.strip()]
+    aur = [line for line in run("paru", "-Qua", timeout=60).splitlines()
+           if line.strip() and "[ignored]" not in line] if shutil.which("paru") else []
+    return repo, aur
+
+
+def cpu_temp():
+    for h in sorted(os.listdir("/sys/class/hwmon")):
+        base = f"/sys/class/hwmon/{h}"
+        if read(f"{base}/name") in ("coretemp", "k10temp", "zenpower"):
+            v = read(f"{base}/temp1_input")
+            if v:
+                return int(v) / 1000
+    return None
+
+
+def modes():
+    try:
+        return json.loads(run(os.path.join(BIN, "bapirlo-mode"), "status"))
+    except ValueError:
+        return {}
+
+
+# ---------------------------------------------------------------- UI helpers
+def label(text="", css=(), xalign=0.0, wrap=False, **kw):
+    lbl = Gtk.Label(label=text, xalign=xalign, wrap=wrap, **kw)
+    for c in css:
+        lbl.add_css_class(c)
+    return lbl
+
+
+def card(title=None, extra_css=()):
+    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+    box.add_css_class("card")
+    for c in extra_css:
+        box.add_css_class(c)
+    if title:
+        box.append(label(title, ("heading",)))
+    return box
+
+
+def kuro_button(text, accent=False, icon=None):
+    b = Gtk.Button()
+    if icon:
+        b.set_child(Adw.ButtonContent(label=text, icon_name=icon))
+    else:
+        b.set_label(text)
+    b.add_css_class("kuro")
+    if accent:
+        b.add_css_class("accent")
+    return b
+
+
+def launch(cmd):
+    try:
+        subprocess.Popen(cmd, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except OSError:
+        pass
+
+
+# ---------------------------------------------------------------- app
+class Welcome(Adw.Application):
+    def __init__(self):
+        super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+        self.win = None
+        self._busy = False
+
+    def do_activate(self):
+        if self.win:
+            self.win.present()
+            return
+        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)
+        prov = Gtk.CssProvider()
+        prov.load_from_string(CSS)
+        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), prov,
+                                                  Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        self.win = Adw.ApplicationWindow(application=self, title="Bapirlo OS — Welcome",
+                                         default_width=1000, default_height=940)
+        self.win.add_css_class("bapirlo-welcome")
+        view = Adw.ToolbarView()
+        hb = Adw.HeaderBar(show_title=False)
+        hb.add_css_class("flat")
+        view.add_top_bar(hb)
+
+        page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16,
+                       margin_start=24, margin_end=24, margin_bottom=20, margin_top=2)
+        page.append(self.build_hero())
+
+        row = Gtk.Box(spacing=16, homogeneous=True)
+        row.append(self.build_today())
+        row.append(self.build_system())
+        page.append(row)
+        page.append(self.build_modes())
+        page.append(self.build_apps())
+        page.append(self.build_footer())
+
+        scroll = Gtk.ScrolledWindow(hscrollbar_policy=Gtk.PolicyType.NEVER, vexpand=True)
+        scroll.set_child(Adw.Clamp(maximum_size=1100, child=page))
+        view.set_content(scroll)
+        self.win.set_content(view)
+
+        esc = Gtk.ShortcutController()
+        esc.add_shortcut(Gtk.Shortcut(trigger=Gtk.ShortcutTrigger.parse_string("Escape"),
+                                      action=Gtk.CallbackAction.new(lambda *a: (self.win.close(), True)[1])))
+        self.win.add_controller(esc)
+
+        self.tick()
+        self.refresh_system()
+        self.refresh_modes()
+        self.timers = [GLib.timeout_add_seconds(1, self.tick),
+                       GLib.timeout_add_seconds(5, self.refresh_system),
+                       GLib.timeout_add_seconds(5, self.refresh_modes),
+                       GLib.timeout_add_seconds(1800, self.load_weather)]
+        self.win.connect("close-request", self.on_close)
+        self.load_weather()
+        self.load_events()
+        self.load_updates()
+        self.win.present()
+
+    def on_close(self, *_):
+        for t in self.timers:
+            GLib.source_remove(t)
+        return False
+
+    # --- hero: greeting, clock, weather
+    def build_hero(self):
+        hero = Gtk.Box(spacing=24)
+        hero.add_css_class("hero")
+        left = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0, hexpand=True, valign=Gtk.Align.CENTER)
+        left.append(label("BAPIRLO OS", ("brand",)))
+        self.greet = label("", ("greet",))
+        left.append(self.greet)
+        self.clock = label("", ("clock",))
+        left.append(self.clock)
+        self.date = label("", ("date",))
+        left.append(self.date)
+        hero.append(left)
+
+        wx = card(extra_css=("weather",))
+        wx.set_valign(Gtk.Align.CENTER)
+        wx.set_size_request(300, -1)
+        top = Gtk.Box(spacing=14)
+        self.wx_icon = Gtk.Image(icon_name="weather-few-clouds-symbolic", pixel_size=56)
+        self.wx_icon.add_css_class("wx-icon")
+        top.append(self.wx_icon)
+        tcol = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, valign=Gtk.Align.CENTER)
+        self.wx_temp = label("--°", ("big-temp",))
+        self.wx_cond = label("Loading weather…", ("value",))
+        tcol.append(self.wx_temp)
+        tcol.append(self.wx_cond)
+        top.append(tcol)
+        wx.append(top)
+        self.wx_detail = label("", ("dim",), wrap=True)
+        self.wx_place = label("", ("faint",))
+        wx.append(self.wx_detail)
+        wx.append(self.wx_place)
+        hero.append(wx)
+        return hero
+
+    def tick(self):
+        now = datetime.datetime.now()
+        self.clock.set_label(now.strftime("%H:%M"))
+        self.date.set_label(now.strftime("%A %-d %B %Y"))
+        part = "morning" if 5 <= now.hour < 12 else "afternoon" if now.hour < 18 else "evening"
+        name = os.environ.get("BAPIRLO_NAME") or (GLib.get_real_name() or GLib.get_user_name()).split()[0]
+        if name.lower() == "unknown":
+            name = GLib.get_user_name()
+        self.greet.set_label(f"Good {part}, {name.capitalize()}")
+        return True
+
+    def load_weather(self):
+        in_thread(fetch_weather, self.show_weather)
+        return True
+
+    def show_weather(self, data):
+        if isinstance(data, Exception):
+            self.wx_cond.set_label("Weather unavailable")
+            self.wx_detail.set_label(str(data) if isinstance(data, RuntimeError) else "No connection — try later")
+            return
+        cur, day = data["current"], data["daily"]
+        text, icon = WMO.get(cur["weather_code"], ("—", "weather-overcast"))
+        if not cur.get("is_day", 1) and icon in ("weather-clear", "weather-few-clouds"):
+            icon += "-night"
+        self.wx_icon.set_from_icon_name(icon + "-symbolic")
+        self.wx_temp.set_label(f"{round(cur['temperature_2m'])}°")
+        self.wx_cond.set_label(text)
+        rain = day.get("precipitation_probability_max", [None])[0]
+        self.wx_detail.set_label(
+            f"Feels {round(cur['apparent_temperature'])}° · H {round(day['temperature_2m_max'][0])}° "
+            f"L {round(day['temperature_2m_min'][0])}°" + (f" · rain {rain}%" if rain is not None else "")
+            + f"\nWind {round(cur['wind_speed_10m'])} km/h")
+        self.wx_place.set_label(data["_name"])
+
+    # --- today
+    def build_today(self):
+        c = card("TODAY")
+        self.events = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8, vexpand=True)
+        self.events.append(label("Checking your calendars…", ("dim",)))
+        c.append(self.events)
+        return c
+
+    def load_events(self):
+        in_thread(fetch_events, self.show_events)
+
+    def show_events(self, res):
+        while (child := self.events.get_first_child()):
+            self.events.remove(child)
+        if isinstance(res, Exception):
+            self.events.append(label("Calendar service not available.", ("dim",)))
+            return
+        events, n_cals = res
+        if not events:
+            self.events.append(label("Nothing on today — enjoy it.", ("value",)))
+            hint = label("Google Calendar? Add your account in Settings → Online Accounts and its "
+                         "events show up here.", ("faint",), wrap=True)
+            self.events.append(hint)
+            b = kuro_button("Online Accounts", icon="goa-panel-symbolic")
+            b.set_halign(Gtk.Align.START)
+            b.connect("clicked", lambda *_: launch(["gnome-control-center", "online-accounts"]))
+            self.events.append(b)
+            return
+        for e in events[:6]:
+            row = Gtk.Box(spacing=12)
+            row.append(label("All day" if e["all_day"] else e["start"].strftime("%H:%M"), ("event-time",)))
+            col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+            col.append(label(e["title"], ("event-title",), ellipsize=3))
+            sub = " · ".join(x for x in (e["where"], e["cal"]) if x)
+            col.append(label(sub, ("faint",), ellipsize=3))
+            row.append(col)
+            self.events.append(row)
+        if len(events) > 6:
+            self.events.append(label(f"+ {len(events) - 6} more", ("faint",)))
+
+    # --- system
+    def build_system(self):
+        c = card("SYSTEM")
+        grid = Gtk.Grid(column_spacing=14, row_spacing=10)
+        names = ["Battery", "CPU", "Power mode", "Storage", "Updates"]
+        self.sys = {}
+        for i, n in enumerate(names):
+            grid.attach(label(n, ("dim",)), 0, i, 1, 1)
+            v = label("…", ("value",), hexpand=True)
+            grid.attach(v, 1, i, 1, 1)
+            self.sys[n] = v
+        self.bat_bar = Gtk.ProgressBar(valign=Gtk.Align.CENTER)
+        self.bat_bar.set_size_request(90, -1)
+        grid.attach(self.bat_bar, 2, 0, 1, 1)
+        self.upd_btn = kuro_button("Update", accent=True, icon="software-update-available-symbolic")
+        self.upd_btn.set_visible(False)
+        self.upd_btn.connect("clicked", lambda *_: self.run_update())
+        grid.attach(self.upd_btn, 2, 4, 1, 1)
+        c.append(grid)
+        return c
+
+    def refresh_system(self):
+        cap, status = read(f"{BAT}/capacity"), read(f"{BAT}/status")
+        if cap:
+            limit = read(f"{BAT}/charge_control_end_threshold")
+            note = {"Charging": "charging", "Discharging": "on battery", "Full": "full",
+                    "Not charging": f"plugged in · held at {limit}%" if limit and limit != "100" else "plugged in"}
+            self.sys["Battery"].set_label(f"{cap}% · {note.get(status, status.lower())}")
+            self.bat_bar.set_fraction(int(cap) / 100)
+            if int(cap) <= 20:
+                self.bat_bar.add_css_class("low")
+            else:
+                self.bat_bar.remove_css_class("low")
+        else:
+            self.sys["Battery"].set_label("no battery")
+        t = cpu_temp()
+        load = os.getloadavg()[0]
+        self.sys["CPU"].set_label((f"{t:.0f} °C · " if t is not None else "") + f"load {load:.1f}")
+        st = shutil.disk_usage("/")
+        self.sys["Storage"].set_label(f"{st.free / 1024 ** 3:.0f} GB free of {st.total / 1024 ** 3:.0f} GB")
+        return True
+
+    def load_updates(self):
+        self.sys["Updates"].set_label("checking…")
+        in_thread(fetch_updates, self.show_updates)
+
+    def show_updates(self, res):
+        if isinstance(res, Exception):
+            self.sys["Updates"].set_label("could not check")
+            return
+        repo, aur = res
+        n = len(repo) + len(aur)
+        self.sys["Updates"].set_label("up to date" if n == 0 else
+                                      f"{n} available" + (f" ({len(aur)} AUR)" if aur else ""))
+        self.upd_btn.set_visible(n > 0)
+
+    def run_update(self):
+        launch(["alacritty", "--class", "bapirlo-update", "-T", "Bapirlo update",
+                "-e", os.path.join(BIN, "bapirlo-update")])
+
+    # --- modes
+    def build_modes(self):
+        c = card("MODES")
+        row = Gtk.Box(spacing=12, homogeneous=True)
+        specs = [("gaming", "input-gaming-symbolic", "Gaming mode", "Turbo · DND · replay on"),
+                 ("quiet", "weather-clear-night-symbolic", "Quiet mode", "Eco · silent fans · no sounds"),
+                 ("dnd", "notifications-disabled-symbolic", "Do Not Disturb", "No notification pop-ups")]
+        self.mode_btn = {}
+        for key, icon, title, sub in specs:
+            b = Gtk.ToggleButton()
+            b.add_css_class("mode")
+            inner = Gtk.Box(spacing=14)
+            img = Gtk.Image(icon_name=icon, pixel_size=30)
+            img.add_css_class("mode-icon")
+            inner.append(img)
+            col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True)
+            col.append(label(title, ("mode-title",)))
+            col.append(label(sub, ("mode-sub",), ellipsize=3))
+            inner.append(col)
+            state = label("OFF", ("mode-state",))
+            inner.append(state)
+            b.set_child(inner)
+            b._state = state
+            b.connect("toggled", self.on_mode, key)
+            row.append(b)
+            self.mode_btn[key] = b
+        c.append(row)
+        self.profile_note = label("", ("faint",))
+        c.append(self.profile_note)
+        return c
+
+    def on_mode(self, btn, key):
+        btn._state.set_label("ON" if btn.get_active() else "OFF")
+        if self._busy:
+            return
+        cmd = [os.path.join(BIN, "bapirlo-mode"), key, "on" if btn.get_active() else "off"]
+        in_thread(lambda: subprocess.run(cmd, timeout=20), lambda *_: self.refresh_modes())
+
+    def refresh_modes(self):
+        st = modes()
+        self._busy = True
+        for k, b in self.mode_btn.items():
+            want = bool(st.get(k))
+            if b.get_active() != want:
+                b.set_active(want)
+            b._state.set_label("ON" if want else "OFF")
+        self._busy = False
+        prof = st.get("profile", "")
+        self.sys["Power mode"].set_label(PROFILE_NAMES.get(prof, prof or "—"))
+        held = "held by Gaming mode" if st.get("gaming") else "held by Quiet mode" if st.get("quiet") else \
+            "follows the charger (plugged in → Turbo, battery → Eco)"
+        self.profile_note.set_label(f"Power profile: {PROFILE_NAMES.get(prof, prof)} — {held}")
+        return True
+
+    # --- apps
+    def build_apps(self):
+        c = card("QUICK LAUNCH")
+        favs = [a for a in Gio.Settings.new("org.gnome.shell").get_strv("favorite-apps") if a != f"{APP_ID}.desktop"]
+        flow = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, max_children_per_line=10,
+                           min_children_per_line=max(4, min(len(favs), 10)), column_spacing=6, row_spacing=6,
+                           homogeneous=True)
+        for app_id in favs:
+            info = DesktopAppInfo.new(app_id)
+            if not info:
+                continue
+            b = Gtk.Button(tooltip_text=info.get_description() or info.get_display_name())
+            b.add_css_class("app")
+            col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+            img = Gtk.Image(gicon=info.get_icon(), pixel_size=48) if info.get_icon() else \
+                Gtk.Image(icon_name="application-x-executable", pixel_size=48)
+            col.append(img)
+            col.append(label(info.get_display_name(), xalign=0.5, ellipsize=3, max_width_chars=9))
+            b.set_child(col)
+            b.connect("clicked", self.on_launch, info)
+            flow.append(b)
+        c.append(flow)
+        return c
+
+    def on_launch(self, _btn, info):
+        ctx = Gdk.Display.get_default().get_app_launch_context()
+        try:
+            info.launch([], ctx)
+        except GLib.Error:
+            pass
+
+    # --- footer
+    def build_footer(self):
+        f = Gtk.Box(spacing=12)
+        f.add_css_class("footer")
+        sw = Gtk.Switch(active=not os.path.exists(OFF_FILE), valign=Gtk.Align.CENTER)
+        sw.connect("notify::active", self.on_autostart)
+        f.append(sw)
+        f.append(label("Show at first login of the day", ("dim",), hexpand=True))
+        about = kuro_button("About This PC", icon="computer-symbolic")
+        about.connect("clicked", lambda *_: launch(["gtk-launch", "os.bapirlo.About"]))
+        f.append(about)
+        close = kuro_button("Let's go", accent=True)
+        close.connect("clicked", lambda *_: self.win.close())
+        f.append(close)
+        return f
+
+    def on_autostart(self, sw, _):
+        os.makedirs(CONF, exist_ok=True)
+        if sw.get_active():
+            try:
+                os.remove(OFF_FILE)
+            except FileNotFoundError:
+                pass
+        else:
+            open(OFF_FILE, "w").close()
+
+
+def first_today():
+    """True once per calendar day (and records it)."""
+    today = datetime.date.today().isoformat()
+    if os.path.exists(OFF_FILE) or read(DAY_FILE) == today:
+        return False
+    os.makedirs(STATE, exist_ok=True)
+    with open(DAY_FILE, "w") as f:
+        f.write(today)
+    return True
+
+
+if __name__ == "__main__":
+    if "--daily" in sys.argv:
+        if not first_today():
+            sys.exit(0)
+        sys.argv.remove("--daily")
+    sys.exit(Welcome().run(sys.argv))

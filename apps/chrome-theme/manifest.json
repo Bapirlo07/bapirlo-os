@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Bapirlo Kuro",
+  "version": "1.0",
+  "description": "Bapirlo OS \"Kuro\" theme: ink blacks, crimson accent, KURO. SCATTER. new tab.",
+  "theme": {
+    "images": {
+      "theme_ntp_background": "images/ntp.jpg"
+    },
+    "colors": {
+      "frame": [14, 10, 13],
+      "frame_inactive": [14, 10, 13],
+      "frame_incognito": [10, 7, 9],
+      "frame_incognito_inactive": [10, 7, 9],
+      "background_tab": [14, 10, 13],
+      "background_tab_inactive": [14, 10, 13],
+      "toolbar": [35, 26, 31],
+      "toolbar_text": [242, 233, 236],
+      "toolbar_button_icon": [242, 233, 236],
+      "tab_text": [242, 233, 236],
+      "tab_background_text": [142, 118, 128],
+      "tab_background_text_inactive": [142, 118, 128],
+      "bookmark_text": [202, 181, 191],
+      "omnibox_background": [22, 16, 21],
+      "omnibox_text": [242, 233, 236],
+      "ntp_background": [14, 10, 13],
+      "ntp_text": [242, 233, 236],
+      "ntp_link": [255, 70, 85],
+      "ntp_header": [225, 29, 46],
+      "button_background": [0, 0, 0, 0]
+    },
+    "tints": {
+      "buttons": [-1, -1, -1]
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}

@@ -1,0 +1,143 @@
+# Bapirlo OS — Plymouth script
+# Timeline (50 fps): 0-14 slash flashes in · 14-40 slash fades, logo fades in
+#                    25-55 title fades in · 45+ RGB dots bounce, logo pulses
+
+Window.SetBackgroundTopColor(0.043, 0.043, 0.051);
+Window.SetBackgroundBottomColor(0.086, 0.086, 0.102);
+
+sw = Window.GetWidth();
+sh = Window.GetHeight();
+s = sh / 1200;
+
+# --- background
+bg = Sprite(Image("bg.png").Scale(sw, sh));
+bg.SetZ(-100);
+
+# --- slash (full-screen streak)
+slash = Sprite(Image("slash.png").Scale(sw, sh));
+slash.SetZ(5);
+slash.SetOpacity(0);
+
+# --- logo
+ls = Math.Int(360 * s);
+logo = Sprite(Image("logo.png").Scale(ls, ls));
+logo_x = sw / 2 - ls / 2;
+logo_y = sh * 0.40 - ls / 2;
+logo.SetPosition(logo_x, logo_y, 10);
+logo.SetOpacity(0);
+
+# --- title
+title_raw = Image("title.png");
+tw = Math.Int(title_raw.GetWidth() * s * 0.8);
+th = Math.Int(title_raw.GetHeight() * s * 0.8);
+title = Sprite(title_raw.Scale(tw, th));
+title.SetPosition(sw / 2 - tw / 2, logo_y + ls + 10 * s, 10);
+title.SetOpacity(0);
+
+# --- RGB loader dots
+ds = Math.Int(40 * s);
+dot_names[0] = "dot-red.png";
+dot_names[1] = "dot-blue.png";
+dot_names[2] = "dot-pink.png";
+dot_names[3] = "dot-emerald.png";
+dots_y = sh * 0.80;
+for (i = 0; i < 4; i++) {
+  dots[i] = Sprite(Image(dot_names[i]).Scale(ds, ds));
+  dots[i].SetPosition(sw / 2 - 2 * ds * 1.3 + i * ds * 1.3, dots_y, 10);
+  dots[i].SetOpacity(0);
+}
+
+# --- message line (e.g. fsck output)
+msg = Sprite();
+msg.SetPosition(sw * 0.1, sh * 0.92, 20);
+
+t = 0;
+mode = "normal";
+
+fun clamp01(v) {
+  if (v < 0) return 0;
+  if (v > 1) return 1;
+  return v;
+}
+
+fun refresh_callback() {
+  global.t = global.t + 1;
+
+  # slash: quick flash in, slide slightly along its direction, then fade
+  if (t < 14) a = t / 14; else a = 1 - (t - 14) / 26;
+  a = clamp01(a);
+  slash.SetOpacity(a);
+  off = (t - 14) * 3 * s;
+  slash.SetX(off);
+  slash.SetY(0 - off * 0.45);
+
+  # logo: fade in, then gentle pulse
+  if (t < 40) la = clamp01((t - 14) / 26);
+  else la = 0.86 + 0.14 * Math.Sin((t - 40) / 14);
+  if (mode == "normal") logo.SetOpacity(la); else logo.SetOpacity(la * 0.35);
+
+  # title
+  ta = clamp01((t - 25) / 30);
+  if (mode == "normal") title.SetOpacity(ta); else title.SetOpacity(0);
+
+  # dots: staggered bounce
+  da = clamp01((t - 45) / 20);
+  for (i = 0; i < 4; i++) {
+    ph = (t / 7) - i * 0.9;
+    bounce = Math.Abs(Math.Sin(ph));
+    dots[i].SetY(dots_y - bounce * 22 * s);
+    if (mode == "normal") dots[i].SetOpacity(da * (0.55 + 0.45 * bounce));
+    else dots[i].SetOpacity(0);
+  }
+}
+Plymouth.SetRefreshFunction(refresh_callback);
+
+# ---------- password prompt (only used if a disk is encrypted)
+entry_img = Image("entry.png");
+ew = Math.Int(entry_img.GetWidth() * s);
+eh = Math.Int(entry_img.GetHeight() * s);
+entry = Sprite(entry_img.Scale(ew, eh));
+entry.SetPosition(sw / 2 - ew / 2, sh * 0.70, 30);
+entry.SetOpacity(0);
+prompt_sprite = Sprite();
+prompt_sprite.SetPosition(sw / 2 - ew / 2, sh * 0.70 - 40 * s, 30);
+bullet_img = Image("bullet.png").Scale(Math.Int(20 * s), Math.Int(20 * s));
+nbullets = 0;
+
+fun hide_dialog() {
+  entry.SetOpacity(0);
+  prompt_sprite.SetOpacity(0);
+  for (i = 0; i < global.nbullets; i++) global.bullets[i].SetOpacity(0);
+}
+
+fun display_normal_callback() {
+  global.mode = "normal";
+  hide_dialog();
+}
+
+fun display_password_callback(prompt, count) {
+  global.mode = "password";
+  entry.SetOpacity(1);
+  prompt_sprite.SetImage(Image.Text(prompt, 0.94, 0.94, 0.96, 1, "Sans 14"));
+  prompt_sprite.SetOpacity(1);
+  for (i = 0; i < global.nbullets; i++) global.bullets[i].SetOpacity(0);
+  for (i = 0; i < count && i < 24; i++) {
+    if (!global.bullets[i]) global.bullets[i] = Sprite(bullet_img);
+    global.bullets[i].SetPosition(sw / 2 - ew / 2 + 22 * s + i * 22 * s, sh * 0.70 + eh / 2 - 10 * s, 31);
+    global.bullets[i].SetOpacity(1);
+  }
+  if (count > global.nbullets) global.nbullets = count;
+}
+
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+
+fun message_callback(text) {
+  msg.SetImage(Image.Text(text, 0.6, 0.6, 0.66, 1, "Sans 11"));
+}
+Plymouth.SetMessageFunction(message_callback);
+
+fun quit_callback() {
+  logo.SetOpacity(1);
+}
+Plymouth.SetQuitFunction(quit_callback);

@@ -1,0 +1,17 @@
+[Unit]
+Description=Bapirlo OS MSI power glue (power profile <-> msi-ec, AC/battery switching, charge limit)
+After=power-profiles-daemon.service upower.service
+Wants=power-profiles-daemon.service upower.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/lib/bapirlo/bapirlo-perfd
+Restart=on-failure
+RestartSec=5
+Nice=10
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

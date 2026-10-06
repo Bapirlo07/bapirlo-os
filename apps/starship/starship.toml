@@ -1,0 +1,132 @@
+# Bapirlo OS "Kuro" — Starship prompt. Palette: ~/bapirlo-os/tools/palette.py
+# Needs a Nerd Font (Alacritty uses JetBrainsMono Nerd Font).
+"$schema" = 'https://starship.rs/config-schema.json'
+
+palette = "kuro"
+add_newline = true
+command_timeout = 400          # never let a slow git repo stall the prompt
+scan_timeout = 20
+
+#  ▌ ⛩ you  ~/bapirlo-os   main ✚2  …               took 3s  18:42
+#  ❯
+format = """
+[](crimson)$os$username[](bg:night fg:crimson)$directory[](bg:surface fg:night)$git_branch$git_status[](fg:surface)\
+$python$nodejs$rust$golang$c$java$lua\
+$fill$cmd_duration$jobs$time
+$character"""
+
+[palettes.kuro]
+ink     = "#0E0A0D"
+night   = "#161015"
+surface = "#231A1F"
+line    = "#523B44"
+muted   = "#8E7680"
+mist    = "#CAB5BF"
+paper   = "#F2E9EC"
+crimson = "#E11D2E"
+ember   = "#FF4655"
+blood   = "#7A0F1A"
+sakura  = "#F08AA4"
+jade    = "#3FC69A"
+amber   = "#F2B45A"
+steel   = "#7C9CFF"
+
+[os]
+disabled = false
+style = "bg:crimson fg:paper"
+format = "[$symbol]($style)"
+[os.symbols]
+Arch = " "
+CachyOS = " "
+Linux = " "
+
+[username]
+show_always = true
+style_user = "bg:crimson fg:paper bold"
+style_root = "bg:blood fg:paper bold"
+format = "[$user ]($style)"
+
+[directory]
+style = "bg:night fg:paper"
+read_only = " 󰌾"
+read_only_style = "bg:night fg:ember"
+truncation_length = 3
+truncation_symbol = "…/"
+home_symbol = "~"
+format = "[ $path]($style)[$read_only]($read_only_style)[ ]($style)"
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Pictures" = " "
+"bapirlo-os" = "⛩ bapirlo-os"
+
+[git_branch]
+symbol = ""
+style = "bg:surface fg:sakura"
+format = "[ $symbol $branch]($style)"
+
+[git_status]
+style = "bg:surface fg:ember"
+format = "[ $all_status$ahead_behind ]($style)"
+conflicted = "✖"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕"
+modified = "✚${count}"
+staged = "●${count}"
+untracked = "?${count}"
+deleted = "✘${count}"
+stashed = "≡"
+
+[python]
+symbol = " "
+style = "fg:amber"
+format = "[ $symbol$version( \\($virtualenv\\))]($style)"
+[nodejs]
+symbol = " "
+style = "fg:jade"
+format = "[ $symbol$version]($style)"
+[rust]
+symbol = " "
+style = "fg:ember"
+format = "[ $symbol$version]($style)"
+[golang]
+symbol = " "
+style = "fg:steel"
+format = "[ $symbol$version]($style)"
+[c]
+symbol = " "
+style = "fg:steel"
+format = "[ $symbol$version]($style)"
+[java]
+symbol = " "
+style = "fg:ember"
+format = "[ $symbol$version]($style)"
+[lua]
+symbol = " "
+style = "fg:steel"
+format = "[ $symbol$version]($style)"
+
+[fill]
+symbol = " "
+
+[cmd_duration]
+min_time = 2000
+style = "fg:amber"
+format = "[ $duration ]($style)"
+
+[jobs]
+symbol = " "
+style = "fg:sakura"
+format = "[$symbol$number ]($style)"
+
+[time]
+disabled = false
+time_format = "%H:%M"
+style = "fg:muted"
+format = "[ $time]($style)"
+
+[character]
+success_symbol = "[❯](bold crimson)"
+error_symbol = "[❯](bold ember)[✘](ember)"
+vimcmd_symbol = "[❮](bold sakura)"

@@ -1,0 +1,44 @@
+/* Bapirlo OS "Kuro" — Spotify. Radius tokens: surface 16 · item 10 · chip 8. */
+:root {
+  --bapirlo-hairline: rgba(225, 29, 46, 0.28);
+  --bapirlo-radius: 16px;
+  --bapirlo-item: 10px;
+}
+
+body, .main-type-mesto, .main-type-ballad, .encore-text { font-family: "Inter", sans-serif !important; }
+
+/* manga headings: big page titles in Bangers, like the desktop media card tag */
+.main-entityHeader-title h1,
+.main-entityHeader-title .encore-text-headline-large,
+[data-testid="entityTitle"] h1 {
+  font-family: "Bangers", "Inter", sans-serif !important;
+  letter-spacing: 0.02em;
+  font-weight: 400 !important;
+}
+
+/* floating panels with the crimson hairline */
+.Root__nav-bar,
+.Root__main-view,
+.Root__right-sidebar > div,
+.main-yourLibraryX-library {
+  border-radius: var(--bapirlo-radius) !important;
+  border: 1px solid var(--bapirlo-hairline);
+}
+.Root__now-playing-bar { border-top: 1px solid var(--bapirlo-hairline); }
+
+/* cards + rows */
+.main-card-card, .Card { border-radius: var(--bapirlo-item) !important; }
+.main-card-card:hover, .Card:hover { background-color: rgba(225, 29, 46, 0.10) !important; }
+.main-trackList-trackListRow:hover { background-color: rgba(225, 29, 46, 0.12) !important; }
+.main-trackList-trackListRow[aria-selected="true"] { background-color: rgba(225, 29, 46, 0.22) !important; }
+
+/* progress / volume bars in crimson, ember on hover */
+.x-progressBar-fillColor { background-color: var(--spice-button) !important; }
+.progress-bar:hover .x-progressBar-fillColor { background-color: var(--spice-button-active) !important; }
+
+/* play button glow */
+.main-playButton-PlayButton button span,
+.encore-bright-accent-set { box-shadow: 0 0 18px rgba(225, 29, 46, 0.45); }
+
+/* scrollbars */
+::-webkit-scrollbar-thumb { background: rgba(225, 29, 46, 0.35) !important; border-radius: 8px; }

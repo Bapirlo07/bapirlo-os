@@ -1,0 +1,10 @@
+{
+  "uuid": "bapirlo-media@bapirlo-os",
+  "name": "Bapirlo Media",
+  "description": "Bapirlo OS desktop now-playing card: MPRIS art, progress, controls and volume, floating above your windows.",
+  "shell-version": [
+    "50"
+  ],
+  "version": 1,
+  "url": "https://github.com/Bapirlo07/bapirlo-os"
+}

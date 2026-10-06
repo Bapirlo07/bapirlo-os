@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — wallpaper + Night Light follow the sun.
+
+Every 10 minutes (bapirlo-daycycle.timer, and at login) this:
+  · works out today's sunrise / sunset for your location (SimpleWeather's main location, or
+    ~/.config/bapirlo/location.json) — pure maths, no network
+  · day   (sunrise → sunset): the bright wallpaper     night: the dark one
+    Pictures from ~/Pictures/wallpapers/bapirlo/day and …/night win if you put any there
+    (one per day, rotating); otherwise the Kuro day / night grades are used.
+    The wallpaper is only set when it actually changes, and bapirlo-autotheme picks the
+    new accent colours up from it (it watches the wallpaper).
+  · Night Light schedule = sunset → sunrise (updated daily, so it follows the seasons)
+
+  bapirlo-daycycle            apply now
+  bapirlo-daycycle --status   print today's times and what would be used
+Off: systemctl --user disable --now bapirlo-daycycle.timer
+"""
+import datetime
+import json
+import math
+import os
+import random
+import sys
+
+from gi.repository import Gio, GLib
+
+HOME = os.path.expanduser("~")
+DEFAULTS = {"day": f"{HOME}/.local/share/backgrounds/bapirlo/kuro-day-2560x1600.jpg",
+            "night": f"{HOME}/.local/share/backgrounds/bapirlo/kuro-night-2560x1600.jpg"}
+FOLDERS = {p: f"{HOME}/Pictures/wallpapers/bapirlo/{p}" for p in ("day", "night")}
+IMG_EXT = (".jpg", ".jpeg", ".png", ".webp")
+CONF = os.path.join(GLib.get_user_config_dir(), "bapirlo")
+
+
+def location():
+    ext = f"{HOME}/.local/share/gnome-shell/extensions/simple-weather@romanlefler.com/schemas"
+    try:
+        src = Gio.SettingsSchemaSource.new_from_directory(ext, Gio.SettingsSchemaSource.get_default(), False)
+        schema = src.lookup("org.gnome.shell.extensions.simple-weather", False)
+        if schema:
+            s = Gio.Settings.new_full(schema, None, None)
+            locs = [json.loads(x) for x in s.get_strv("locations")]
+            if locs:
+                loc = locs[min(s.get_int64("main-location-index"), len(locs) - 1)]
+                return float(loc["lat"]), float(loc["lon"])
+    except (GLib.Error, ValueError, KeyError, TypeError):
+        pass
+    try:
+        with open(os.path.join(CONF, "location.json")) as f:
+            d = json.load(f)
+            return float(d["lat"]), float(d["lon"])
+    except (OSError, ValueError, KeyError):
+        return None
+
+
+def sun_times(day, lat, lon):
+    """NOAA sunrise/sunset (UTC datetimes) — good to about a minute."""
+    n = day.timetuple().tm_yday
+    out = []
+    for rising in (True, False):
+        lng_hour = lon / 15
+        t = n + ((6 if rising else 18) - lng_hour) / 24
+        m = 0.9856 * t - 3.289
+        l_ = (m + 1.916 * math.sin(math.radians(m)) + 0.020 * math.sin(math.radians(2 * m)) + 282.634) % 360
+        ra = math.degrees(math.atan(0.91764 * math.tan(math.radians(l_)))) % 360
+        ra = (ra + (math.floor(l_ / 90) * 90 - math.floor(ra / 90) * 90)) / 15
+        sin_dec = 0.39782 * math.sin(math.radians(l_))
+        cos_dec = math.cos(math.asin(sin_dec))
+        cos_h = (math.cos(math.radians(90.833)) - sin_dec * math.sin(math.radians(lat))) / \
+                (cos_dec * math.cos(math.radians(lat)))
+        if not -1 <= cos_h <= 1:
+            return None                     # polar day / night
+        h = (360 - math.degrees(math.acos(cos_h)) if rising else math.degrees(math.acos(cos_h))) / 15
+        ut = (h + ra - 0.06571 * t - 6.622 - lng_hour) % 24
+        out.append(datetime.datetime.combine(day, datetime.time(0), datetime.timezone.utc) +
+                   datetime.timedelta(hours=ut))
+    return out
+
+
+def pick(phase, today):
+    folder = FOLDERS[phase]
+    try:
+        imgs = sorted(f for f in os.listdir(folder) if f.lower().endswith(IMG_EXT))
+    except OSError:
+        imgs = []
+    if imgs:
+        return os.path.join(folder, random.Random(today.toordinal()).choice(imgs) if len(imgs) > 1 else imgs[0])
+    return DEFAULTS[phase]
+
+
+def main():
+    now = datetime.datetime.now().astimezone()
+    today = now.date()
+    loc = location() or (51.5, -0.12)
+    times = sun_times(today, *loc)
+    if times:
+        rise, sset = (t.astimezone() for t in times)
+    else:   # polar edge case — fixed 07:00 / 19:00
+        rise = now.replace(hour=7, minute=0, second=0, microsecond=0)
+        sset = now.replace(hour=19, minute=0, second=0, microsecond=0)
+    phase = "day" if rise <= now < sset else "night"
+    image = pick(phase, today)
+
+    if "--status" in sys.argv:
+        print(f"location {loc[0]:.3f},{loc[1]:.3f}  sunrise {rise:%H:%M}  sunset {sset:%H:%M}  now {phase}")
+        print(f"wallpaper → {image}")
+        return
+
+    bg = Gio.Settings.new("org.gnome.desktop.background")
+    uri = Gio.File.new_for_path(image).get_uri()
+    if os.path.exists(image) and (bg.get_string("picture-uri") != uri or bg.get_string("picture-uri-dark") != uri):
+        bg.set_string("picture-uri", uri)
+        bg.set_string("picture-uri-dark", uri)
+        print(f"{phase}: wallpaper → {image}", flush=True)
+
+    color = Gio.Settings.new("org.gnome.settings-daemon.plugins.color")
+    frm = round(sset.hour + sset.minute / 60, 2)
+    to = round(rise.hour + rise.minute / 60, 2)
+    if color.get_boolean("night-light-schedule-automatic"):
+        color.set_boolean("night-light-schedule-automatic", False)
+    if abs(color.get_double("night-light-schedule-from") - frm) > 0.01:
+        color.set_double("night-light-schedule-from", frm)
+    if abs(color.get_double("night-light-schedule-to") - to) > 0.01:
+        color.set_double("night-light-schedule-to", to)
+    Gio.Settings.sync()
+
+
+if __name__ == "__main__":
+    main()

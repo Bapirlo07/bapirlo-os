@@ -1,0 +1,1 @@
+{"uuid": "testhelper@bapirlo-os", "name": "Bapirlo test helper", "description": "Test-only: unsafe mode for Eval/Screenshot in the headless shell.", "shell-version": ["50"]}

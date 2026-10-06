@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Bapirlo OS — instant replay (GPU Screen Recorder keeps the last 30 s in RAM).
+#   bapirlo-replay save     write the last 30 s to ~/Videos/Replays   (Super+Alt+G, or click REPLAY in the bar)
+#   bapirlo-replay toggle   start / stop the buffer                   (Super+Alt+R)
+#   bapirlo-replay start | stop | status
+#   bapirlo-replay run      what bapirlo-replay.service executes
+# Normally the bapirlo-game extension starts it when a game goes fullscreen (or OBS goes live)
+# and stops it afterwards. Encoding runs on the Intel iGPU's media engine, so the RTX 4060
+# (and games on it) are untouched; nothing is written to disk until you save.
+set -euo pipefail
+UNIT=bapirlo-replay.service
+OUT=${BAPIRLO_REPLAY_DIR:-$HOME/Videos/Replays}
+CONF=${XDG_CONFIG_HOME:-$HOME/.config}/bapirlo/replay.conf
+# defaults (override in ~/.config/bapirlo/replay.conf)
+SECONDS_KEPT=30 FPS=60 QUALITY=high CAPTURE=screen AUDIO=default_output
+[ -f "$CONF" ] && . "$CONF"
+
+case "${1:-}" in
+  run)
+    mkdir -p "$OUT"
+    exec gpu-screen-recorder -w "$CAPTURE" -f "$FPS" -r "$SECONDS_KEPT" -q "$QUALITY" \
+         -a "$AUDIO" -c mp4 -o "$OUT" -restore-portal-session yes
+    ;;
+  save)
+    if systemctl --user -q is-active "$UNIT"; then
+      systemctl --user kill -s SIGUSR1 --kill-whom=main "$UNIT"
+    else
+      notify-send -a "Instant replay" -i media-record-symbolic "Replay is off" "Press Super+Alt+R to start the buffer."
+    fi ;;
+  start) systemctl --user start "$UNIT" ;;
+  stop) systemctl --user stop "$UNIT" ;;
+  toggle)
+    if systemctl --user -q is-active "$UNIT"; then
+      systemctl --user stop "$UNIT"
+      notify-send -a "Instant replay" -i media-record-symbolic "Replay buffer off"
+    else
+      systemctl --user start "$UNIT"
+      notify-send -a "Instant replay" -i media-record-symbolic "Replay buffer on" "Super+Alt+G saves the last ${SECONDS_KEPT} s."
+    fi ;;
+  status) systemctl --user status "$UNIT" --no-pager ;;
+  *) sed -n 2,10p "$0"; exit 1 ;;
+esac

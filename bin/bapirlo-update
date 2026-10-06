@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Bapirlo OS — one-click system update (top-bar Arch Update button / Welcome app "Update").
+# Runs in its own terminal window: lists what will change, then `paru -Syu` (official repos
+# + AUR, as you). The pacman hook takes a Timeshift snapshot right before packages are
+# upgraded (once per run). paru shows AUR PKGBUILD changes for review before building.
+set -uo pipefail
+R=$'\e[38;2;255;70;85m'; D=$'\e[38;2;202;181;191m'; B=$'\e[1m'; N=$'\e[0m'
+printf '\n  %s%sBAPIRLO OS · UPDATE%s\n\n' "$B" "$R" "$N"
+printf '  %sA Timeshift snapshot is taken automatically before anything is upgraded.%s\n\n' "$D" "$N"
+paru -Syu
+rc=$?
+echo
+if [ $rc -eq 0 ]; then
+  printf '  %s%sDone.%s ' "$B" "$R" "$N"
+  # new kernel installed but old one still running → suggest a reboot
+  running=$(uname -r); if ! ls /usr/lib/modules | grep -qx "$running"; then
+    printf 'A new kernel was installed — reboot when convenient.'
+  fi
+  echo
+  notify-send -a "Bapirlo OS" -i software-update-available-symbolic "System updated" "All packages are up to date." 2>/dev/null
+else
+  printf '  %sUpdate stopped (exit %s) — scroll up for the reason.%s\n' "$R" "$rc" "$N"
+fi
+printf '\n  %sPress Enter to close.%s' "$D" "$N"; read -r _

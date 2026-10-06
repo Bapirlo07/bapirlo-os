@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Bapirlo OS — add / remove workspaces (bound to Ctrl+Super+D / Ctrl+Super+F4 by 90-workspaces.sh)
+# GNOME (Wayland) only lets scripts change the COUNT, so "remove" closes the LAST workspace;
+# any windows on it are moved to the one before it — nothing is closed.
+set -u
+MAX=12
+n=$(gsettings get org.gnome.desktop.wm.preferences num-workspaces)
+note() { notify-send -a "Workspaces" -i preferences-desktop-workspaces -h string:x-canonical-private-synchronous:bapirlo-ws -t 1500 "$1" "$2" 2>/dev/null || true; }
+case "${1:-}" in
+  add)
+    if [ "$n" -ge "$MAX" ]; then note "Workspace limit" "Already at $MAX workspaces"; exit 0; fi
+    gsettings set org.gnome.desktop.wm.preferences num-workspaces $((n + 1))
+    note "Workspace $((n + 1)) added" "Super+End to go there · now $((n + 1)) workspaces" ;;
+  remove)
+    if [ "$n" -le 1 ]; then note "Can't remove" "At least one workspace is needed"; exit 0; fi
+    gsettings set org.gnome.desktop.wm.preferences num-workspaces $((n - 1))
+    note "Workspace $n removed" "Its windows moved to workspace $((n - 1)) · now $((n - 1)) workspaces" ;;
+  *) echo "usage: $0 add|remove"; exit 1 ;;
+esac

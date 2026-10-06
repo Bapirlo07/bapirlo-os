@@ -1,0 +1,11 @@
+[Unit]
+Description=Bapirlo OS monthly cleanup (package cache, orphans, old logs)
+After=network-online.target
+ConditionACPower=true
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/bapirlo/bapirlo-cleanup
+Nice=19
+IOSchedulingClass=idle
+CPUSchedulingPolicy=idle

@@ -1,0 +1,172 @@
+/* Bapirlo Bar — Kuro tokens: crimson #E11D2E · ember #FF4655 · paper #F2E9EC · mist #CAB5BF
+   item radius 11 (concentric with the 16px bar, 5px inset) · chip 8 · motion 180ms.
+   Colours that follow the wallpaper are overridden by ~/.local/state/bapirlo/accent/shell.css */
+
+/* groups: no single big highlight — each child hovers on its own */
+#panel .panel-button.bapirlo-group,
+#panel .panel-button.bapirlo-group:hover,
+#panel .panel-button.bapirlo-group:focus,
+#panel .panel-button.bapirlo-group:active,
+#panel .panel-button.bapirlo-group:checked {
+  box-shadow: none;
+  background-color: transparent;
+  -natural-hpadding: 2px;
+  -minimum-hpadding: 2px;
+}
+.bapirlo-group-box { spacing: 2px; }
+.bapirlo-group-outer { spacing: 8px; }
+.bapirlo-sep {
+  width: 1px;
+  height: 18px;
+  background-color: rgba(242, 233, 236, 0.20);
+}
+
+/* ---------------------------------------------------------------- workspace dots */
+#panel .bapirlo-ws { -natural-hpadding: 6px; }
+.bapirlo-ws-hit {
+  padding: 0 4px;
+  min-height: 26px;
+  border-radius: 8px;
+  transition-duration: 180ms;
+}
+.bapirlo-ws-hit:hover { background-color: rgba(225, 29, 46, 0.16); }
+.bapirlo-ws-dot {
+  height: 5px;                       /* + 1.5px border each side = 8px */
+  border-radius: 99px;
+  border: 1.5px solid rgba(242, 233, 236, 0.42);
+  background-color: transparent;
+  transition-duration: 220ms;
+}
+.bapirlo-ws-hit:hover .bapirlo-ws-dot { border-color: rgba(242, 233, 236, 0.75); }
+.bapirlo-ws-dot.occupied { background-color: #FF4655; border-color: #FF4655; }
+.bapirlo-ws-dot.active {
+  background-color: #E11D2E;
+  border-color: #FF4655;
+  box-shadow: 0 0 6px rgba(225, 29, 46, 0.55);
+}
+
+/* ---------------------------------------------------------------- quick launch */
+.bapirlo-launcher {
+  min-width: 36px;
+  min-height: 34px;
+  border-radius: 11px;
+  transition-duration: 180ms;
+}
+.bapirlo-launcher:hover, .bapirlo-launcher:focus { background-color: rgba(225, 29, 46, 0.18); }
+.bapirlo-launcher:active { background-color: rgba(225, 29, 46, 0.34); }
+.bapirlo-launcher-box { spacing: 2px; }
+#panel .bapirlo-launcher .bapirlo-launcher-icon { icon-size: 22px; icon-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); }
+.bapirlo-launcher-dot {
+  height: 3px;
+  border-radius: 99px;
+  background-color: #FF4655;
+}
+.bapirlo-launcher-dot.focused { background-color: #E11D2E; box-shadow: 0 0 4px rgba(225, 29, 46, 0.7); }
+
+/* ---------------------------------------------------------------- mini player */
+.bapirlo-mini-titlebtn {
+  border-radius: 11px;
+  padding: 0 10px 0 5px;
+  min-height: 34px;
+  transition-duration: 180ms;
+}
+.bapirlo-mini-titlebtn:hover { background-color: rgba(225, 29, 46, 0.18); }
+.bapirlo-mini-info { spacing: 9px; }
+.bapirlo-mini-art {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background-size: cover;
+  background-color: rgba(242, 233, 236, 0.08);
+  border: 1px solid rgba(225, 29, 46, 0.45);
+}
+#panel .bapirlo-mini-art .bapirlo-mini-art-icon { icon-size: 16px; }
+.bapirlo-mini-title {
+  max-width: 190px;
+  font-size: 11pt;
+  font-weight: 600;
+  color: #F2E9EC;
+}
+.bapirlo-mini-info.paused .bapirlo-mini-title { color: #CAB5BF; font-weight: 500; }
+.bapirlo-mini-info.paused .bapirlo-mini-art { border-color: rgba(242, 233, 236, 0.18); }
+.bapirlo-mini-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 99px;
+  transition-duration: 180ms;
+}
+#panel .bapirlo-mini-btn .bapirlo-mini-icon { icon-size: 16px; color: #F2E9EC; }
+.bapirlo-mini-btn:hover { background-color: rgba(225, 29, 46, 0.22); }
+.bapirlo-mini-btn:active { background-color: #E11D2E; }
+.bapirlo-mini-play { background-color: rgba(242, 233, 236, 0.08); }
+.bapirlo-mini-btn:insensitive .bapirlo-mini-icon { color: rgba(242, 233, 236, 0.3); }
+.bapirlo-mini-extra { spacing: 0; }
+
+/* ---------------------------------------------------------------- power chip (manga sticker) */
+.bapirlo-power-chip {
+  border-radius: 8px;
+  padding: 0 9px 0 7px;
+  min-height: 26px;
+  background-color: rgba(242, 233, 236, 0.07);
+  border: 1px solid rgba(242, 233, 236, 0.10);
+  transition-duration: 180ms;
+}
+.bapirlo-power-box { spacing: 5px; }
+#panel .bapirlo-power-chip .bapirlo-power-icon { icon-size: 16px; color: #F2E9EC; }
+#panel .bapirlo-power-chip .bapirlo-power-game { icon-size: 14px; color: #ffffff; }
+.bapirlo-power-label {
+  font-family: Bangers, sans-serif;   /* St: max one quoted family per list */
+  font-weight: normal;                /* Bangers has no bold — avoid synthetic emboldening */
+  font-size: 13pt;
+  letter-spacing: 1.2px;
+  padding-top: 2px;
+  color: #F2E9EC;
+}
+.bapirlo-power-chip:hover { background-color: rgba(225, 29, 46, 0.22); border-color: rgba(225, 29, 46, 0.45); }
+.bapirlo-power-chip.eco .bapirlo-power-label, #panel .bapirlo-power-chip.eco .bapirlo-power-icon { color: #F08AA4; }
+.bapirlo-power-chip.turbo {
+  background-color: #E11D2E;
+  border-color: #FF4655;
+  box-shadow: 2px 2px 0 rgba(14, 10, 13, 0.85);   /* hard ink offset, comic-panel style */
+}
+.bapirlo-power-chip.turbo .bapirlo-power-label { color: #ffffff; text-shadow: 1px 1px 0 rgba(122, 15, 26, 0.9); }
+#panel .bapirlo-power-chip.turbo .bapirlo-power-icon { color: #ffffff; }
+.bapirlo-power-chip.turbo:hover { background-color: #FF4655; }
+
+/* ---------------------------------------------------------------- replay dot */
+.bapirlo-replay-btn {
+  border-radius: 8px;
+  padding: 0 8px;
+  min-height: 26px;
+  transition-duration: 180ms;
+}
+.bapirlo-replay-btn:hover { background-color: rgba(225, 29, 46, 0.22); }
+.bapirlo-replay-box { spacing: 6px; }
+.bapirlo-replay-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 99px;
+  background-color: #E11D2E;
+  box-shadow: 0 0 6px rgba(255, 70, 85, 0.8);
+}
+.bapirlo-replay-label {
+  font-family: Bangers, sans-serif;
+  font-weight: normal;
+  font-size: 12pt;
+  letter-spacing: 1.2px;
+  padding-top: 2px;
+  color: #FF4655;
+}
+
+/* ---------------------------------------------------------------- tooltip */
+.bapirlo-tooltip {
+  background-color: rgba(22, 16, 21, 0.96);
+  border: 1px solid rgba(225, 29, 46, 0.28);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-family: "Inter", sans-serif;
+  font-size: 10pt;
+  font-weight: 500;
+  color: #F2E9EC;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+}

@@ -1,0 +1,18 @@
+Bapirlo Kuro sound theme — where every sound came from
+=====================================================
+All raw sounds: Kenney.nl, Creative Commons Zero (CC0 1.0, public domain) — free for any use,
+no attribution required. Licence files are next to this one.
+
+message-new-instant.oga  (notifications, "shing")
+    knifeSlice2.ogg  from "RPG Audio"         https://kenney.nl/assets/rpg-audio
+  + glass_004.ogg    from "Interface Sounds"  https://kenney.nl/assets/interface-sounds  (25 ms later = the ring)
+    high-passed (1.2 / 1.8 kHz), 0.35 s fade, loudness -26 LUFS (quiet)
+
+audio-volume-change.oga  (volume keys / slider)
+    tick_002.ogg     from "Interface Sounds", high-passed 1.5 kHz, -13 dB
+
+desktop-login.oga  (login)
+    metalLatch.ogg + knifeSlice.ogg (RPG Audio) + glass_004.ogg (Interface Sounds)
+    = hilt click -> blade draw -> ring, -24 LUFS
+
+Built with ffmpeg on 2026-10-05 by Bapirlo OS (Claude). Preview:  pw-play <file>

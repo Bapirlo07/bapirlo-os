@@ -1,0 +1,8 @@
+[Sound Theme]
+Name=Bapirlo Kuro
+Comment=Bapirlo OS: sword "shing" notifications, soft volume tick, blade-draw login. Kenney.nl CC0 sounds.
+Directories=stereo
+Inherits=freedesktop
+
+[stereo]
+OutputProfile=stereo

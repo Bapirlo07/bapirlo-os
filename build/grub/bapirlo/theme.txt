@@ -1,0 +1,82 @@
+# Bapirlo OS GRUB theme
+title-text: ""
+desktop-image: "background.png"
+desktop-image-scale-method: "crop"
+desktop-color: "#0b0b0d"
+terminal-font: "Inter Regular 20"
+terminal-box: "terminal_box_*.png"
+terminal-left: "10%"
+terminal-top: "10%"
+terminal-width: "80%"
+terminal-height: "80%"
+
++ image {
+  top = 6%
+  left = 50%-85
+  width = 170
+  height = 170
+  file = "logo.png"
+}
+
++ label {
+  top = 6%+178
+  left = 0
+  width = 100%
+  align = "center"
+  text = "BAPIRLO OS"
+  font = "Bangers Regular 84"
+  color = "#e3242b"
+}
+
++ boot_menu {
+  left = 29%
+  top = 36%
+  width = 42%
+  height = 44%
+  item_font = "Inter Regular 30"
+  item_color = "#c9c9d1"
+  selected_item_font = "Inter Bold 30"
+  selected_item_color = "#ffffff"
+  icon_width = 44
+  icon_height = 44
+  item_icon_space = 22
+  item_height = 72
+  item_padding = 18
+  item_spacing = 10
+  selected_item_pixmap_style = "select_*.png"
+  menu_pixmap_style = "menu_*.png"
+  scrollbar = false
+}
+
++ progress_bar {
+  id = "__timeout__"
+  left = 29%
+  top = 82%
+  width = 42%
+  height = 6
+  show_text = false
+  fg_color = "#e3242b"
+  bg_color = "#16161a"
+  border_color = "#16161a"
+}
+
++ label {
+  id = "__timeout__"
+  left = 0
+  top = 82%+18
+  width = 100%
+  align = "center"
+  color = "#ff3d8b"
+  font = "Inter Regular 22"
+  text = "Booting in %d s"
+}
+
++ label {
+  left = 0
+  top = 95%
+  width = 100%
+  align = "center"
+  color = "#7a7a86"
+  font = "Inter Regular 22"
+  text = "↑ ↓  select     Enter  boot     E  edit     C  console"
+}

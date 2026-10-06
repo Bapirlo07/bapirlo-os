@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.bapirlo-ai" path="/org/gnome/shell/extensions/bapirlo-ai/">
+    <key name="toggle" type="as">
+      <default><![CDATA[['<Super>a']]]></default>
+      <summary>Show / hide the assistant terminal</summary>
+    </key>
+    <key name="command" type="s">
+      <default>'claude'</default>
+      <summary>Command run in the terminal (fish syntax)</summary>
+    </key>
+    <key name="width" type="d">
+      <default>0.62</default>
+      <summary>Width as a fraction of the monitor's work area</summary>
+    </key>
+    <key name="height" type="d">
+      <default>0.62</default>
+      <summary>Height as a fraction of the monitor's work area</summary>
+    </key>
+    <key name="keep-above" type="b">
+      <default>true</default>
+      <summary>Float above other windows</summary>
+    </key>
+  </schema>
+</schemalist>

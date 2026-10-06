@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# Bapirlo OS — one-switch modes (used by the Welcome app; works from a terminal too).
+#
+#   bapirlo-mode gaming on|off|toggle   Performance profile held (MSI Turbo, even on battery)
+#                                       + Do Not Disturb + instant-replay buffer running
+#   bapirlo-mode quiet  on|off|toggle   Power-saver profile held (MSI Eco + silent fans)
+#                                       + no event sounds
+#   bapirlo-mode dnd    on|off|toggle   notification banners off / on
+#   bapirlo-mode status                 {"gaming": …, "quiet": …, "dnd": …}
+#
+# Gaming and quiet exclude each other. Each mode is a small user unit holding a
+# power-profiles-daemon profile (bapirlo-gaming-mode / bapirlo-quiet-mode); stopping it lets go,
+# and bapirlo-perfd puts the charger-based profile back. A mode does not survive a logout.
+# Anything a mode changed (banners, sounds, replay) is put back exactly as it was when it ends.
+set -uo pipefail
+STATE=${XDG_STATE_HOME:-$HOME/.local/state}/bapirlo/modes
+mkdir -p "$STATE"
+NOTIF=org.gnome.desktop.notifications
+SOUND=org.gnome.desktop.sound
+
+active() { systemctl --user -q is-active "bapirlo-$1-mode.service"; }
+
+hold() {   # hold MODE PROFILE REASON
+  systemctl --user reset-failed "bapirlo-$1-mode.service" 2>/dev/null
+  systemd-run --user --quiet --collect --unit="bapirlo-$1-mode" --description="Bapirlo $1 mode" \
+    powerprofilesctl launch -p "$2" -r "$3" -i os.bapirlo.Welcome sleep infinity
+}
+
+# remember KEY: save the current value once (first mode that touches it wins), restore puts it back
+remember() { [ -f "$STATE/$2.saved" ] || gsettings get "$1" "$2" > "$STATE/$2.saved"; }
+restore_key() {
+  [ -f "$STATE/$2.saved" ] || return 0
+  gsettings set "$1" "$2" "$(cat "$STATE/$2.saved")"; rm -f "$STATE/$2.saved"
+}
+
+dnd() {
+  case $1 in
+    on)  gsettings set $NOTIF show-banners false ;;
+    off) gsettings set $NOTIF show-banners true; rm -f "$STATE/show-banners.saved" ;;
+    toggle) if [ "$(gsettings get $NOTIF show-banners)" = true ]; then dnd on; else dnd off; fi ;;
+  esac
+}
+
+gaming() {
+  case $1 in
+    on)
+      active gaming && return 0
+      active quiet && quiet off
+      hold gaming performance "Gaming mode"
+      remember $NOTIF show-banners; gsettings set $NOTIF show-banners false
+      if ! systemctl --user -q is-active bapirlo-replay.service; then
+        systemctl --user start bapirlo-replay.service 2>/dev/null && touch "$STATE/replay.started"
+      fi ;;
+    off)
+      systemctl --user stop bapirlo-gaming-mode.service 2>/dev/null
+      restore_key $NOTIF show-banners
+      [ -f "$STATE/replay.started" ] && { systemctl --user stop bapirlo-replay.service; rm -f "$STATE/replay.started"; } ;;
+    toggle) if active gaming; then gaming off; else gaming on; fi ;;
+  esac
+}
+
+quiet() {
+  case $1 in
+    on)
+      active quiet && return 0
+      active gaming && gaming off
+      hold quiet power-saver "Quiet mode"
+      remember $SOUND event-sounds; gsettings set $SOUND event-sounds false ;;
+    off)
+      systemctl --user stop bapirlo-quiet-mode.service 2>/dev/null
+      restore_key $SOUND event-sounds ;;
+    toggle) if active quiet; then quiet off; else quiet on; fi ;;
+  esac
+}
+
+status() {
+  local g=false q=false d=false
+  active gaming && g=true
+  active quiet && q=true
+  [ "$(gsettings get $NOTIF show-banners)" = false ] && d=true
+  printf '{"gaming": %s, "quiet": %s, "dnd": %s, "profile": "%s"}\n' $g $q $d "$(powerprofilesctl get 2>/dev/null)"
+}
+
+case "${1:-}:${2:-}" in
+  gaming:on|gaming:off|gaming:toggle) gaming "$2" ;;
+  quiet:on|quiet:off|quiet:toggle)    quiet "$2" ;;
+  dnd:on|dnd:off|dnd:toggle)          dnd "$2" ;;
+  status:*)                           status ;;
+  *) sed -n 2,9p "$0"; exit 1 ;;
+esac

@@ -1,0 +1,158 @@
+/* Bapirlo Media — Kuro tokens (see ~/.themes/Bapirlo-Kuro/gnome-shell/gnome-shell.css)
+     radius   surface 16 · item 10 · chip 8
+     surface  #161015 tint over pre-blurred wallpaper · hairline 1px rgba(225,29,46,.28)
+     text     paper #F2E9EC · mist #CAB5BF · muted #8E7680 · accent text #FF4655
+     accent   crimson #E11D2E · ember #FF4655 (hover) · blood #7A0F1A (pressed)
+     motion   180ms hover/press */
+
+/* ------------------------------------------------------------ card */
+.bm-card {
+  width: 296px;
+  border-radius: 16px;
+  border: 1px solid rgba(225, 29, 46, 0.28);
+  background-color: rgba(22, 16, 21, 0.94);   /* used until/unless the frost slice loads */
+  color: #F2E9EC;
+  font-family: "Inter", sans-serif;
+  font-size: 10.5pt;
+}
+.bm-glow {
+  border-radius: 16px;
+  background-color: rgba(14, 10, 13, 0.9);
+  box-shadow: 0 0 38px 2px rgba(225, 29, 46, 0.42);
+}
+.bm-halftone {
+  width: 132px;
+  height: 132px;
+  border-radius: 0 16px 0 0;
+  background-image: url("assets/halftone.png");
+  background-size: 132px 132px;
+  opacity: 0.55;
+}
+.bm-box { padding: 12px 14px 14px 14px; spacing: 10px; }
+
+/* header: manga sticker + player chips */
+.bm-header { spacing: 6px; min-height: 26px; }
+.bm-tag {
+  font-family: Bangers, sans-serif;   /* St: max one quoted family per list, else the whole rule is dropped */
+  font-size: 13pt;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  background-color: #E11D2E;
+  border-radius: 4px;
+  padding: 2px 9px 0 8px;
+  box-shadow: 2px 2px 0 rgba(14, 10, 13, 0.9);   /* hard ink offset, comic-panel style */
+  text-shadow: 1px 1px 0 rgba(122, 15, 26, 0.9);
+}
+.bm-tag.bm-tag-idle { background-color: #523B44; text-shadow: none; }
+.bm-chips { spacing: 4px; }
+.bm-chip {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background-color: rgba(242, 233, 236, 0.06);
+  border: 1px solid transparent;
+  transition-duration: 180ms;
+}
+.bm-chip StIcon { color: #CAB5BF; }
+.bm-chip:hover { background-color: rgba(225, 29, 46, 0.20); }
+.bm-chip:checked { border-color: #E11D2E; background-color: rgba(225, 29, 46, 0.22); }
+.bm-chip.bm-chip-playing StIcon { color: #FF4655; }
+
+/* buttons */
+.bm-btn {
+  border-radius: 99px;
+  color: #F2E9EC;
+  transition-duration: 180ms;
+}
+.bm-btn:hover { background-color: rgba(225, 29, 46, 0.20); color: #ffffff; }
+.bm-btn:active { background-color: #7A0F1A; }
+.bm-btn:focus { box-shadow: inset 0 0 0 1px rgba(255, 70, 85, 0.6); }
+.bm-mini { width: 24px; height: 24px; border-radius: 8px; color: #8E7680; }
+.bm-mini:hover { color: #ffffff; }
+.bm-skip { width: 40px; height: 40px; }
+.bm-play {
+  width: 50px;
+  height: 50px;
+  background-color: #E11D2E;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(225, 29, 46, 0.45);
+}
+.bm-play:hover { background-color: #FF4655; }
+.bm-play:active { background-color: #7A0F1A; }
+.bm-controls { spacing: 18px; }
+
+/* art */
+.bm-art-btn { border-radius: 10px; }
+.bm-art-wrap {
+  border-radius: 10px;
+  background-color: rgba(242, 233, 236, 0.05);
+  background-gradient-direction: vertical;
+  background-gradient-start: rgba(225, 29, 46, 0.18);
+  background-gradient-end: rgba(14, 10, 13, 0.6);
+}
+.bm-art {
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(242, 233, 236, 0.08);
+}
+.bm-art-icon { color: rgba(242, 233, 236, 0.55); }
+.bm-art-btn:hover .bm-art { border-color: rgba(255, 70, 85, 0.6); }
+
+/* text */
+.bm-meta { spacing: 1px; }
+.bm-title {
+  font-family: "Inter Display", sans-serif;
+  font-weight: 700;
+  font-size: 13pt;
+  color: #F2E9EC;
+}
+.bm-artist { font-size: 10pt; font-weight: 500; color: #CAB5BF; }
+.bm-seek { spacing: 0; }   /* St can't take negative margins — keep bar + times tight here */
+.bm-time { font-size: 8.5pt; font-feature-settings: "tnum"; color: #8E7680; }
+
+/* sliders */
+.bm-progress, .bm-vol-slider {
+  -barlevel-height: 4px;
+  -barlevel-background-color: rgba(242, 233, 236, 0.12);
+  -barlevel-active-background-color: #E11D2E;
+  -barlevel-overdrive-color: #FF4655;
+  -barlevel-border-width: 0;
+  -slider-handle-radius: 0;
+  height: 14px;
+  color: #ffffff;
+}
+.bm-progress:hover, .bm-vol-slider:hover, .bm-vol-slider:focus {
+  -barlevel-active-background-color: #FF4655;
+  -slider-handle-radius: 6px;
+}
+.bm-volume { spacing: 10px; padding: 0 2px; }
+.bm-vol-icon { color: #CAB5BF; }
+.bm-volume-system .bm-vol-icon { color: #8E7680; }   /* no per-app stream → system volume */
+
+/* ------------------------------------------------------------ pill */
+.bm-pill {
+  border-radius: 99px;
+  border: 1px solid rgba(225, 29, 46, 0.28);
+  background-color: rgba(22, 16, 21, 0.94);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  padding: 4px;
+  spacing: 2px;
+  color: #F2E9EC;
+  font-family: "Inter", sans-serif;
+}
+.bm-pill-expand { border-radius: 99px; padding: 0 8px 0 0; transition-duration: 180ms; }
+.bm-pill-expand:hover { background-color: rgba(225, 29, 46, 0.20); }
+.bm-pill-inner { spacing: 8px; }
+.bm-pill-art {
+  width: 30px;
+  height: 30px;
+  border-radius: 99px;
+  background-color: #E11D2E;
+  background-size: cover;
+  background-position: center;
+}
+.bm-card:dragging, .bm-pill:dragging { border-color: rgba(255, 70, 85, 0.7); }
+.bm-pill-title { max-width: 150px; font-size: 9.5pt; font-weight: 600; }
+.bm-pill-play { width: 30px; height: 30px; background-color: #E11D2E; color: #ffffff; }
+.bm-pill-play:hover { background-color: #FF4655; }

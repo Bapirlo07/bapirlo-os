@@ -1,0 +1,11 @@
+[Unit]
+Description=Bapirlo OS monthly cleanup
+
+[Timer]
+OnCalendar=monthly
+Persistent=true
+# not right at boot/login — wait until things have settled
+RandomizedDelaySec=2h
+
+[Install]
+WantedBy=timers.target

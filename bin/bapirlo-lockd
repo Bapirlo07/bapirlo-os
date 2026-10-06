@@ -1,0 +1,154 @@
+#!/usr/bin/env python3
+"""Bapirlo OS lock daemon — locking for GNOME 50 under LightDM.
+
+GNOME's own lock screen only exists with GDM, so on this system Super+L, suspend and idle never
+locked anything. This locks through LightDM instead: it switches to the themed login screen in
+"locked" mode and your session (apps, music, downloads) keeps running behind it.
+
+  bapirlo-lockd             run as the user service (bapirlo-lockd.service):
+                              · lock before suspend (holds a short logind delay so it happens first)
+                              · lock on `loginctl lock-session`
+                              · lock when GNOME goes idle (Settings → Power → Screen Blank) and
+                                Settings → Privacy → Screen Lock "Automatic Screen Lock" is on,
+                                after its "Delay"; Caffeine / fullscreen games prevent idle
+  bapirlo-lockd --lock-now  lock immediately (Super+L)
+"""
+import os
+import subprocess
+import sys
+
+from gi.repository import Gio, GLib
+
+SYSTEM = Gio.bus_get_sync(Gio.BusType.SYSTEM)
+SESSION = Gio.bus_get_sync(Gio.BusType.SESSION)
+IDLE = 3        # org.gnome.SessionManager.Presence status
+
+
+def log(msg):
+    print(f"bapirlo-lockd: {msg}", flush=True)
+
+
+def lightdm_session_path():
+    path = os.environ.get("XDG_SESSION_PATH")
+    if path:
+        return path
+    # fallback: find this user's session on the display manager
+    try:
+        props = SYSTEM.call_sync("org.freedesktop.DisplayManager", "/org/freedesktop/DisplayManager",
+                                 "org.freedesktop.DBus.Properties", "Get",
+                                 GLib.Variant("(ss)", ("org.freedesktop.DisplayManager", "Sessions")),
+                                 None, Gio.DBusCallFlags.NONE, 2000, None)
+        for p in props.unpack()[0]:
+            user = SYSTEM.call_sync("org.freedesktop.DisplayManager", p, "org.freedesktop.DBus.Properties",
+                                    "Get", GLib.Variant("(ss)", ("org.freedesktop.DisplayManager.Session", "UserName")),
+                                    None, Gio.DBusCallFlags.NONE, 2000, None).unpack()[0]
+            if user == os.environ.get("USER"):
+                return p
+    except GLib.Error as e:
+        log(f"no display manager session: {e.message}")
+    return None
+
+
+def lock():
+    path = lightdm_session_path()
+    if path:
+        try:
+            SYSTEM.call_sync("org.freedesktop.DisplayManager", path, "org.freedesktop.DisplayManager.Session",
+                             "Lock", None, None, Gio.DBusCallFlags.NONE, 5000, None)
+            log("locked")
+            return True
+        except GLib.Error as e:
+            log(f"Session.Lock failed: {e.message}")
+    return subprocess.call(["dm-tool", "lock"]) == 0
+
+
+class Daemon:
+    def __init__(self):
+        self.inhibit_fd = None
+        self.idle_timer = 0
+        self.screensaver = Gio.Settings.new("org.gnome.desktop.screensaver")
+        self.take_inhibitor()
+
+        SYSTEM.signal_subscribe("org.freedesktop.login1", "org.freedesktop.login1.Manager", "PrepareForSleep",
+                                "/org/freedesktop/login1", None, Gio.DBusSignalFlags.NONE, self.on_sleep)
+        sid = self.logind_session()
+        if sid:
+            SYSTEM.signal_subscribe("org.freedesktop.login1", "org.freedesktop.login1.Session", "Lock",
+                                    sid, None, Gio.DBusSignalFlags.NONE, lambda *a: lock())
+        SESSION.signal_subscribe("org.gnome.SessionManager", "org.gnome.SessionManager.Presence",
+                                 "StatusChanged", "/org/gnome/SessionManager/Presence", None,
+                                 Gio.DBusSignalFlags.NONE, self.on_presence)
+        log(f"running (login session {sid})")
+
+    def logind_session(self):
+        try:
+            sid = os.environ.get("XDG_SESSION_ID")
+            if sid:
+                r = SYSTEM.call_sync("org.freedesktop.login1", "/org/freedesktop/login1",
+                                     "org.freedesktop.login1.Manager", "GetSession", GLib.Variant("(s)", (sid,)),
+                                     None, Gio.DBusCallFlags.NONE, 2000, None)
+            else:
+                r = SYSTEM.call_sync("org.freedesktop.login1", "/org/freedesktop/login1",
+                                     "org.freedesktop.login1.Manager", "GetSessionByPID",
+                                     GLib.Variant("(u)", (os.getpid(),)), None, Gio.DBusCallFlags.NONE, 2000, None)
+            return r.unpack()[0]
+        except GLib.Error:
+            # user service: not inside the session scope → take the user's graphical session
+            try:
+                r = SYSTEM.call_sync("org.freedesktop.login1", "/org/freedesktop/login1/user/self",
+                                     "org.freedesktop.DBus.Properties", "Get",
+                                     GLib.Variant("(ss)", ("org.freedesktop.login1.User", "Display")),
+                                     None, Gio.DBusCallFlags.NONE, 2000, None)
+                return r.unpack()[0][1]
+            except GLib.Error as e:
+                log(f"no logind session: {e.message}")
+                return None
+
+    # -- suspend: lock first, then let the system sleep
+    def take_inhibitor(self):
+        if self.inhibit_fd is not None:
+            return
+        try:
+            r, fds = SYSTEM.call_with_unix_fd_list_sync(
+                "org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", "Inhibit",
+                GLib.Variant("(ssss)", ("sleep", "Bapirlo lock", "Lock the screen before suspend", "delay")),
+                None, Gio.DBusCallFlags.NONE, 2000, None, None)
+            self.inhibit_fd = fds.get(r.unpack()[0])
+        except GLib.Error as e:
+            log(f"could not take sleep inhibitor: {e.message}")
+
+    def release_inhibitor(self):
+        if self.inhibit_fd is not None:
+            os.close(self.inhibit_fd)
+            self.inhibit_fd = None
+
+    def on_sleep(self, conn, sender, path, iface, signal, params):
+        going_down = params.unpack()[0]
+        if going_down:
+            lock()
+            # give LightDM a moment to switch to the greeter before the machine sleeps
+            GLib.timeout_add(900, lambda: (self.release_inhibitor(), False)[1])
+        else:
+            self.take_inhibitor()
+
+    # -- idle: same rules as GNOME's own Automatic Screen Lock
+    def on_presence(self, conn, sender, path, iface, signal, params):
+        status = params.unpack()[0]
+        if self.idle_timer:
+            GLib.source_remove(self.idle_timer)
+            self.idle_timer = 0
+        if status == IDLE and self.screensaver.get_boolean("lock-enabled"):
+            delay = max(1, self.screensaver.get_uint("lock-delay"))
+            self.idle_timer = GLib.timeout_add_seconds(delay, self.idle_lock)
+
+    def idle_lock(self):
+        self.idle_timer = 0
+        lock()
+        return False
+
+
+if __name__ == "__main__":
+    if "--lock-now" in sys.argv:
+        sys.exit(0 if lock() else 1)
+    Daemon()
+    GLib.MainLoop().run()

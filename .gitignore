@@ -1,0 +1,21 @@
+# --- upstream code & binaries: install.sh fetches them (pinned commits)
+/src/
+/tools/realesrgan/
+
+# --- anything generated from the wallpaper. The original art is third-party fan art,
+#     so it is never committed — install.sh rebuilds all of it from YOUR wallpaper.
+/build/**/*.png
+/build/**/*.jpg
+/build/**/*.jpeg
+/build/**/*.gif
+/build/**/*.pf2
+/build/art/
+/apps/chrome-theme/images/
+
+# --- local / machine state
+*.log
+__pycache__/
+*.pyc
+*.bak-*
+local.conf
+location.json

@@ -1,0 +1,126 @@
+/**
+ * @name Bapirlo Kuro
+ * @description Bapirlo OS "Kuro" palette — ink blacks, crimson accent, manga headings. Matches the desktop.
+ * @author Bapirlo OS
+ * @version 1.0.0
+ */
+
+/* covers both Discord's classic and "visual refresh" variable sets */
+.theme-dark, .theme-darker, .theme-midnight, .visual-refresh.theme-dark, :root {
+  /* surfaces (ink → night → surface) */
+  --background-primary: #161015;
+  --background-secondary: #0E0A0D;
+  --background-secondary-alt: #120D11;
+  --background-tertiary: #0E0A0D;
+  --background-floating: #161015;
+  --background-nested-floating: #1B1419;
+  --background-accent: #523B44;
+  --background-base-lowest: #0A0709;
+  --background-base-lower: #0E0A0D;
+  --background-base-low: #120D11;
+  --background-surface-high: #161015;
+  --background-surface-higher: #1B1419;
+  --background-surface-highest: #231A1F;
+  --bg-base-primary: #161015;
+  --bg-base-secondary: #0E0A0D;
+  --bg-base-tertiary: #0A0709;
+  --bg-surface-raised: #1B1419;
+  --bg-surface-overlay: #161015;
+  --chat-background-default: #161015;
+  --modal-background: #161015;
+  --channeltextarea-background: #231A1F;
+  --input-background: #0E0A0D;
+  --deprecated-card-bg: #1B1419;
+  --home-background: #161015;
+
+  /* hover / selected = crimson tints */
+  --background-modifier-hover: rgba(225, 29, 46, 0.10);
+  --background-modifier-active: rgba(225, 29, 46, 0.16);
+  --background-modifier-selected: rgba(225, 29, 46, 0.22);
+  --background-mod-subtle: rgba(225, 29, 46, 0.10);
+  --background-mod-normal: rgba(225, 29, 46, 0.16);
+  --background-mod-strong: rgba(225, 29, 46, 0.24);
+  --interactive-background-hover: rgba(225, 29, 46, 0.10);
+  --interactive-background-active: rgba(225, 29, 46, 0.16);
+  --interactive-background-selected: rgba(225, 29, 46, 0.22);
+  --background-message-hover: rgba(225, 29, 46, 0.05);
+
+  /* text */
+  --text-normal: #F2E9EC;
+  --text-default: #F2E9EC;
+  --text-strong: #FFFFFF;
+  --header-primary: #F2E9EC;
+  --header-secondary: #CAB5BF;
+  --text-muted: #8E7680;
+  --text-subtle: #8E7680;
+  --channels-default: #8E7680;
+  --interactive-normal: #CAB5BF;
+  --interactive-hover: #F2E9EC;
+  --interactive-active: #FFFFFF;
+  --interactive-muted: #523B44;
+  --text-link: #FF4655;
+  --text-brand: #FF4655;
+
+  /* brand = crimson */
+  --brand-experiment: #E11D2E;
+  --brand-500: #E11D2E;
+  --brand-560: #C51827;
+  --brand-600: #A81422;
+  --brand-360: #FF4655;
+  --brand-400: #FF4655;
+  --control-brand-foreground: #FF4655;
+  --control-brand-foreground-new: #FF4655;
+  --button-filled-brand-background: #E11D2E;
+  --button-filled-brand-background-hover: #FF4655;
+  --button-filled-brand-background-active: #7A0F1A;
+  --mention-foreground: #FF4655;
+  --mention-background: rgba(225, 29, 46, 0.18);
+  --info-warning-foreground: #F2B45A;
+  --status-positive: #3FC69A;
+  --status-danger: #E11D2E;
+
+  /* lines */
+  --border-subtle: rgba(225, 29, 46, 0.18);
+  --border-faint: rgba(242, 233, 236, 0.06);
+  --border-normal: rgba(225, 29, 46, 0.28);
+  --border-strong: rgba(225, 29, 46, 0.40);
+  --background-modifier-accent: rgba(242, 233, 236, 0.08);
+
+  /* shape + type */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --font-primary: "Inter", "gg sans", sans-serif;
+  --font-display: "Inter", "gg sans", sans-serif;
+  --font-code: "JetBrainsMono Nerd Font", monospace;
+}
+
+/* manga touch: server name + DM / channel headers in Bangers */
+[class*="sidebar"] [class*="header"] h2[class*="name"],
+[class*="title_"] h1[class*="title"],
+section[aria-label="Channel header"] h1 {
+  font-family: "Bangers", "Inter", sans-serif !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.03em;
+  font-size: 18px;
+}
+
+/* floating cards: popouts, menus, modals */
+[class*="menu_"], [class*="popout"], [class*="userPopout"], [role="dialog"] > [class*="root"] {
+  border: 1px solid rgba(225, 29, 46, 0.28) !important;
+  border-radius: 16px !important;
+}
+
+/* message box */
+[class*="channelTextArea"] [class*="scrollableContainer"] {
+  border-radius: 14px;
+  border: 1px solid rgba(225, 29, 46, 0.18);
+}
+
+/* unread pills + selected server indicator in crimson */
+[class*="unreadMentionsIndicator"] [class*="text"],
+[class*="numberBadge"] { background-color: #E11D2E !important; }
+[class*="listItem"] [class*="pill"] [class*="item"] { background-color: #FF4655 !important; }
+
+/* scrollbars */
+::-webkit-scrollbar-thumb { background-color: rgba(225, 29, 46, 0.35) !important; border-radius: 8px; }

@@ -1,0 +1,21 @@
+# Bapirlo OS — Satty (screenshot annotation), Kuro palette.  Installed by 310-round3.sh
+[general]
+fullscreen = false
+early-exit = true                 # close after save / copy
+corner-roundness = 12
+initial-tool = "arrow"
+copy-command = "wl-copy"
+annotation-size-factor = 1.5
+save-after-copy = false
+default-hide-toolbars = false
+primary-highlighter = "block"
+actions-on-enter = ["save-to-clipboard"]
+actions-on-escape = ["exit"]
+
+[font]
+family = "Inter"
+style = "Bold"
+
+[color-palette]
+# crimson, ember, sakura, paper, ink, amber
+palette = ["#E11D2E", "#FF4655", "#F08AA4", "#F2E9EC", "#0E0A0D", "#FFB020"]

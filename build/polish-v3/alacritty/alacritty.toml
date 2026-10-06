@@ -1,0 +1,81 @@
+# Bapirlo OS — Alacritty "Kuro" (70-polish.sh). Same palette as Ptyxis / fastfetch.
+[general]
+live_config_reload = true
+
+[window]
+padding = { x = 14, y = 12 }
+dynamic_padding = true
+decorations = "Full"
+opacity = 0.94
+blur = false            # GNOME blurs nothing behind it anyway; keeps it zero-cost
+dynamic_title = true
+
+[font]
+size = 10.5
+normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
+bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
+italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
+offset = { x = 0, y = 2 }   # a little more line height
+
+[cursor]
+style = { shape = "Beam", blinking = "On" }
+blink_interval = 600
+unfocused_hollow = true
+thickness = 0.15
+
+[scrolling]
+history = 20000
+
+[selection]
+save_to_clipboard = false
+
+[colors]
+draw_bold_text_with_bright_colors = false
+
+[colors.primary]
+background = "#0E0A0D"
+foreground = "#F2E9EC"
+
+[colors.cursor]
+text = "#0E0A0D"
+cursor = "#FF4655"
+
+[colors.selection]
+text = "#FFFFFF"
+background = "#7A1420"
+
+[colors.search.matches]
+foreground = "#0E0A0D"
+background = "#F2B45A"
+
+[colors.search.focused_match]
+foreground = "#FFFFFF"
+background = "#E11D2E"
+
+[colors.hints.start]
+foreground = "#0E0A0D"
+background = "#F08AA4"
+
+[colors.footer_bar]
+foreground = "#F2E9EC"
+background = "#1C1418"
+
+[colors.normal]
+black = "#1C1418"
+red = "#E11D2E"
+green = "#3FC69A"
+yellow = "#F2B45A"
+blue = "#7C9CFF"
+magenta = "#F08AA4"
+cyan = "#6FC7C2"
+white = "#CAB5BF"
+
+[colors.bright]
+black = "#857079"
+red = "#FF4655"
+green = "#6EE0B4"
+yellow = "#FFD08A"
+blue = "#A3B8FF"
+magenta = "#FFB3C6"
+cyan = "#9EE6E1"
+white = "#FFFFFF"

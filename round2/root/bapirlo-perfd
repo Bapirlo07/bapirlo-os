@@ -1,0 +1,163 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — MSI power glue (root daemon, bapirlo-perfd.service).
+
+1. Base profile follows the charger (power-profiles-daemon):
+     plugged in → performance        on battery → power-saver
+   …but never while something HOLDS a profile (the bapirlo-game extension holds "performance"
+   while a game runs — even on battery). When the hold ends ppd restores, then we re-apply.
+   A manual pick (top-bar chip, Quick Settings) stays until the next plug/unplug.
+2. Every profile change is mirrored into the MSI EC through msi-ec:
+     performance → shift_mode turbo   + fan auto
+     balanced    → shift_mode comfort + fan auto
+     power-saver → shift_mode eco     + fan silent
+3. Battery charge limit (default 80 %) is (re)applied at start and after resume.
+
+Event driven (D-Bus signals only). Config: /etc/bapirlo/perfd.conf (KEY=value lines).
+Off: sudo systemctl disable --now bapirlo-perfd
+"""
+import os
+import sys
+import time
+
+import gi
+gi.require_version("Gio", "2.0")
+from gi.repository import Gio, GLib  # noqa: E402
+
+EC = "/sys/devices/platform/msi-ec"
+BAT = "/sys/class/power_supply/BAT1"
+PPD, PPD_PATH = "org.freedesktop.UPower.PowerProfiles", "/org/freedesktop/UPower/PowerProfiles"
+UP, UP_PATH = "org.freedesktop.UPower", "/org/freedesktop/UPower"
+
+CONF = {
+    "CHARGE_LIMIT": "80",
+    "AC_PROFILE": "performance",
+    "BATTERY_PROFILE": "power-saver",
+    "MAP_performance": "turbo auto",
+    "MAP_balanced": "comfort auto",
+    "MAP_power-saver": "eco silent",
+}
+
+
+def log(*a):
+    print(*a, flush=True)
+
+
+def load_conf():
+    try:
+        for line in open("/etc/bapirlo/perfd.conf"):
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                CONF[k.strip()] = v.strip().strip('"')
+    except FileNotFoundError:
+        pass
+
+
+def write(path, value):
+    try:
+        with open(path) as f:
+            if f.read().strip() == value:
+                return
+        with open(path, "w") as f:
+            f.write(value)
+        log(f"{path} = {value}")
+    except OSError as e:
+        log(f"cannot write {path}: {e}")
+
+
+def available(path):
+    try:
+        return open(path).read().split()
+    except OSError:
+        return []
+
+
+class Daemon:
+    def __init__(self):
+        self.bus = Gio.bus_get_sync(Gio.BusType.SYSTEM)
+        self.ppd = Gio.DBusProxy.new_sync(self.bus, Gio.DBusProxyFlags.NONE, None, PPD, PPD_PATH, PPD)
+        self.upower = Gio.DBusProxy.new_sync(self.bus, Gio.DBusProxyFlags.NONE, None, UP, UP_PATH, UP)
+        self.on_battery = self._prop(self.upower, "OnBattery")
+        self.pending_base = False
+        self.ppd.connect("g-properties-changed", self.on_ppd)
+        self.upower.connect("g-properties-changed", self.on_upower)
+        self.bus.signal_subscribe("org.freedesktop.login1", "org.freedesktop.login1.Manager", "PrepareForSleep",
+                                  "/org/freedesktop/login1", None, Gio.DBusSignalFlags.NONE, self.on_sleep)
+        self.charge_limit()
+        self.apply_base("start")
+        self.mirror()
+
+    @staticmethod
+    def _prop(proxy, name):
+        v = proxy.get_cached_property(name)
+        return v.unpack() if v is not None else None
+
+    def holds(self):
+        return self._prop(self.ppd, "ActiveProfileHolds") or []
+
+    # --- 1. base profile from AC state
+    def apply_base(self, why):
+        want = CONF["BATTERY_PROFILE"] if self.on_battery else CONF["AC_PROFILE"]
+        if self.holds():
+            self.pending_base = True      # a game holds a profile — wait until it lets go
+            log(f"{why}: profile held by {[h.get('ApplicationId') for h in self.holds()]}, deferring {want}")
+            return
+        self.pending_base = False
+        if self._prop(self.ppd, "ActiveProfile") == want:
+            return
+        log(f"{why}: {'battery' if self.on_battery else 'AC'} → {want}")
+        try:
+            self.bus.call_sync(PPD, PPD_PATH, "org.freedesktop.DBus.Properties", "Set",
+                               GLib.Variant("(ssv)", (PPD, "ActiveProfile", GLib.Variant("s", want))),
+                               None, Gio.DBusCallFlags.NONE, 5000, None)
+        except GLib.Error as e:
+            log("set profile failed:", e.message)
+
+    # --- 2. mirror the profile into the EC
+    def mirror(self):
+        profile = self._prop(self.ppd, "ActiveProfile")
+        parts = CONF.get(f"MAP_{profile}", "").split()
+        shift, fan = (parts + ["", ""])[:2]
+        if not os.path.isdir(EC):
+            return
+        if shift and shift in available(f"{EC}/available_shift_modes"):
+            write(f"{EC}/shift_mode", shift)
+        if fan and fan in available(f"{EC}/available_fan_modes"):
+            write(f"{EC}/fan_mode", fan)
+
+    # --- 3. charge limit
+    def charge_limit(self):
+        path = f"{BAT}/charge_control_end_threshold"
+        for _ in range(20):            # msi-ec attaches its battery hook a moment after boot
+            if os.path.exists(path):
+                write(path, CONF["CHARGE_LIMIT"])
+                return
+            time.sleep(0.5)
+        log("no charge_control_end_threshold (msi-ec not loaded?)")
+
+    # --- signals
+    def on_ppd(self, _proxy, changed, _inv):
+        changed = changed.unpack()
+        if "ActiveProfile" in changed:
+            self.mirror()
+        if "ActiveProfileHolds" in changed and not changed["ActiveProfileHolds"] and self.pending_base:
+            GLib.timeout_add(500, lambda: self.apply_base("hold released") or False)
+
+    def on_upower(self, _proxy, changed, _inv):
+        changed = changed.unpack()
+        if "OnBattery" in changed and changed["OnBattery"] != self.on_battery:
+            self.on_battery = changed["OnBattery"]
+            self.apply_base("power source changed")
+
+    def on_sleep(self, _c, _s, _p, _i, _sig, params):
+        if not params.unpack()[0]:    # resumed
+            GLib.timeout_add_seconds(2, lambda: (self.charge_limit(), self.mirror(), False)[-1])
+
+
+if __name__ == "__main__":
+    load_conf()
+    if len(sys.argv) > 1 and sys.argv[1] == "--once":
+        d = Daemon()
+        sys.exit(0)
+    Daemon()
+    GLib.MainLoop().run()

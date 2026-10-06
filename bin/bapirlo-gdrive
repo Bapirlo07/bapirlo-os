@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Bapirlo OS — Google Drive in Files via rclone (GNOME's own Drive backend was removed from gvfs).
+#   bapirlo-gdrive setup     one-time Google sign-in in your browser, then mount at login
+#   bapirlo-gdrive off       stop + don't mount at login (your rclone sign-in is kept)
+#   bapirlo-gdrive status
+# Mounted at ~/GoogleDrive, shown in the Files sidebar. Files open on demand and are cached
+# (max 5 GB, ~/.cache/rclone) at idle I/O priority, so it never competes with games.
+set -euo pipefail
+UNIT=bapirlo-gdrive.service
+REMOTE=gdrive
+case "${1:-}" in
+  setup)
+    if ! rclone listremotes | grep -qx "$REMOTE:"; then
+      echo "A browser window opens — sign in to Google and allow rclone."
+      rclone config create "$REMOTE" drive scope=drive
+    fi
+    mkdir -p ~/GoogleDrive
+    systemctl --user daemon-reload
+    systemctl --user enable --now "$UNIT"
+    B=~/.config/gtk-3.0/bookmarks; mkdir -p "$(dirname "$B")"; touch "$B"
+    grep -q "file://$HOME/GoogleDrive" "$B" || echo "file://$HOME/GoogleDrive Google Drive" >> "$B"
+    echo "Google Drive → ~/GoogleDrive (sidebar: Google Drive)" ;;
+  off)
+    systemctl --user disable --now "$UNIT" || true
+    sed -i "\|file://$HOME/GoogleDrive|d" ~/.config/gtk-3.0/bookmarks 2>/dev/null || true
+    echo "Drive unmounted. Remove the Google sign-in too: rclone config delete $REMOTE" ;;
+  status) systemctl --user status "$UNIT" --no-pager ;;
+  *) sed -n 2,7p "$0"; exit 1 ;;
+esac

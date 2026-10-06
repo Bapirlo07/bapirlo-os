@@ -1,0 +1,14 @@
+[Unit]
+Description=Bapirlo instant replay buffer (GPU Screen Recorder, last 30 s)
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/bapirlo-os/bin/bapirlo-replay run
+# SIGINT = gsr stops cleanly; nothing is saved unless you pressed save
+KillSignal=SIGINT
+TimeoutStopSec=5
+Restart=on-failure
+RestartSec=3
+Nice=5
