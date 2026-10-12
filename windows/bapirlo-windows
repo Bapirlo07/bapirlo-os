@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+# Bapirlo OS — the Windows partition, from Linux (no sudo; mounts go through udisks).
+#   bapirlo-windows            status
+#   bapirlo-windows mount      mount READ-ONLY (same as clicking "Windows" in Files)
+#   bapirlo-windows check      mount ro + report BitLocker / Fast Startup / hibernation / dirty flag
+#   bapirlo-windows rw         remount read-write — refused unless Windows was fully shut down
+#                              with Fast Startup OFF and the volume is clean
+#   bapirlo-windows ro         back to read-only
+#   bapirlo-windows off        unmount
+#   bapirlo-windows bookmarks  add Files bookmarks (Windows Desktop/Documents/Downloads/Pictures/Shared)
+set -euo pipefail
+UUID=B4A053F6A053BE14
+DEV=/dev/disk/by-uuid/$UUID
+BK=$HOME/theme-backups
+
+mp()  { findmnt -nro TARGET -S "UUID=$UUID" 2>/dev/null | head -1 || true; }
+opts(){ findmnt -nro OPTIONS -S "UUID=$UUID" 2>/dev/null | head -1 || true; }
+is_rw(){ [[ ",$(opts)," == *,rw,* ]]; }
+
+do_mount() {  # $1 = ro|rw
+  [ -n "$(mp)" ] && return 0
+  udisksctl mount -b "$DEV" -o "$1" >/dev/null
+}
+do_off() { [ -z "$(mp)" ] || { sync; udisksctl unmount -b "$DEV" >/dev/null; }; }
+
+fstype() { lsblk -no FSTYPE "$DEV"; }
+
+# prints lines "key=value": bitlocker, hiberfil, hiberboot, hibernate, dirty
+probe() {
+  local m=$1
+  echo "bitlocker=$([ "$(fstype)" = BitLocker ] && echo yes || echo no)"
+  python3 -I - "$m" <<'PY'
+import os, subprocess, sys
+m = sys.argv[1]
+def ci(base, *parts):
+    """case-insensitive path join (ntfs3 is case-sensitive on lookup)"""
+    p = base
+    for part in parts:
+        try: hit = next((e for e in os.listdir(p) if e.lower() == part.lower()), None)
+        except OSError: return None
+        if hit is None: return None
+        p = os.path.join(p, hit)
+    return p
+h = ci(m, "hiberfil.sys")
+if not h: print("hiberfil=absent")
+else:
+    try:
+        sig = open(h, "rb").read(4)
+        state = {b"hibr": "hibernated", b"HIBR": "hibernated", b"wake": "clean", b"WAKE": "clean",
+                 b"RSTR": "clean", b"rstr": "clean", b"\0\0\0\0": "clean"}.get(sig, "unknown:" + sig.hex())
+    except OSError as e: state = "unreadable"
+    print(f"hiberfil={state}")
+def reg(hive, key, val):
+    r = subprocess.run(["hivexget", hive, key, val], capture_output=True, text=True)
+    return r.stdout.strip() if r.returncode == 0 else None
+sysh = ci(m, "Windows", "System32", "config", "SYSTEM")
+if sysh and subprocess.run(["which", "hivexget"], capture_output=True).returncode == 0:
+    cur = reg(sysh, "Select", "Current") or "1"
+    cs = f"ControlSet{int(cur):03d}"
+    print("hiberboot=" + (reg(sysh, cs + "\\Control\\Session Manager\\Power", "HiberbootEnabled") or "unknown"))
+    print("hibernate=" + (reg(sysh, cs + "\\Control\\Power", "HibernateEnabled") or "unknown"))
+    print("rtcutc=" + (reg(sysh, cs + "\\Control\\TimeZoneInformation", "RealTimeIsUniversal") or "0"))
+else:
+    print("hiberboot=unknown"); print("hibernate=unknown"); print("rtcutc=unknown")
+PY
+  local d; d=$(basename "$(readlink -f "$DEV")")
+  if [ -r /proc/fs/ntfs3/$d/volinfo ] && grep -qi dirty /proc/fs/ntfs3/$d/volinfo; then echo dirty=yes
+  elif journalctl -k -b --no-pager -q 2>/dev/null | grep "ntfs3($d)\|ntfs3: $d" | tail -3 | grep -qi dirty; then echo dirty=yes
+  else echo dirty=no; fi
+}
+
+safe_for_rw() {  # reads probe output on stdin; prints reasons, returns 1 if not safe
+  local ok=0 k v
+  while IFS== read -r k v; do
+    case $k in
+      bitlocker) [ "$v" = no ] || { echo "  ✗ BitLocker-encrypted"; ok=1; } ;;
+      hiberfil)  case $v in absent|clean) ;; *) echo "  ✗ Windows is hibernated / Fast Startup image present (hiberfil.sys = $v)"; ok=1;; esac ;;
+      hiberboot) [ "$v" = 0 ] || { echo "  ✗ Fast Startup is ON in Windows (HiberbootEnabled = $v)"; ok=1; } ;;
+      dirty)     [ "$v" = no ] || { echo "  ✗ volume marked dirty — boot Windows, run 'chkdsk C: /f', shut down fully"; ok=1; } ;;
+    esac
+  done
+  return $ok
+}
+
+cmd=${1:-status}
+case $cmd in
+  status)
+    if [ -z "$(mp)" ]; then echo "Windows: not mounted (click \"Windows\" in Files, or: bapirlo-windows mount)"
+    else echo "Windows: mounted $(is_rw && echo READ-WRITE || echo read-only) at $(mp)"; fi ;;
+  mount) do_mount ro; echo "Windows: mounted read-only at $(mp)" ;;
+  check)
+    was=$(mp); do_mount ro
+    r=$(probe "$(mp)")
+    echo "$r" | sed 's/^/  /'
+    echo
+    if echo "$r" | safe_for_rw; then echo "→ safe to write: 'bapirlo-windows rw' is allowed"
+    else echo "→ keep it read-only (see above)"; fi
+    [ -n "$was" ] || do_off ;;
+  rw)
+    was=$(mp); do_mount ro
+    if is_rw; then echo "already read-write at $(mp)"; exit 0; fi
+    r=$(probe "$(mp)")
+    if ! reasons=$(echo "$r" | safe_for_rw); then
+      echo "Refusing read-write — writing now could corrupt Windows files:"; echo "$reasons"
+      echo "Fix it on the Windows side (Fast Startup off, then Shut down — not Restart into Linux from a hibernated state)."
+      [ -n "$was" ] || do_off; exit 1
+    fi
+    do_off; do_mount rw
+    is_rw || { echo "kernel kept it read-only (check: journalctl -k | grep ntfs3)"; exit 1; }
+    echo "Windows: READ-WRITE at $(mp) — run 'bapirlo-windows ro' when done" ;;
+  ro) do_off; do_mount ro; echo "Windows: read-only at $(mp)" ;;
+  off) do_off; echo "Windows: unmounted" ;;
+  bookmarks)
+    do_mount ro; m=$(mp)
+    f=${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/bookmarks; mkdir -p "$(dirname "$f")" "$BK"; touch "$f"
+    b=$BK/$(date +%Y%m%d-%H%M%S)-windows-bookmarks; mkdir -p "$b"; cp -a "$f" "$b/bookmarks"
+    echo "$b" > "$BK/LATEST-WINDOWS-BOOKMARKS"
+    python3 -I - "$m" "$f" <<'PY'
+import os, subprocess, sys, urllib.parse
+m, f = sys.argv[1], sys.argv[2]
+def ci(base, rel):
+    p = base
+    for part in [x for x in rel.replace("\\", "/").split("/") if x]:
+        try: hit = next((e for e in os.listdir(p) if e.lower() == part.lower()), None)
+        except OSError: return None
+        if hit is None: return None
+        p = os.path.join(p, hit)
+    return p
+users = ci(m, "Users")
+skip = {"public", "default", "default user", "all users", "defaultapppool", "wdagutilityaccount"}
+cands = []
+for u in os.listdir(users) if users else []:
+    d = os.path.join(users, u); nt = ci(d, "NTUSER.DAT")
+    if u.lower() not in skip and os.path.isdir(d) and not os.path.islink(d) and nt:
+        cands.append((os.path.getmtime(nt), u, d, nt))
+if not cands: sys.exit("no Windows user profile found under Users/")
+_, user, home, nt = max(cands)
+print(f"Windows user: {user}" + (f" (also: {', '.join(c[1] for c in cands if c[1] != user)})" if len(cands) > 1 else ""))
+# where Windows really keeps them (OneDrive may have moved Desktop/Documents/Pictures)
+key = r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders"
+names = {"Desktop": ("Desktop", "Desktop"), "Documents": ("Personal", "Documents"),
+         "Downloads": ("{374DE290-123F-4565-9164-39C4925E467B}", "Downloads"), "Pictures": ("My Pictures", "Pictures")}
+want = []
+for label, (val, default) in names.items():
+    r = subprocess.run(["hivexget", nt, key, val], capture_output=True, text=True)
+    v = r.stdout.strip() if r.returncode == 0 else ""
+    path = None
+    if v.upper().startswith("%USERPROFILE%"):
+        path = ci(home, v[len("%USERPROFILE%"):])
+    elif len(v) > 2 and v[1] == ":" and v[0].upper() == "C":
+        path = ci(m, v[2:])
+    path = path or ci(home, default)
+    if path: want.append((path, f"Windows {label}"))
+    else: print(f"  skipped {label}: not found ({v or default})")
+shared = ci(m, "Shared")
+if shared: want.append((shared, "Shared"))
+lines = [l for l in open(f).read().splitlines() if l.strip()]
+have = {l.split(" ", 1)[0] for l in lines}
+for path, label in want:
+    uri = "file://" + urllib.parse.quote(path)
+    if uri in have: print(f"  exists   {label}"); continue
+    lines.append(f"{uri} {label}"); print(f"  added    {label} → {path}")
+open(f, "w").write("\n".join(lines) + "\n")
+if not shared: print("  (no C:\\Shared folder yet — create it, then run this again for a 'Shared' bookmark)")
+PY
+    echo "backup: $b   undo: cp '$b/bookmarks' '$f'" ;;   # stays mounted so the bookmarks open straight away
+  *) sed -n '2,10p' "$0"; exit 1 ;;
+esac

@@ -1,0 +1,9 @@
+#!/bin/sh
+# Bapirlo Writer launcher.
+#   bapirlo-writer               open (or raise) the window
+#   bapirlo-writer --clipboard   open it with the clipboard text loaded (Super+Shift+H)
+#   bapirlo-writer --grammar | --rewrite   choose the mode
+HERE=$(dirname "$(readlink -f "$0")")
+PY="${XDG_DATA_HOME:-$HOME/.local/share}/bapirlo-writer/venv/bin/python3"
+[ -x "$PY" ] || { echo "Run: bash $HERE/install.sh" >&2; exit 1; }
+PYTHONPATH="$HERE${PYTHONPATH:+:$PYTHONPATH}" exec "$PY" -m bapirlo_writer "$@"

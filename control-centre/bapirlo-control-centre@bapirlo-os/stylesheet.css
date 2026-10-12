@@ -1,0 +1,154 @@
+/* Bapirlo Control Centre — Kuro tokens (same as the shell theme):
+   surface rgba(22,16,21,.97) + 1px hairline rgba(225,29,46,.28), radius surface 16 / tile 14 / chip 8
+   accent #E11D2E · ember #FF4655 · paper #F2E9EC · Inter. Text ≥ 0.70 alpha on tiles (readable without hover). */
+
+.bcc-menu .popup-menu-content.bcc-box { padding: 14px; width: 372px; spacing: 12px; }
+.bcc-main { spacing: 12px; }
+
+/* ------------------------------------------------------------ tiles */
+.bcc-tile {
+  border-radius: 14px;
+  background-color: rgba(242, 233, 236, 0.07);
+  border: 1px solid rgba(242, 233, 236, 0.08);
+  transition-duration: 200ms;
+}
+.bcc-tile-button { border-radius: 14px; padding: 0; transition-duration: 160ms; }
+.bcc-tile-button:hover { background-color: rgba(242, 233, 236, 0.06); }
+.bcc-tile-button:active { background-color: rgba(242, 233, 236, 0.10); }
+.bcc-tile-button:focus { box-shadow: inset 0 0 0 2px rgba(255, 70, 85, 0.55); }
+.bcc-small { min-height: 88px; }
+.bcc-wide { min-height: 64px; }
+.bcc-full { min-height: 56px; }
+
+.bcc-face-small { spacing: 5px; padding: 8px 4px; }
+.bcc-face-wide { spacing: 10px; padding: 0 12px; }
+.bcc-text { spacing: 1px; }
+.bcc-chevron { icon-size: 14px; color: rgba(242, 233, 236, 0.70); }
+.bcc-tile:checked .bcc-chevron { color: rgba(255, 220, 224, 0.86); }
+
+.bcc-icon-circle {
+  width: 36px; height: 36px; border-radius: 18px;
+  background-color: rgba(242, 233, 236, 0.12);
+  transition-duration: 200ms;
+}
+.bcc-small .bcc-icon-circle { width: 40px; height: 40px; border-radius: 20px; }
+.bcc-icon { icon-size: 18px; color: #F2E9EC; }
+
+.bcc-title { font-family: "Inter", sans-serif; font-weight: 600; font-size: 10.5pt; color: #F2E9EC; }
+.bcc-small .bcc-title { text-align: center; font-size: 9pt; font-weight: 500; color: rgba(242, 233, 236, 0.86); }
+.bcc-subtitle { font-family: "Inter", sans-serif; font-size: 9pt; color: rgba(242, 233, 236, 0.70); }
+
+/* active: crimson circle + soft red glow, tile picks up a faint wash */
+.bcc-tile:checked { background-color: rgba(225, 29, 46, 0.14); border-color: rgba(225, 29, 46, 0.40); }
+.bcc-tile:checked .bcc-icon-circle {
+  background-color: #E11D2E;
+  box-shadow: 0 0 14px rgba(225, 29, 46, 0.55);
+}
+.bcc-tile:checked .bcc-icon { color: #ffffff; }
+.bcc-tile:checked .bcc-subtitle { color: rgba(255, 220, 224, 0.86); }
+.bcc-tile:insensitive { background-color: rgba(242, 233, 236, 0.03); }
+.bcc-tile:insensitive .bcc-title, .bcc-tile:insensitive .bcc-subtitle, .bcc-tile:insensitive .bcc-icon { color: rgba(242, 233, 236, 0.55); }
+
+/* recording: pulsing is avoided (no animation loop) — solid ember ring instead */
+.bcc-recording:checked .bcc-icon-circle { background-color: #FF4655; box-shadow: 0 0 0 3px rgba(255, 70, 85, 0.35), 0 0 16px rgba(255, 70, 85, 0.6); }
+
+/* low battery / low disk */
+.bcc-low { border-color: rgba(255, 70, 85, 0.75); background-color: rgba(225, 29, 46, 0.18); }
+.bcc-low .bcc-icon-circle { background-color: #E11D2E; }
+.bcc-low .bcc-title { color: #FF4655; }
+
+/* battery fill + charging sweep */
+.bcc-battery-fill { border-radius: 14px; background-color: rgba(242, 233, 236, 0.06); }
+.bcc-tile:checked .bcc-battery-fill { background-color: rgba(225, 29, 46, 0.20); }
+.bcc-battery-sweep {
+  border-radius: 14px;
+  background-gradient-direction: horizontal;
+  background-gradient-start: rgba(255, 70, 85, 0);
+  background-gradient-end: rgba(255, 70, 85, 0.28);
+}
+
+/* storage usage bar along the bottom edge */
+.bcc-storage-bar { height: 3px; margin: 0 14px 8px 14px; border-radius: 2px; background-color: rgba(242, 233, 236, 0.12); }
+.bcc-storage-used { height: 3px; border-radius: 2px; background-color: #F2E9EC; }
+.bcc-low .bcc-storage-used { background-color: #FF4655; }
+
+/* sliders */
+.bcc-slider-col { padding: 8px 12px 6px 12px; spacing: 2px; }
+.bcc-slider-title { font-family: "Inter", sans-serif; font-weight: 600; font-size: 10pt; color: #F2E9EC; }
+.bcc-slider-value { font-family: "Inter", sans-serif; font-size: 9pt; color: rgba(242, 233, 236, 0.75); font-feature-settings: "tnum"; }
+.bcc-slider-line { spacing: 8px; }
+.bcc-slider-icon, .bcc-slider-more { border-radius: 10px; padding: 6px; color: #F2E9EC; }
+.bcc-slider-icon:hover, .bcc-slider-more:hover { background-color: rgba(242, 233, 236, 0.10); }
+.bcc-slider-bin .slider {
+  -barlevel-height: 8px;
+  -barlevel-background-color: rgba(242, 233, 236, 0.16);
+  -barlevel-active-background-color: #E11D2E;
+  -barlevel-border-width: 0;
+  -slider-handle-radius: 9px;
+  color: #ffffff;
+}
+
+/* now playing */
+.bcc-media-box { spacing: 10px; padding: 0 10px; }
+.bcc-media-art {
+  width: 38px; height: 38px; border-radius: 8px;
+  background-color: rgba(242, 233, 236, 0.12);
+  background-size: cover;
+}
+.bcc-media-btn { border-radius: 16px; padding: 7px; color: #F2E9EC; }
+.bcc-media-btn:hover { background-color: rgba(242, 233, 236, 0.12); }
+
+/* ------------------------------------------------------------ edit mode */
+.bcc-tile:editing { border: 1px dashed rgba(255, 70, 85, 0.65); }
+.bcc-badge {
+  width: 20px; height: 20px; border-radius: 10px;   /* no negative margins: St overflows; offset via translation in JS */
+  background-color: #E11D2E; color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+.bcc-badge:hover { background-color: #FF4655; }
+.bcc-tray { spacing: 8px; padding-top: 4px; }
+.bcc-tray-title { font-family: "Inter", sans-serif; font-size: 8.5pt; font-weight: 700; letter-spacing: 1px; color: rgba(242, 233, 236, 0.70); }
+.bcc-chip { border-radius: 8px; padding: 5px 10px; background-color: rgba(242, 233, 236, 0.09); color: #F2E9EC; }
+.bcc-chip:hover { background-color: rgba(225, 29, 46, 0.25); }
+.bcc-chip-box { spacing: 6px; }
+.bcc-chip-box StLabel { font-family: "Inter", sans-serif; font-size: 9.5pt; }
+
+/* ------------------------------------------------------------ detail page */
+.bcc-detail { spacing: 8px; }
+.bcc-detail-head { spacing: 10px; padding-bottom: 4px; }
+.bcc-detail-icon { icon-size: 18px; color: #FF4655; }
+.bcc-detail-title { font-family: "Inter", sans-serif; font-weight: 700; font-size: 12pt; color: #F2E9EC; }
+.bcc-detail-scroll { max-height: 420px; }
+.bcc-list { spacing: 4px; }
+.bcc-row { border-radius: 10px; padding: 9px 10px; color: #F2E9EC; }
+.bcc-row:hover { background-color: rgba(242, 233, 236, 0.08); }
+.bcc-row:checked { background-color: rgba(225, 29, 46, 0.18); }
+.bcc-row StBoxLayout { spacing: 10px; }
+.bcc-row-icon { icon-size: 16px; color: #F2E9EC; }
+.bcc-row-label { font-family: "Inter", sans-serif; font-size: 10.5pt; color: #F2E9EC; }
+.bcc-row-tick { icon-size: 16px; color: #FF4655; }
+.bcc-note { font-family: "Inter", sans-serif; font-size: 9pt; color: rgba(242, 233, 236, 0.72); padding: 4px 10px; }
+.bcc-kv { padding: 6px 10px; }
+.bcc-kv-key { font-family: "Inter", sans-serif; font-size: 10pt; color: rgba(242, 233, 236, 0.75); }
+.bcc-kv-val { font-family: "Inter", sans-serif; font-size: 10pt; font-weight: 600; color: #F2E9EC; }
+/* a borrowed GNOME menu: drop its own container look, keep its items */
+.bcc-borrowed-box { padding: 0; background-color: transparent; border: none; box-shadow: none; }
+.bcc-borrowed-box > .header { padding: 2px 10px 8px 10px; }
+
+/* ------------------------------------------------------------ footer */
+.bcc-footer { spacing: 8px; padding-top: 2px; }
+.bcc-round {
+  width: 34px; height: 34px; border-radius: 17px;
+  background-color: rgba(242, 233, 236, 0.09); color: #F2E9EC;
+  transition-duration: 160ms;
+}
+.bcc-round:hover { background-color: rgba(225, 29, 46, 0.25); }
+.bcc-round:checked { background-color: #E11D2E; color: #ffffff; }
+.bcc-pill {
+  border-radius: 17px; padding: 0 14px; height: 34px;
+  background-color: rgba(242, 233, 236, 0.09); color: #F2E9EC;
+  font-family: "Inter", sans-serif; font-size: 9.5pt; font-weight: 600;
+}
+.bcc-pill:hover { background-color: rgba(225, 29, 46, 0.25); }
+.bcc-tray-rows { spacing: 8px; }
+.bcc-tray-row { spacing: 8px; }

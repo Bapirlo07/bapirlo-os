@@ -1,0 +1,245 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — make Bluetooth devices work in Windows AND Linux without re-pairing.
+
+Each pairing creates a new secret key; the device only remembers the LAST one. So:
+  1. pair the device in Linux, 2. boot Windows and pair it there (Windows now holds the key the
+  device remembers), 3. back in Linux run this — it copies Windows' keys into BlueZ.
+
+  sudo bapirlo-bt-sync                 show what would change (changes nothing)
+  sudo bapirlo-bt-sync --apply         back up /var/lib/bluetooth, write keys, restart bluetooth
+  sudo bapirlo-bt-sync --apply --map WIN_MAC=LINUX_MAC   pair up an LE device the tool couldn't match
+  sudo bapirlo-bt-sync restore         put the last backup of /var/lib/bluetooth back
+
+Windows is only ever READ (registry hive SYSTEM, mounted read-only). Classic devices (headphones,
+most mice/keyboards) use one link key; Bluetooth LE devices (many mice, Xbox controllers) use
+LTK/EDIV/ERand/IRK.
+"""
+import configparser, os, re, shutil, subprocess, sys, tempfile, time
+
+UUID = "B4A053F6A053BE14"
+BT = "/var/lib/bluetooth"
+USER = os.environ.get("SUDO_USER") or os.environ.get("USER", "root")
+BK = f"/home/{USER}/theme-backups"
+
+
+def run(*a, **k):
+    return subprocess.run(a, capture_output=True, text=True, **k)
+
+
+def mac(s):  # 'e4c767129f2f' -> 'E4:C7:67:12:9F:2F'
+    s = s.replace(":", "").upper()
+    return ":".join(s[i:i + 2] for i in range(0, 12, 2))
+
+
+def ci(base, rel):
+    p = base
+    for part in [x for x in rel.split("/") if x]:
+        hit = next((e for e in os.listdir(p) if e.lower() == part.lower()), None)
+        if hit is None:
+            return None
+        p = os.path.join(p, hit)
+    return p
+
+
+def windows_mount():
+    """existing mount point, or a private read-only mount (returned with cleanup flag)"""
+    cur = run("findmnt", "-nro", "TARGET", "-S", f"UUID={UUID}").stdout.split("\n")[0].strip()
+    if cur:
+        return cur, False
+    d = tempfile.mkdtemp(prefix="bapirlo-win-", dir="/run")
+    r = run("mount", "-t", "ntfs3", "-o", "ro", f"/dev/disk/by-uuid/{UUID}", d)
+    if r.returncode:
+        os.rmdir(d)
+        sys.exit(f"could not mount Windows read-only: {r.stderr.strip()}")
+    return d, True
+
+
+def parse_reg(text):
+    """hivexregedit --export output -> {keypath_lower: {valuename_lower: (kind, bytes|int|str)}}"""
+    text = re.sub(r"\\\r?\n\s*", "", text)  # join continuation lines
+    out, cur = {}, None
+    for line in text.splitlines():
+        line = line.strip()
+        if line.startswith("[") and line.endswith("]"):
+            cur = out.setdefault(line[1:-1].strip("\\").lower(), {})
+            continue
+        m = re.match(r'^("(?:[^"\\]|\\.)*"|@)=(.*)$', line)
+        if not m or cur is None:
+            continue
+        name = m.group(1).strip('"').lower()
+        v = m.group(2)
+        if v.startswith("dword:"):
+            cur[name] = ("int", int(v[6:], 16))
+        elif v.startswith("hex"):
+            data = v.split(":", 1)[1]
+            cur[name] = ("bin", bytes(int(b, 16) for b in data.split(",") if b.strip()))
+        elif v.startswith('"'):
+            cur[name] = ("str", v.strip('"'))
+    return out
+
+
+def windows_keys(m):
+    hive = ci(m, "Windows/System32/config/SYSTEM")
+    if not hive:
+        sys.exit("Windows registry hive not found")
+    cur = run("hivexget", hive, "Select", "Current").stdout.strip() or "1"
+    base = f"ControlSet{int(cur):03d}\\Services\\BTHPORT\\Parameters\\Keys"
+    r = run("hivexregedit", "--export", "--prefix", "", hive, base)
+    if r.returncode:
+        sys.exit(f"hivexregedit failed (is the hivex package installed?): {r.stderr.strip()}")
+    return keys_from_reg(parse_reg(r.stdout), base)
+
+
+def keys_from_reg(reg, base):
+    base = base.lower()
+    adapters = {}
+    for path, vals in reg.items():
+        rel = path[len(base):].strip("\\") if path.startswith(base) else None
+        if rel is None or not rel:
+            continue
+        parts = rel.split("\\")
+        a = adapters.setdefault(mac(parts[0]), {"classic": {}, "le": {}})
+        if len(parts) == 1:  # classic link keys are values named after the device address
+            for n, (kind, v) in vals.items():
+                if kind == "bin" and len(v) == 16 and re.fullmatch(r"[0-9a-f]{12}", n):
+                    a["classic"][mac(n)] = v
+        elif len(parts) == 2 and re.fullmatch(r"[0-9a-f]{12}", parts[1]) and "ltk" in vals:
+            a["le"][mac(parts[1])] = vals
+    return adapters
+
+
+def load(p):
+    c = configparser.ConfigParser(interpolation=None, strict=False)
+    c.optionxform = str
+    c.read(p)
+    return c
+
+
+def save(c, p):
+    with open(p, "w") as f:
+        c.write(f, space_around_delimiters=False)
+
+
+def hexs(b):
+    return b.hex().upper()
+
+
+def plan(win, maps):
+    """list of (adapter, linux_dev_dir, new_dev_mac or None, {section: {k: v}}, label)"""
+    todo, notes = [], []
+    for ad, keys in win.items():
+        adir = os.path.join(BT, ad)
+        if not os.path.isdir(adir):
+            notes.append(f"Windows adapter {ad} is not this Linux adapter — skipped")
+            continue
+        linux = {d: load(os.path.join(adir, d, "info")) for d in os.listdir(adir)
+                 if re.fullmatch(r"([0-9A-F]{2}:){5}[0-9A-F]{2}", d) and os.path.isfile(os.path.join(adir, d, "info"))}
+        name = lambda d: linux[d].get("General", "Name", fallback="?") if d in linux else "?"
+        for dev, k in keys["classic"].items():
+            if dev not in linux:
+                notes.append(f"{dev} (classic) is paired in Windows but not in Linux — pair it in Linux first, then in Windows again, then rerun")
+                continue
+            if not linux[dev].has_section("LinkKey"):
+                notes.append(f"{dev} {name(dev)}: Linux entry has no [LinkKey] — skipped")
+                continue
+            if linux[dev].get("LinkKey", "Key").upper() == hexs(k):
+                notes.append(f"{dev} {name(dev)}: already in sync")
+                continue
+            todo.append((ad, dev, None, {"LinkKey": {"Key": hexs(k)}}, f"{name(dev)} (classic)"))
+        for wdev, v in keys["le"].items():
+            g = lambda n: v.get(n.lower(), (None, None))[1]
+            irk = g("IRK")
+            target = maps.get(wdev) or (wdev if wdev in linux else None)
+            if not target and irk:  # same device, new random address: match by its identity key
+                target = next((d for d, c in linux.items()
+                               if c.get("IdentityResolvingKey", "Key", fallback="").upper() == hexs(irk)), None)
+            if not target:
+                le = [f"{d} {name(d)}" for d, c in linux.items() if c.has_section("LongTermKey")]
+                notes.append(f"{wdev} (LE) not matched — rerun with --map {wdev}=<Linux MAC>; Linux LE devices: {', '.join(le) or 'none'}")
+                continue
+            ltk, erand, ediv = g("LTK"), g("ERand"), g("EDIV")
+            sec = {"LongTermKey": {
+                "Key": hexs(ltk),
+                "EncSize": str(g("KeyLength") or 16),
+                "EDiv": str(ediv or 0),
+                "Rand": str(int.from_bytes(erand, "little") if isinstance(erand, bytes) else int(erand or 0)),
+            }}
+            if irk:
+                sec["IdentityResolvingKey"] = {"Key": hexs(irk)}
+            cur = linux[target]
+            same = all(cur.get(s, k, fallback="").upper() == val.upper() for s, kv in sec.items() for k, val in kv.items())
+            if same and target == wdev:
+                notes.append(f"{wdev} {name(target)}: already in sync")
+                continue
+            todo.append((ad, target, wdev if wdev != target else None, sec, f"{name(target)} (LE)"))
+    return todo, notes
+
+
+def backup():
+    os.makedirs(BK, exist_ok=True)
+    d = os.path.join(BK, time.strftime("%Y%m%d-%H%M%S") + "-bt-sync")
+    os.makedirs(d)
+    run("tar", "-C", "/var/lib", "-cpf", os.path.join(d, "bluetooth.tar"), "bluetooth")
+    open(os.path.join(BK, "LATEST-BT-SYNC"), "w").write(d + "\n")
+    run("chown", "-R", f"{USER}:{USER}", d, os.path.join(BK, "LATEST-BT-SYNC"))
+    os.chmod(os.path.join(d, "bluetooth.tar"), 0o600)  # contains pairing keys
+    return d
+
+
+def restore():
+    d = open(os.path.join(BK, "LATEST-BT-SYNC")).read().strip()
+    run("systemctl", "stop", "bluetooth")
+    shutil.rmtree(BT)
+    r = run("tar", "-C", "/var/lib", "-xpf", os.path.join(d, "bluetooth.tar"))
+    run("systemctl", "start", "bluetooth")
+    print(f"restored /var/lib/bluetooth from {d}" if not r.returncode else r.stderr)
+
+
+def main():
+    if os.geteuid():
+        sys.exit("run with sudo")
+    args = sys.argv[1:]
+    if args[:1] == ["restore"]:
+        return restore()
+    apply = "--apply" in args
+    maps = {}
+    if "--map" in args:
+        w, l = args[args.index("--map") + 1].split("=")
+        maps[mac(w)] = mac(l)
+    m, temp = windows_mount()
+    try:
+        win = windows_keys(m)
+    finally:
+        if temp:
+            run("umount", m); os.rmdir(m)
+    todo, notes = plan(win, maps)
+    for n in notes:
+        print("  ·", n)
+    for ad, dev, newmac, sec, label in todo:
+        print(f"  → {label} {dev}" + (f" → renamed to {newmac} (Windows' address)" if newmac else "")
+              + ": " + ", ".join(f"[{s}] {', '.join(kv)}" for s, kv in sec.items()))
+    if not todo:
+        print("nothing to change"); return
+    if not apply:
+        print("\ndry run — nothing changed. Apply with: sudo bapirlo-bt-sync --apply"); return
+    d = backup()
+    run("systemctl", "stop", "bluetooth")
+    try:
+        for ad, dev, newmac, sec, label in todo:
+            p = os.path.join(BT, ad, dev, "info")
+            c = load(p)
+            for s, kv in sec.items():
+                if not c.has_section(s):
+                    c.add_section(s)
+                for k, v in kv.items():
+                    c.set(s, k, v)
+            save(c, p)
+            if newmac:
+                os.rename(os.path.join(BT, ad, dev), os.path.join(BT, ad, newmac))
+    finally:
+        run("systemctl", "start", "bluetooth")
+    print(f"\ndone — {len(todo)} device(s) synced. Backup: {d}\nundo: sudo bapirlo-bt-sync restore")
+
+
+if __name__ == "__main__":
+    main()

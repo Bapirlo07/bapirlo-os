@@ -1,0 +1,61 @@
+/* Bapirlo Writer — Kuro styling (palette: ~/bapirlo-os/tools/palette.py) */
+window.bapirlo-writer {
+  background-color: #0E0A0D;
+  background-image: radial-gradient(circle at 8% -10%, rgba(255,70,85,0.20), transparent 45%),
+                    radial-gradient(circle at 100% 110%, rgba(240,138,164,0.10), transparent 40%);
+  color: #F2E9EC;
+}
+window.bapirlo-writer headerbar { background: transparent; box-shadow: none; color: #F2E9EC; }
+.brand { font-family: Bangers; font-size: 16pt; letter-spacing: 2.5px; color: #FF4655; }
+.heading { font-family: Bangers; font-size: 14pt; letter-spacing: 1.3px; color: #FF4655; }
+.dim { color: #CAB5BF; }
+.faint { color: #8E7680; font-size: 9.5pt; }
+.cost { color: #CAB5BF; font-feature-settings: "tnum"; font-size: 10pt; }
+
+.card {
+  background-color: rgba(22,16,21,0.94);
+  border: 1px solid rgba(225,29,46,0.28);
+  border-radius: 16px; padding: 14px 16px;
+}
+.card.result { border-color: rgba(255,70,85,0.45); box-shadow: 0 0 0 1px rgba(255,70,85,0.10), 0 8px 28px rgba(0,0,0,0.35); }
+textview.page, textview.page text {
+  background-color: transparent; color: #F2E9EC;
+  font-size: 12.5pt; caret-color: #FF4655;
+}
+textview.page text selection { background-color: rgba(225,29,46,0.45); color: #FFFFFF; }
+.placeholder { color: #8E7680; font-style: italic; }
+
+dropdown > button, button.kuro {
+  border-radius: 10px; padding: 6px 14px; background-color: rgba(242,233,236,0.07);
+  color: #F2E9EC; font-weight: 600; transition: 160ms; border: none; box-shadow: none;
+}
+dropdown > button:hover, button.kuro:hover { background-color: rgba(225,29,46,0.22); }
+button.kuro:disabled { color: rgba(242,233,236,0.35); background-color: rgba(242,233,236,0.04); }
+button.kuro.accent { background-color: #E11D2E; color: #FFFFFF; }
+button.kuro.accent:hover { background-color: #FF4655; }
+button.kuro.accent:disabled { background-color: rgba(225,29,46,0.35); color: rgba(255,255,255,0.6); }
+button.chip { border-radius: 8px; padding: 3px 10px; min-height: 0; font-weight: 600;
+              background-color: rgba(63,198,154,0.16); color: #BFF3E1; }
+button.chip:hover { background-color: rgba(63,198,154,0.32); }
+button.flat-kuro { border-radius: 8px; padding: 3px 10px; min-height: 0; color: #CAB5BF; background: transparent; }
+button.flat-kuro:hover { background-color: rgba(242,233,236,0.08); color: #F2E9EC; }
+switch:checked { background-color: #E11D2E; }
+
+/* issue cards (grammar) and flag rows (rewrite) */
+.issue { background-color: rgba(242,233,236,0.045); border-radius: 12px; padding: 10px 12px;
+         border: 1px solid transparent; }
+.issue.selected { border-color: rgba(255,70,85,0.6); background-color: rgba(225,29,46,0.10); }
+.kind { font-size: 8.5pt; font-weight: 800; letter-spacing: 1px; border-radius: 6px; padding: 1px 7px; }
+.kind.spelling    { background-color: rgba(225,29,46,0.25);  color: #FF9AA3; }
+.kind.grammar     { background-color: rgba(242,180,90,0.22); color: #F7CB86; }
+.kind.punctuation { background-color: rgba(124,156,255,0.22); color: #B7C8FF; }
+.kind.clarity, .kind.long { background-color: rgba(240,138,164,0.20); color: #F7B9C9; }
+.kind.fact  { background-color: rgba(242,180,90,0.22); color: #F7CB86; }
+.kind.style { background-color: rgba(124,156,255,0.22); color: #B7C8FF; }
+.kind.flag  { background-color: rgba(225,29,46,0.25);  color: #FF9AA3; }
+.wrong { color: #FF9AA3; text-decoration: line-through; }
+.reason { color: #CAB5BF; font-size: 10pt; }
+.count { color: #CAB5BF; font-size: 10pt; font-weight: 600; }
+.status-ok { color: #3FC69A; }
+.status-warn { color: #F2B45A; }
+.empty-title { font-family: Bangers; font-size: 18pt; letter-spacing: 1.5px; color: #523B44; }
