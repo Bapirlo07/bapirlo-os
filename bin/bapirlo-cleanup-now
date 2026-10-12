@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Bapirlo OS — "Clean up" from the Control Centre storage tile.
+# User caches first (thumbnails, paru build files), then the monthly system cleanup
+# (bapirlo-cleanup.service: package cache keep 2, orphans minus keep-list, old logs) — that one
+# asks for your password through GNOME's own dialog. Shows a notification with what was freed.
+set -uo pipefail
+free() { df -B1 --output=avail / | tail -1; }
+before=$(free)
+rm -rf "$HOME/.cache/thumbnails/"* "$HOME/.cache/paru/clone" 2>/dev/null
+systemctl start bapirlo-cleanup.service 2>/dev/null   # polkit prompt; skipped if cancelled
+after=$(free)
+freed=$(( (after - before) / 1000000 ))
+notify-send -a "Storage" -i drive-harddisk-symbolic "Clean up done" \
+  "Freed ${freed} MB · $(numfmt --to=si --suffix=B "$after") free on Linux"

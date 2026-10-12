@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Bapirlo OS — screen recording (GPU Screen Recorder, same low-lag iGPU encode as instant replay).
+#   bapirlo-record toggle   start / stop          (Control Centre "Screen Rec" tile)
+#   bapirlo-record start | stop | status
+# Files land in ~/Videos/Recordings. Runs as the transient user unit bapirlo-record.service,
+# so the Control Centre can watch its state over D-Bus without polling.
+set -euo pipefail
+UNIT=bapirlo-record.service
+OUT=${BAPIRLO_RECORD_DIR:-$HOME/Videos/Recordings}
+CONF=${XDG_CONFIG_HOME:-$HOME/.config}/bapirlo/replay.conf
+FPS=60 QUALITY=high CAPTURE=screen AUDIO=default_output
+[ -f "$CONF" ] && . "$CONF"
+
+start() {
+  mkdir -p "$OUT"
+  f="$OUT/Recording_$(date +%Y-%m-%d_%H-%M-%S).mp4"
+  systemd-run --user --quiet --unit="$UNIT" --collect -p KillSignal=SIGINT -p TimeoutStopSec=10 -p Nice=5 \
+    gpu-screen-recorder -w "$CAPTURE" -f "$FPS" -q "$QUALITY" -a "$AUDIO" -c mp4 -o "$f"
+}
+stop() {
+  systemctl --user stop "$UNIT"
+  last=$(ls -t "$OUT"/*.mp4 2>/dev/null | head -1 || true)
+  notify-send -a "Screen recording" -i media-record-symbolic "Recording saved" "${last##*/}"
+}
+case "${1:-}" in
+  start) start ;;
+  stop) stop ;;
+  toggle) if systemctl --user -q is-active "$UNIT"; then stop; else start; fi ;;
+  status) systemctl --user status "$UNIT" --no-pager ;;
+  *) sed -n 2,6p "$0"; exit 1 ;;
+esac

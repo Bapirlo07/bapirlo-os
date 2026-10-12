@@ -23,6 +23,7 @@ active() { systemctl --user -q is-active "bapirlo-$1-mode.service"; }
 hold() {   # hold MODE PROFILE REASON
   systemctl --user reset-failed "bapirlo-$1-mode.service" 2>/dev/null
   systemd-run --user --quiet --collect --unit="bapirlo-$1-mode" --description="Bapirlo $1 mode" \
+    -p SuccessExitStatus=1 \
     powerprofilesctl launch -p "$2" -r "$3" -i os.bapirlo.Welcome sleep infinity
 }
 

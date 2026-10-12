@@ -3,7 +3,8 @@
   "name": "Bapirlo Game Mode",
   "description": "While a fullscreen game runs or OBS records/streams: Do Not Disturb, Turbo power profile (games only) and the instant-replay buffer. Everything is undone when it ends.",
   "shell-version": [
-    "50"
+    "50",
+    "51"
   ],
   "version": 1,
   "url": "https://github.com/Bapirlo07/bapirlo-os"

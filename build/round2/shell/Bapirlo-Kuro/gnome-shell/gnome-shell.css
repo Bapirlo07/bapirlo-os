@@ -8,13 +8,13 @@
 @import url("@HOME@/.themes/WhiteSur-Dark-red/gnome-shell/gnome-shell.css");
 
 /* =========================================================== top bar */
-#panelBox { padding: 8px 10px 0 10px; }
+#panelBox { padding: 6px 8px 0 8px; }   /* v3: small even gap from the screen edges */
 #panel {
   height: 44px !important;
   border-radius: 16px;
-  background-color: rgba(14, 10, 13, 0.60);
+  background-color: rgba(14, 10, 13, 0.74);   /* v3: readable over bright wallpaper too */
   border: 1px solid rgba(225, 29, 46, 0.28);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.40);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38);
   font-family: "Inter", sans-serif;
   font-size: 12pt;
   font-weight: 500;
@@ -27,7 +27,8 @@
   box-shadow: none;
 }
 #panel .panel-corner { -panel-corner-radius: 0; -panel-corner-opacity: 0; }
-#panel #panelLeft, #panel #panelCenter, #panel #panelRight { spacing: 4px; }
+#panel #panelLeft { spacing: 6px; }
+#panel #panelRight { spacing: 6px; }   /* one even gap between every group / capsule */
 #panel #panelLeft { padding-left: 3px; }
 #panel #panelRight { padding-right: 3px; }
 
@@ -43,14 +44,15 @@
   box-shadow: inset 0 0 0 100px transparent;
   transition-duration: 180ms;
 }
+/* v3: hover / press / open are neutral paper tints — crimson is kept for states (rec, low battery, DND, Caffeine) */
 #panel .panel-button:hover, #panel .panel-button:focus {
   color: #ffffff;
-  box-shadow: inset 0 0 0 100px rgba(225, 29, 46, 0.20);
+  box-shadow: inset 0 0 0 100px rgba(242, 233, 236, 0.12);
 }
 #panel .panel-button:active, #panel .panel-button:checked,
 #panel .panel-button:active:hover, #panel .panel-button:checked:hover {
   color: #ffffff;
-  box-shadow: inset 0 0 0 100px #E11D2E;
+  box-shadow: inset 0 0 0 100px rgba(242, 233, 236, 0.22);
 }
 #panel .panel-button .system-status-icon,
 #panel .panel-button StIcon {
@@ -78,50 +80,108 @@
 #panel .panel-button#panelActivities:checked .workspace-dot,
 #panel .panel-button#panelActivities:active .workspace-dot { background-color: #ffffff; }
 
-/* clock — one capsule, tabular figures, no border/glow stacking */
+/* clock + date — the only thing in the centre (the Dynamic Island capsule); weather sits on the right.
+   No capsule of its own: it hovers/presses like every other bar button. */
 #panel .panel-button.clock-display .clock {
   font-feature-settings: "tnum";
-  font-size: 13pt;
+  font-size: 12pt;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   color: #F2E9EC;
-  padding: 0 14px;
-  border-radius: 8px;
+  padding: 0;
   border: 0;
-  background-color: rgba(242, 233, 236, 0.07);
-  transition-duration: 180ms;
+  background-color: transparent;
 }
-#panel .panel-button.clock-display { box-shadow: none; }
-#panel .panel-button.clock-display:hover .clock { background-color: rgba(225, 29, 46, 0.24); color: #ffffff; }
+#panel .panel-button.clock-display:hover .clock,
 #panel .panel-button.clock-display:active .clock,
-#panel .panel-button.clock-display:checked .clock { background-color: #E11D2E; color: #ffffff; }
+#panel .panel-button.clock-display:checked .clock { background-color: transparent; color: #ffffff; }
+#panel #panelCenter { spacing: 0; }
 #panel .panel-button.clock-display .messages-indicator { color: #FF4655; }
 #panel .screencast-indicator, #panel .remote-access-indicator { color: #FF4655; }
+
+/* Vitals — CPU % and temperature as one compact item: a single CPU glyph, then both values */
+#panel .vitals-panel-menu { spacing: 8px; padding: 0; }
+#panel .vitals-panel-item { spacing: 4px; }
+#panel .vitals-panel-icon-processor { icon-size: 20px; margin: 0; }
+#panel .vitals-panel-icon-temperature { icon-size: 0; width: 0; margin: 0; padding: 0; }
+#panel .vitals-panel-label { font-feature-settings: "tnum"; }
 
 /* =========================================================== shared surface */
 .popup-menu-boxpointer .popup-menu-content, .candidate-popup-content,
 .quick-settings, .notification-banner, .osd-window, .workspace-switcher,
 .switcher-list, .modal-dialog, .resize-popup {
-  background-color: rgba(22, 16, 21, 0.94) !important;
+  background-color: rgba(22, 16, 21, 0.97) !important;
   border: 1px solid rgba(225, 29, 46, 0.28) !important;
   border-radius: 16px !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
-  color: #F2E9EC;
+  color: #F2E9EC !important;
 }
 .popup-menu-boxpointer .popup-menu-content { padding: 6px; }
 .quick-settings { padding: 12px !important; }
 
-/* menu items (right-click menus, app menus, calendar, quick settings sub-menus) */
+/* menu items (right-click menus, app menus, calendar, quick settings sub-menus, Vitals, clipboard…)
+   WhiteSur greys every item (#afafaf, !important on some states) and only turns it white on hover.
+   Here text is always paper #F2E9EC (≈15:1 on the menu surface); hover is a subtle tint, not a
+   colour change. Secondary text ≥ 0.66 alpha (≈6:1), disabled 0.55 (≈4.6:1). */
+.popup-menu, .popup-menu-item, .popup-menu-item:checked, .popup-inactive-menu-item,
+.popup-menu .message, .popup-menu .user-icon, .popup-menu-item .popup-menu-icon,
+.popup-menu-item StLabel, .popup-menu-item StIcon {
+  color: #F2E9EC !important;
+}
 .popup-menu-item {
   border-radius: 10px !important;
   padding: 7px 10px;
   transition-duration: 180ms;
 }
-.popup-menu-item:hover, .popup-menu-item:focus { background-color: rgba(225, 29, 46, 0.20); color: #ffffff; }
-.popup-menu-item:active, .popup-menu-item:checked { background-color: #E11D2E; color: #ffffff; }
-.popup-menu-item:insensitive { color: rgba(242, 233, 236, 0.45); }
-.popup-separator-menu-item .popup-separator-menu-item-separator { background-color: rgba(242, 233, 236, 0.08); }
-.popup-sub-menu { background-color: rgba(242, 233, 236, 0.04); border-radius: 0 0 10px 10px; }
+.popup-menu-item:hover, .popup-menu-item:focus, .popup-menu-item:selected,
+.popup-menu-item:checked:hover, .popup-menu-item:checked:focus, .popup-menu-item:checked:selected {
+  background-color: rgba(225, 29, 46, 0.22) !important;
+  color: #ffffff !important;
+}
+.popup-menu-item:checked { background-color: rgba(242, 233, 236, 0.08) !important; }
+.popup-menu-item:active, .popup-menu-item.selected:active, .popup-menu-item:checked:active {
+  background-color: rgba(225, 29, 46, 0.38) !important;
+  color: #ffffff !important;
+}
+.popup-menu-item:insensitive, .popup-menu-item:checked:insensitive, .popup-inactive-menu-item:insensitive,
+.popup-menu-item:insensitive StLabel, .popup-menu-item:insensitive StIcon {
+  color: rgba(242, 233, 236, 0.55) !important;
+}
+.popup-menu-ornament, .popup-menu-item .popup-menu-ornament { color: #FF4655 !important; }
+.popup-separator-menu-item .popup-separator-menu-item-separator { background-color: rgba(242, 233, 236, 0.12); }
+.popup-sub-menu { background-color: rgba(242, 233, 236, 0.05) !important; border-radius: 0 0 10px 10px !important; }
+
+/* everything else WhiteSur dims to #afafaf / 35-50 % white */
+.events-button, .datemenu-today-button, .world-clocks-button, .weather-button,
+.calendar .calendar-day-base, .calendar .calendar-day-base:active, .calendar .calendar-today,
+.message-media-control, .notification-button, .keyboard-key, .run-dialog-description,
+.dialog-list .dialog-list-box .dialog-list-item .dialog-list-item-description {
+  color: #F2E9EC !important;
+}
+.events-button .events-section-title, .world-clocks-button .world-clocks-header,
+.weather-button .weather-header, .weather-button .weather-forecast-time,
+.events-button .event-placeholder, .message-list .message-list-placeholder,
+.message .message-header, .message .message-header .message-header-content .event-time,
+.device-subtitle, .search-statustext,
+.search-provider-icon .list-search-provider-content .list-search-provider-details,
+StEntry StLabel.hint-text, #overview .search-entry StLabel.hint-text, #overview .search-entry .search-entry-icon {
+  color: rgba(242, 233, 236, 0.70) !important;
+}
+.calendar .calendar-nonwork-day { color: rgba(242, 233, 236, 0.70) !important; }
+.calendar .calendar-other-month-day { color: rgba(242, 233, 236, 0.45) !important; }   /* decorative: other month */
+.calendar .calendar-week-number, .calendar .calendar-day-heading { color: rgba(242, 233, 236, 0.70) !important; }
+.message-media-control:insensitive, StEntry:insensitive, .button:insensitive {
+  color: rgba(242, 233, 236, 0.55) !important;
+}
+.quick-toggle .quick-toggle-subtitle, .quick-toggle-menu .header .subtitle,
+.quick-settings .quick-toggle-subtitle { color: rgba(242, 233, 236, 0.78) !important; }
+.quick-toggle:checked .quick-toggle-subtitle { color: rgba(255, 255, 255, 0.88) !important; }
+.quick-toggle-menu .header .title, .quick-toggle, .quick-settings .icon-button, .quick-settings .button { color: #F2E9EC; }
+
+/* Clipboard Indicator ships greys of its own (its stylesheet loads after the theme → !important) */
+.clipboard-indicator-empty-state, .clipboard-indicator-empty-state StIcon { color: rgba(242, 233, 236, 0.78) !important; }
+.ci-main-menu-section StButton.ci-pin-btn { color: rgba(242, 233, 236, 0.66) !important; }
+.ci-tag-label { color: rgba(242, 233, 236, 0.80) !important; }
 
 /* quick settings */
 .quick-toggle, .quick-menu-toggle .quick-toggle, .quick-menu-toggle .quick-toggle-arrow,
@@ -141,6 +201,16 @@
 }
 .quick-toggle:checked:hover, .quick-menu-toggle .quick-toggle:checked:hover,
 .quick-menu-toggle .quick-toggle-arrow:checked:hover { background-color: #FF4655 !important; }
+/* toggle + menu button read as ONE pill (GNOME 50: .quick-toggle-has-menu > .quick-toggle + separator
+   + .quick-toggle-menu-button): halves joined, menu half a shade darker (blood-crimson) when on */
+.quick-toggle-has-menu .quick-toggle { border-radius: 10px 0 0 10px !important; }
+.quick-toggle-has-menu .quick-toggle:rtl { border-radius: 0 10px 10px 0 !important; }
+.quick-toggle-has-menu .quick-toggle-menu-button { border-radius: 0 10px 10px 0 !important; background-color: rgba(242, 233, 236, 0.11) !important; color: #F2E9EC; }
+.quick-toggle-has-menu .quick-toggle-menu-button:rtl { border-radius: 10px 0 0 10px !important; }
+.quick-toggle-has-menu .quick-toggle-menu-button:hover { background-color: rgba(242, 233, 236, 0.16) !important; }
+.quick-toggle-has-menu:checked .quick-toggle-menu-button { background-color: #b41725 !important; color: #ffffff; }
+.quick-toggle-has-menu:checked .quick-toggle-menu-button:hover { background-color: #ca1a29 !important; }
+.quick-toggle-has-menu .quick-toggle-separator { width: 0; background-color: transparent; }
 .quick-toggle-menu { border-radius: 16px !important; background-color: rgba(242, 233, 236, 0.05) !important; }
 .slider {
   -barlevel-height: 4px;
@@ -155,7 +225,10 @@
 .datemenu-today-button .date-label { font-weight: 700; }
 .datemenu-today-button .day-label { color: #FF4655; font-weight: 600; }
 .calendar-day, .calendar-day-base { border-radius: 8px !important; font-feature-settings: "tnum"; }
-.calendar .calendar-today, .calendar .calendar-today:selected { background-color: #E11D2E; color: #ffffff; font-weight: 700; }
+.calendar .calendar-today, .calendar .calendar-today:selected,
+.calendar .calendar-today:hover, .calendar .calendar-today:focus {
+  background-color: #E11D2E !important; color: #ffffff !important; font-weight: 700;
+}
 .calendar .calendar-day:selected { background-color: rgba(225, 29, 46, 0.35); color: #ffffff; }
 .calendar-weekend { color: rgba(242, 233, 236, 0.60); }
 .events-button, .world-clocks-button, .weather-button, .message-list .message {
@@ -166,19 +239,74 @@
   background-color: rgba(225, 29, 46, 0.18);
 }
 
-/* =========================================================== notifications */
-.notification-banner { padding: 6px !important; }
-.notification-banner .message, .notification-banner .notification { background-color: transparent; border-radius: 10px; }
-.message .message-title, .message-title { font-weight: 600; color: #ffffff; }
-.message .message-body, .message-body { color: rgba(242, 233, 236, 0.80); }
-.message-source-title, .message-header { color: rgba(242, 233, 236, 0.65); }
-.message .message-close-button, .message .message-expand-button,
-.message-notification-group .message-collapse-button { border-radius: 99px !important; }
-.notification-banner .notification-button, .message .notification-button {
-  border-radius: 8px !important;
-  background-color: rgba(242, 233, 236, 0.08);
+/* =========================================================== notifications (polish pass)
+   Cards are OPAQUE: GNOME 50 stacks a group's cards behind each other, and see-through cards let
+   the text underneath show. Card #211b20 = surface + 5% paper. Banners carry a 3px crimson edge. */
+.message-list .message, .message-view .message {
+  background-color: #211b20 !important;
+  border-radius: 12px !important;
+  transition-duration: 180ms;
 }
-.notification-banner .notification-button:hover { background-color: rgba(225, 29, 46, 0.30); }
+.message-list .message:hover, .message-view .message:hover { background-color: #2e1c23 !important; }
+.message-view { spacing: 8px; }
+/* the banner IS the .message (GNOME 50): a crimson glow from the left fading into the surface, a
+   3px left edge and a stronger hairline (St draws one border colour on rounded boxes, so the edge
+   can't have its own colour — the gradient does that job) */
+.message.notification-banner {
+  background-color: #3a111a !important;
+  background-gradient-direction: horizontal;
+  background-gradient-end: rgba(22, 16, 21, 0.97);
+  border-color: rgba(225, 29, 46, 0.55) !important;
+  border-left-width: 3px !important;
+  padding: 10px 12px 12px 14px !important;
+}
+.message .message-header .message-source-icon { color: #FF4655; }
+.message .message-header .message-source-title { color: #FF4655 !important; font-weight: 600; }
+.message .message-title, .message-title { font-weight: 600; color: #ffffff; }
+.message .message-body, .message-body { color: rgba(242, 233, 236, 0.82); }
+.message .message-header, .message .message-header .event-time { color: rgba(242, 233, 236, 0.66) !important; }
+.message .message-header .message-close-button, .message .message-header .message-expand-button,
+.message-notification-group .message-collapse-button {
+  border-radius: 99px !important;
+  background-color: rgba(242, 233, 236, 0.08) !important;
+  color: #F2E9EC !important;
+  box-shadow: none !important;
+}
+.message .message-header .message-close-button:hover, .message .message-header .message-expand-button:hover,
+.message-notification-group .message-collapse-button:hover { background-color: rgba(225, 29, 46, 0.35) !important; }
+.message-notification-group .message-group-header .message-group-title { color: #F2E9EC !important; font-weight: 700; }
+.notification-banner .notification-button, .message .notification-button {
+  border-radius: 10px !important;
+  background-color: rgba(242, 233, 236, 0.08) !important;
+  box-shadow: none !important;
+  font-weight: 600;
+}
+.notification-banner .notification-button:hover, .message .notification-button:hover { background-color: rgba(225, 29, 46, 0.30) !important; }
+.message-list-controls { padding: 6px 2px 0; }
+.message-list-clear-button.button {
+  border-radius: 10px !important;
+  padding: 6px 16px !important;
+  background-color: rgba(242, 233, 236, 0.07) !important;
+  color: #F2E9EC !important;
+  box-shadow: none !important;
+  font-weight: 600;
+}
+.message-list-clear-button.button:hover { background-color: rgba(225, 29, 46, 0.30) !important; color: #ffffff !important; }
+
+/* calendar month arrows: small and flat like every other icon button (were 40px grey circles) */
+.calendar .pager-button, .calendar .calendar-change-month-back, .calendar .calendar-change-month-forward {
+  width: 28px !important; height: 28px !important;
+  min-width: 0 !important; min-height: 0 !important;
+  padding: 0 !important; margin: 2px !important;
+  border-radius: 99px !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: #F2E9EC !important;
+}
+.calendar .pager-button:hover, .calendar .calendar-change-month-back:hover, .calendar .calendar-change-month-forward:hover {
+  background-color: rgba(225, 29, 46, 0.22) !important;
+}
+.calendar .pager-button StIcon, .calendar .calendar-change-month-back StIcon, .calendar .calendar-change-month-forward StIcon { icon-size: 16px !important; }
 
 /* =========================================================== OSD (volume / brightness / keyboard) */
 .osd-window { padding: 14px 18px !important; spacing: 12px; }

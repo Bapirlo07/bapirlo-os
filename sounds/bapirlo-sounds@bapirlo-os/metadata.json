@@ -3,7 +3,8 @@
   "name": "Bapirlo Sounds",
   "description": "Bapirlo OS: sword \"shing\" for notifications (not in Do Not Disturb or fullscreen, max one per 2 s) and a blade-draw login sound, from the bapirlo sound theme.",
   "shell-version": [
-    "50"
+    "50",
+    "51"
   ],
   "version": 1,
   "url": "https://github.com/Bapirlo07/bapirlo-os"
