@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.bapirlo-island" path="/org/gnome/shell/extensions/bapirlo-island/">
+    <key name="rest-pill" type="b">
+      <default>true</default>
+      <summary>Dark capsule around the clock and weather while idle</summary>
+    </key>
+    <key name="osd" type="b">
+      <default>true</default>
+      <summary>Volume, brightness and other OSDs in the island</summary>
+    </key>
+    <key name="notifications" type="b">
+      <default>true</default>
+      <summary>Notification banners in the island</summary>
+    </key>
+    <key name="media" type="b">
+      <default>true</default>
+      <summary>Show the track when music starts or changes</summary>
+    </key>
+    <key name="charging" type="b">
+      <default>true</default>
+      <summary>Charger plugged/unplugged and low battery</summary>
+    </key>
+    <key name="screenshots" type="b">
+      <default>true</default>
+      <summary>Screenshot thumbnail when one is saved</summary>
+    </key>
+  </schema>
+</schemalist>

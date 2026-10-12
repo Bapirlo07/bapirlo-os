@@ -45,9 +45,8 @@
 }
 .bm-tag.bm-tag-idle { background-color: #523B44; text-shadow: none; }
 .bm-chips { spacing: 4px; }
+.bm-chip.bm-chip-square { width: 24px; height: 24px; }
 .bm-chip {
-  width: 24px;
-  height: 24px;
   border-radius: 8px;
   background-color: rgba(242, 233, 236, 0.06);
   border: 1px solid transparent;
@@ -93,7 +92,6 @@
 .bm-art {
   border-radius: 10px;
   background-size: cover;
-  background-position: center;
   border: 1px solid rgba(242, 233, 236, 0.08);
 }
 .bm-art-icon { color: rgba(242, 233, 236, 0.55); }
@@ -150,9 +148,79 @@
   border-radius: 99px;
   background-color: #E11D2E;
   background-size: cover;
-  background-position: center;
 }
 .bm-card:dragging, .bm-pill:dragging { border-color: rgba(255, 70, 85, 0.7); }
 .bm-pill-title { max-width: 150px; font-size: 9.5pt; font-weight: 600; }
 .bm-pill-play { width: 30px; height: 30px; background-color: #E11D2E; color: #ffffff; }
 .bm-pill-play:hover { background-color: #FF4655; }
+
+/* ============================================================ top-bar button (panel.js)
+   Same look as the bar's old mini player: 24px cover · "Title · Artist" in a fixed 200px window
+   (the bar never jumps; long titles fade out). Idle → a single note icon. */
+#panel .panel-button.bmb-button { -natural-hpadding: 8px; -minimum-hpadding: 5px; }
+.bmb-face { spacing: 9px; }
+.bmb-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background-size: cover;
+  background-color: rgba(242, 233, 236, 0.08);
+  border: 1px solid rgba(225, 29, 46, 0.45);
+}
+#panel .bmb-thumb .bmb-note { icon-size: 14px; color: #FF4655; }
+.bmb-clip { width: 200px; }
+.bmb-title { font-weight: 600; color: #F2E9EC; }
+.bmb-paused .bmb-title { color: #CAB5BF; }   /* same weight: no width jump on pause */
+.bmb-paused .bmb-thumb { border-color: rgba(242, 233, 236, 0.18); }
+/* idle: just the note, no tile */
+.bmb-idle .bmb-thumb { background-color: transparent; border-width: 0; }
+#panel .bmb-idle .bmb-thumb .bmb-note { icon-size: 18px; color: #F2E9EC; }
+#panel .panel-button.bmb-button:checked .bmb-title,
+#panel .panel-button.bmb-button:checked .bmb-note { color: #ffffff; }
+
+/* ============================================================ dropdown
+   The menu surface itself comes from the shell theme (surface rgba(22,16,21,.97), crimson hairline,
+   radius 16, shadow) — here only: no inner padding so the blurred cover reaches the edges. */
+.bmp-menu .popup-menu-content.bmp-menu-box { padding: 0 !important; }
+.bmp-panel { color: #F2E9EC; font-family: "Inter", sans-serif; font-size: 10.5pt; }
+/* blurred cover, faded into the surface by the scrim; top corners follow the menu's 16px (−1 border) */
+.bmp-backdrop {
+  border-radius: 15px 15px 0 0;
+  background-size: cover;
+}
+.bmp-scrim {
+  border-radius: 15px 15px 0 0;
+  background-gradient-direction: vertical;
+  background-gradient-start: rgba(225, 29, 46, 0.16);   /* panel.js swaps in the cover accent */
+  background-gradient-end: rgba(22, 16, 21, 0.97);
+}
+.bmp-halftone { border-radius: 0 15px 0 0; opacity: 0.45; }
+.bmp-view.bm-box { padding: 14px 16px 16px 16px; spacing: 12px; }
+.bmp-view .bm-art-wrap { border-radius: 12px; }
+.bmp-view .bm-art { border-radius: 12px; }
+.bmp-view .bm-art-btn { border-radius: 12px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55); }
+.bmp-view .bm-title { font-size: 14pt; color: #ffffff; }
+.bmp-view .bm-artist { font-size: 10.5pt; color: #CAB5BF; }
+.bmp-view .bm-time { font-size: 9pt; color: #CAB5BF; }   /* ≥ 7:1 on the surface: readable without hovering */
+.bmp-view .bm-progress, .bmp-view .bm-vol-slider { -barlevel-height: 5px; -slider-handle-radius: 6px; height: 18px; }
+.bmp-view .bm-vol-icon { color: #F2E9EC; }
+.bmp-view .bm-volume-system .bm-vol-icon { color: #CAB5BF; }
+.bmp-view .bm-controls { spacing: 22px; }
+.bmp-view .bm-skip { width: 44px; height: 44px; }
+.bmp-view .bm-play { width: 54px; height: 54px; }
+
+/* player switcher with names (more than one player) */
+.bm-chip.bm-chip-labelled { height: 26px; padding: 0 9px 0 7px; border-radius: 99px; }
+.bm-chip-inner { spacing: 5px; }
+.bm-chip-label { font-size: 9pt; font-weight: 600; color: #CAB5BF; max-width: 80px; }
+.bm-chip:checked .bm-chip-label, .bm-chip:hover .bm-chip-label { color: #ffffff; }
+.bm-chip.bm-chip-playing .bm-chip-label { color: #FF4655; }
+.bm-chip.bm-chip-playing:checked .bm-chip-label { color: #ffffff; }
+.bm-chip:focus { box-shadow: inset 0 0 0 1px rgba(255, 70, 85, 0.6); }
+
+/* nothing playing */
+.bmp-empty { padding: 26px 28px 30px; spacing: 10px; }
+.bmp-empty-tag { margin-bottom: 6px; }
+.bmp-empty-icon { color: rgba(242, 233, 236, 0.35); }
+.bmp-empty-title { font-weight: 700; font-size: 13pt; color: #F2E9EC; }
+.bmp-empty-hint { font-size: 10pt; color: #CAB5BF; text-align: center; }

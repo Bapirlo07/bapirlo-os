@@ -1,0 +1,64 @@
+/* Bapirlo Island — Kuro palette (tools/palette.py): ink #0E0A0D, crimson #E11D2E, ember #FF4655,
+   paper #F2E9EC, mist #CAB5BF, muted #8E7680. Hairline + glow = shell polish tokens. */
+
+/* idle capsule around the clock + weather */
+#panelCenter.bapirlo-island-rest {
+  background-color: rgba(10, 7, 9, 0.92);
+  border: 1px solid rgba(225, 29, 46, 0.22);
+  border-radius: 999px;
+  margin: 5px 0;
+  padding: 0 8px;
+  box-shadow: 0 0 10px rgba(225, 29, 46, 0.12);
+}
+
+.bapirlo-island {
+  background-color: rgba(10, 7, 9, 0.97);
+  border: 1px solid rgba(225, 29, 46, 0.30);
+  border-radius: 24px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55), 0 0 18px rgba(225, 29, 46, 0.18);
+  color: #F2E9EC;
+  font-family: Inter;
+}
+
+.island-row { spacing: 12px; padding: 0 16px; }
+.island-notif { padding: 10px 0 8px 0; spacing: 6px; }
+.island-notif .island-row { padding: 0 14px; }
+.island-text { spacing: 2px; }
+
+.island-title { font-size: 11pt; font-weight: 700; color: #F2E9EC; }
+.island-source { font-size: 8.5pt; font-weight: 600; color: #8E7680; padding-left: 10px; }
+.island-body { font-size: 10pt; color: #CAB5BF; }
+.island-pct { font-size: 11pt; font-weight: 700; color: #F2E9EC; min-width: 30px; text-align: right; }
+
+.island-level-icon { icon-size: 18px; color: #F2E9EC; }
+.island-level-icon.dim { color: #8E7680; }
+.island-app-icon { icon-size: 36px; }
+
+.island-track { height: 6px; border-radius: 3px; background-color: rgba(242, 233, 236, 0.14); }
+.island-fill {
+  height: 6px;
+  border-radius: 3px;
+  background-gradient-direction: horizontal;
+  background-gradient-start: #7A0F1A;
+  background-gradient-end: #E11D2E;
+}
+.island-fill.over { background-gradient-end: #FF4655; }
+
+.island-art, .island-thumb { border-radius: 10px; background-size: cover; background-color: #231A1F; }
+.island-art { width: 52px; height: 52px; }
+.island-art.empty { background-color: #3a1218; }
+.island-thumb { width: 104px; height: 64px; border: 1px solid rgba(242, 233, 236, 0.12); }
+
+.island-ctl { width: 34px; height: 34px; border-radius: 17px; color: #F2E9EC; }
+.island-ctl StIcon { icon-size: 16px; }
+.island-ctl:hover { background-color: rgba(225, 29, 46, 0.22); }
+
+.island-actions { spacing: 8px; padding: 0 14px; }
+.island-action {
+  height: 30px; border-radius: 15px; font-size: 9.5pt; font-weight: 600; color: #F2E9EC;
+  background-color: rgba(242, 233, 236, 0.08);
+}
+.island-action:hover { background-color: rgba(225, 29, 46, 0.30); }
+
+.island-power.good .island-level-icon { color: #3FC69A; }
+.island-power.warn .island-level-icon, .island-power.warn .island-pct { color: #FF4655; }

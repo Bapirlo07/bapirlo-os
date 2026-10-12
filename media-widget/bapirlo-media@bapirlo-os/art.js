@@ -141,6 +141,28 @@ export async function analyseArt(path, cancellable) {
     return {aspect, accent: hsvToRgb(h, Math.max(s, 0.6), Math.max(v, 0.9))};
 }
 
+// Heavily blurred copy of a cover for the dropdown backdrop: decode tiny, grow back in two bilinear
+// steps (same trick as the frost). Cached per cover + size; a few KB.
+export async function blurredArt(path, w, h, cancellable) {
+    const out = GLib.build_filenamev([cacheDir(), hashName(`${path}|${w}x${h}|blur1`, '.blur.png')]);
+    if (GLib.file_test(out, GLib.FileTest.EXISTS))
+        return out;
+    const tiny = await loadScaled(path, 10, 10, cancellable);
+    const mid = tiny.scale_simple(Math.max(2, Math.round(w / 8)), Math.max(2, Math.round(h / 8)), GdkPixbuf.InterpType.BILINEAR);
+    const full = mid.scale_simple(w, h, GdkPixbuf.InterpType.BILINEAR);
+    full.savev(`${out}.part.png`, 'png', [], []);
+    GLib.rename(`${out}.part.png`, out);
+    pruneCache();
+    return out;
+}
+
+// Readable text colour on top of an accent: white unless the accent is light (WCAG contrast < 3).
+export function textOn([r, g, b]) {
+    const lin = c => ((c /= 255) <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+    const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    return 1.05 / (L + 0.05) >= 3 ? '#ffffff' : '#0e0a0d';
+}
+
 function wallpaperFile() {
     try {
         const bg = new Gio.Settings({schema_id: 'org.gnome.desktop.background'});

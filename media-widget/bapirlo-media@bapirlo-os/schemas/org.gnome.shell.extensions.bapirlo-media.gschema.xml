@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.bapirlo-media" path="/org/gnome/shell/extensions/bapirlo-media/">
+    <key name="toggle-panel" type="as">
+      <default><![CDATA[['<Super><Alt>m']]]></default>
+      <summary>Open / close the media dropdown in the top bar</summary>
+    </key>
+    <key name="desktop-widget" type="b">
+      <default>false</default>
+      <summary>Also show the floating now-playing card on the desktop (the old widget)</summary>
+    </key>
+    <key name="hide-when-idle" type="b">
+      <default>false</default>
+      <summary>Hide the top-bar button when nothing is playing (instead of showing just a note icon)</summary>
+    </key>
+    <key name="tint-from-art" type="b">
+      <default>true</default>
+      <summary>Tint the play button and sliders with the album art's colour (off = always crimson)</summary>
+    </key>
+  </schema>
+</schemalist>
