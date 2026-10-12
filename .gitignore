@@ -19,3 +19,7 @@ __pycache__/
 *.bak-*
 local.conf
 location.json
+
+# --- greeter theme images built from the wallpaper (tools/build-greeter.sh)
+/greeter/bapirlo/img/bg*.jpg
+/greeter/bapirlo/img/avatar*.png

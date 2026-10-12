@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bapirlo OS</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="booting secondary">
+  <!-- Other monitors: the same art, embers and clock; follows the primary into the desktop. -->
+  <div id="stage">
+    <div id="parallax"><div id="bg"></div></div>
+    <div id="shade"></div>
+    <div id="embers" aria-hidden="true"></div>
+  </div>
+  <main id="ui">
+    <header id="brand">
+      <img id="logo" src="img/logo.svg" alt="">
+      <div class="wordmark">BAPIRLO<span>OS · KURO</span></div>
+    </header>
+    <section id="time">
+      <div id="clock">--:--</div>
+      <div id="date"></div>
+    </section>
+  </main>
+  <div id="curtain"></div>
+  <script src="js/common.js"></script>
+  <script>
+    // secondary screens don't need LightDM; start immediately (GreeterReady may never matter here)
+    bootCommon(10);
+  </script>
+</body>
+</html>
