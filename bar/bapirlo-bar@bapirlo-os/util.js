@@ -29,7 +29,10 @@ class BapirloGroup extends PanelMenu.Button {
 let _tip = null;
 let _tipTimer = 0;
 
-export function attachTooltip(actor, textFn) {
+// `tracker` (default: the actor) owns the signal connections, so tooltips put on other
+// extensions' buttons can be taken off again with actor.disconnectObject(tracker).
+export function attachTooltip(actor, textFn, tracker = actor) {
+    const menuOpen = () => actor.menu?.isOpen ?? false;
     actor.connectObject('notify::hover', () => {
         if (_tipTimer) {
             GLib.source_remove(_tipTimer);
@@ -42,11 +45,16 @@ export function attachTooltip(actor, textFn) {
         _tipTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 450, () => {
             _tipTimer = 0;
             const text = textFn();
-            if (text && actor.hover && actor.get_stage())
+            if (text && actor.hover && actor.get_stage() && !menuOpen())
                 showTooltip(actor, text);
             return GLib.SOURCE_REMOVE;
         });
-    }, 'destroy', () => hideTooltip(), actor);
+    }, 'destroy', () => hideTooltip(), tracker);
+    // a dropdown opening from the item replaces its tooltip
+    actor.menu?.connectObject?.('open-state-changed', (_m, open) => {
+        if (open)
+            hideTooltip();
+    }, tracker);
 }
 
 function showTooltip(actor, text) {

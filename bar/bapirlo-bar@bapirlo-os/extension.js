@@ -1,22 +1,29 @@
-// Bapirlo Bar — the extra top-bar pieces for Bapirlo OS (GNOME Shell 50).
-//   left:  [ArcMenu logo] [workspace dots] | [quick launch] | [power chip]
-//   right: [mini player] [replay dot] … the existing indicators
+// Bapirlo Bar — the Bapirlo OS top bar layout and its own pieces (GNOME Shell 50/51).
+//   left:   [ArcMenu logo] [workspace numbers] (quick launch · power chip) [focused app name]
+//   centre: clock + date (the Dynamic Island capsule; Do Not Disturb moon when on)
+//   right:  (media · weather · Vitals)  (updates · replay dot · tray icons)  (Control Centre)
+// Capsules: layout.js · red states + tooltips: states.js · bar over fullscreen apps: reveal.js
+// Keys: Super+Shift+N / Ctrl+Super+D add a workspace · Super+Shift+W / Ctrl+Super+F4 remove the current one
 // Also loads the wallpaper accent stylesheet written by bapirlo-autotheme
 // (~/.local/state/bapirlo/accent/shell.css) and reloads it when it changes.
 // Off switch: gnome-extensions disable bapirlo-bar@bapirlo-os
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import Meta from 'gi://Meta';
+import Shell from 'gi://Shell';
 import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import {PlayerManager} from './mpris.js';
 import {WorkspaceDots} from './workspaces.js';
 import {QuickLaunch} from './launchers.js';
-import {MiniPlayer} from './media.js';
 import {PowerChip} from './power.js';
 import {ReplayDot} from './replay.js';
+import {AppName} from './appname.js';
+import {CapsuleLayout} from './layout.js';
+import {BarStates} from './states.js';
+import {FullscreenReveal} from './reveal.js';
 import {destroyTooltip} from './util.js';
 
 const ACCENT_CSS = GLib.build_filenamev([GLib.get_user_state_dir(), 'bapirlo', 'accent', 'shell.css']);
@@ -29,29 +36,41 @@ export default class BapirloBarExtension extends Extension {
             this._items.push(item);
         };
 
-        // the workspace dots replace the Activities button (Super opens ArcMenu,
-        // clicking the active dot opens the overview)
+        // the workspace numbers replace the Activities button (Super opens ArcMenu,
+        // clicking the active number opens the overview)
         this._activities = Main.panel.statusArea.activities?.container;
         this._activities?.hide();
-        add('ws', new WorkspaceDots(), -1, 'left');
+        this._ws = new WorkspaceDots();
+        add('ws', this._ws, -1, 'left');
+        this._settings = this.getSettings();
+        const keyModes = Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW;
+        Main.wm.addKeybinding('add-workspace', this._settings, Meta.KeyBindingFlags.IGNORE_AUTOREPEAT,
+            keyModes, () => this._ws.addWorkspace());
+        Main.wm.addKeybinding('remove-workspace', this._settings, Meta.KeyBindingFlags.IGNORE_AUTOREPEAT,
+            keyModes, () => this._ws.removeWorkspace());
         add('launch', new QuickLaunch(), -1, 'left');
         add('power', new PowerChip(), -1, 'left');
-
-        this._players = new PlayerManager();
+        add('appname', new AppName(), -1, 'left');
         add('replay', new ReplayDot(), 0, 'right');
-        add('mini', new MiniPlayer(this._players), 0, 'right');
-        this._front = ['mini', 'replay'].map(r => Main.panel.statusArea[`bapirlo-${r}`].container);
-        // extensions enabled after us insert at index 0/1 too — keep ours first
-        Main.panel._rightBox.connectObject('child-added', () => this._keepFront(), this);
+
+        // panel-box placement of everyone (ours and other extensions') lives in layout.js
+        this._layout = new CapsuleLayout();
+        this._states = new BarStates(this._layout.capsules);
+        for (const box of [Main.panel._leftBox, Main.panel._centerBox, Main.panel._rightBox])
+            box.connectObject('child-added', () => this._queueRefresh(), this);
+        this._reveal = new FullscreenReveal();
 
         this._watchAccent();
     }
 
-    _keepFront() {
-        const box = Main.panel._rightBox;
-        this._front.forEach((c, i) => {
-            if (c.get_parent() === box && box.get_child_at_index(i) !== c)
-                box.set_child_at_index(c, i);
+    // newcomers (another extension enabled later, tray icons) get their tooltip / tweaks too
+    _queueRefresh() {
+        if (this._refreshId)
+            return;
+        this._refreshId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
+            this._refreshId = 0;
+            this._states?.refresh();
+            return GLib.SOURCE_REMOVE;
         });
     }
 
@@ -95,6 +114,10 @@ export default class BapirloBarExtension extends Extension {
     }
 
     disable() {
+        Main.wm.removeKeybinding('add-workspace');
+        Main.wm.removeKeybinding('remove-workspace');
+        this._settings = null;
+        this._ws = null;
         if (this._accentId)
             GLib.source_remove(this._accentId);
         this._accentId = 0;
@@ -104,13 +127,20 @@ export default class BapirloBarExtension extends Extension {
             St.ThemeContext.get_for_stage(global.stage).get_theme().unload_stylesheet(this._accentLoaded);
         this._accentLoaded = null;
 
-        Main.panel._rightBox.disconnectObject(this);
-        this._front = [];
+        if (this._refreshId)
+            GLib.source_remove(this._refreshId);
+        this._refreshId = 0;
+        for (const box of [Main.panel._leftBox, Main.panel._centerBox, Main.panel._rightBox])
+            box.disconnectObject(this);
+        this._reveal?.destroy();
+        this._reveal = null;
+        this._states?.destroy();
+        this._states = null;
+        this._layout?.destroy();
+        this._layout = null;
         for (const item of this._items ?? [])
             item.destroy();
         this._items = [];
-        this._players?.destroy();
-        this._players = null;
         destroyTooltip();
         this._activities?.show();
         this._activities = null;

@@ -1,10 +1,12 @@
 {
   "uuid": "bapirlo-bar@bapirlo-os",
   "name": "Bapirlo Bar",
-  "description": "Bapirlo OS top bar: workspace dots, quick launch, mini media player, power-mode chip and instant-replay dot.",
+  "description": "Bapirlo OS top bar: workspace dots (right-click to add / remove), quick launch, mini media player, power-mode chip and instant-replay dot.",
   "shell-version": [
-    "50"
+    "50",
+    "51"
   ],
-  "version": 1,
-  "url": "https://github.com/Bapirlo07/bapirlo-os"
+  "version": 2,
+  "url": "https://github.com/Bapirlo07/bapirlo-os",
+  "settings-schema": "org.gnome.shell.extensions.bapirlo-bar"
 }

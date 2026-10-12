@@ -37,8 +37,7 @@ class BapirloPowerChip extends Group {
         });
         this._icon = new St.Icon({style_class: 'bapirlo-power-icon'});
         this._label = new St.Label({style_class: 'bapirlo-power-label', y_align: Clutter.ActorAlign.CENTER});
-        // short fixed words; Bangers' measured width is a hair under its painted width,
-        // which would otherwise ellipsize "Balanced" to "Balanc…"
+        // short fixed words — never ellipsize them
         this._label.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
         this._game = new St.Icon({icon_name: 'input-gaming-symbolic', style_class: 'bapirlo-power-game', visible: false});
         this._chip.child.add_child(this._icon);

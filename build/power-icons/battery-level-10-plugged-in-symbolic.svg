@@ -1,0 +1,12 @@
+<svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <mask id="hole"><rect width="16" height="16" fill="#fff"/><rect x="5" y="4.75" width="1" height="1.75" rx="0" fill="#000"/><rect x="7" y="4.75" width="1" height="1.75" rx="0" fill="#000"/><rect x="4.5" y="6.5" width="4" height="2.5" rx="0.75" fill="#000"/><rect x="6" y="9" width="1" height="2.25" rx="0" fill="#000"/></mask>
+  <clipPath id="empty"><rect x="2.9" y="0" width="16" height="16"/></clipPath>
+ </defs>
+ <g fill="#dedede">
+  <path d="m2 3c-1.108 0-2 0.892-2 2v6c0 1.108 0.892 2 2 2h9c1.108 0 2-0.892 2-2v-6c0-1.108-0.892-2-2-2zm0 1h9c0.554 0 1 0.446 1 1v6c0 0.554-0.446 1-1 1h-9c-0.554 0-1-0.446-1-1v-6c0-0.554 0.446-1 1-1z"/>
+  <rect x="2" y="5" width="0.8999999999999999" height="6" rx=".55" mask="url(#hole)"/>
+  <g clip-path="url(#empty)"><rect x="5.0" y="4.75" width="1.0" height="1.75" rx="0.0"/><rect x="7.0" y="4.75" width="1.0" height="1.75" rx="0.0"/><rect x="4.5" y="6.5" width="4.0" height="2.5" rx="0.75"/><rect x="6.0" y="9.0" width="1.0" height="2.25" rx="0.0"/></g>
+  <path d="m14 6v4a2 2 0 0 0 2-2 2 2 0 0 0-2-2z"/>
+ </g>
+</svg>

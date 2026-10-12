@@ -1,1 +1,0 @@
-../../media-widget/bapirlo-media@bapirlo-os/mpris.js

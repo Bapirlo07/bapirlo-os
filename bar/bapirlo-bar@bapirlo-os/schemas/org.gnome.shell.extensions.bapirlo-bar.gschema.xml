@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.bapirlo-bar" path="/org/gnome/shell/extensions/bapirlo-bar/">
+    <key name="add-workspace" type="as">
+      <default><![CDATA[['<Super><Shift>n', '<Control><Super>d']]]></default>
+      <summary>Add a workspace right after the current one and go there</summary>
+    </key>
+    <key name="remove-workspace" type="as">
+      <default><![CDATA[['<Super><Shift>w', '<Control><Super>F4']]]></default>
+      <summary>Remove the current workspace (its windows move to the previous one)</summary>
+    </key>
+  </schema>
+</schemalist>
