@@ -1,0 +1,14 @@
+[Unit]
+Description=Bapirlo OS firewall opening for %i (only while it is switched on)
+After=ufw.service
+# a `ufw reload` / restart drops runtime rules — drop the "open" state with it
+PartOf=ufw.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/lib/bapirlo/bapirlo-port open %i
+ExecStop=/usr/local/lib/bapirlo/bapirlo-port close %i
+
+[Install]
+# deliberately none: never started at boot

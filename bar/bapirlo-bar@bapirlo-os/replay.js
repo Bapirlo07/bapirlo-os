@@ -39,7 +39,7 @@ class BapirloReplayDot extends Group {
         super._init('Bapirlo instant replay', 'bapirlo-replay');
         this._btn = new St.Button({
             style_class: 'bapirlo-replay-btn', can_focus: true, track_hover: true,
-            button_mask: St.ButtonMask.ONE | St.ButtonMask.THREE,
+            button_mask: St.ButtonMask.PRIMARY | St.ButtonMask.SECONDARY,
             child: new St.BoxLayout({style_class: 'bapirlo-replay-box', y_align: Clutter.ActorAlign.CENTER}),
         });
         this._dot = new St.Widget({style_class: 'bapirlo-replay-dot', y_align: Clutter.ActorAlign.CENTER});

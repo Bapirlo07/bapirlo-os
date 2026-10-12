@@ -1,0 +1,11 @@
+[Unit]
+Description=Bapirlo Doctor — check extensions and services, notify only if something needs you
+
+[Service]
+Type=oneshot
+# after a system update: wait until pacman has finished (the lock file is gone)
+ExecStartPre=/bin/sh -c 'i=0; while [ -e /var/lib/pacman/db.lck ] && [ $i -lt 360 ]; do sleep 5; i=$((i+1)); done'
+ExecStart=@BIN@/bapirlo-doctor --notify
+Nice=10
+IOSchedulingClass=idle
+SuccessExitStatus=1

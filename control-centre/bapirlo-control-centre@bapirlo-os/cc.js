@@ -5,7 +5,7 @@ import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import St from 'gi://St';
 
-import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
+import {Spinner} from 'resource:///org/gnome/shell/ui/animation.js';
 import * as DND from 'resource:///org/gnome/shell/ui/dnd.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
@@ -15,11 +15,14 @@ import * as T from './tiles.js';
 const COLS = 4;
 const STAGGER_MS = 16;
 const PAGE_MS = 220;
+const WATCH_MS = 250;      // detail page check: input grab + scan state
+const SCAN_LIMIT_MS = 10000;
 
 const NAMES = {
     wifi: 'Wi-Fi', bluetooth: 'Bluetooth', dnd: 'Do Not Disturb', nightlight: 'Night Light',
     power: 'Power Mode', caffeine: 'Caffeine', record: 'Screen Rec', darkmode: 'Dark Style',
     volume: 'Volume', brightness: 'Brightness', battery: 'Battery', media: 'Now Playing', storage: 'Storage',
+    airplay: 'AirPlay', remote: 'Remote Access', captions: 'Live Captions', vault: 'Vault',
 };
 export const ALL_TILES = Object.keys(NAMES);
 
@@ -37,6 +40,10 @@ function makeTile(id, cc) {
     case 'storage': return new T.StorageTile(id, cc);
     case 'media': return new T.MediaTile(id, cc);
     case 'volume': return new T.SliderTile(id, cc, {find: T.FIND.volume, title: 'Sound', icon: 'audio-volume-high-symbolic'});
+    case 'airplay': return new T.CommandTile(id, cc, {title: 'AirPlay', onTitle: 'AirPlay On', icon: 'bapirlo-airplay-symbolic', script: 'bapirlo-airplay'});
+    case 'remote': return new T.CommandTile(id, cc, {title: 'Remote', onTitle: 'Remote On', icon: 'bapirlo-remote-symbolic', script: 'bapirlo-remote'});
+    case 'captions': return new T.CommandTile(id, cc, {title: 'Captions', icon: 'bapirlo-captions-symbolic', script: 'bapirlo-captions'});
+    case 'vault': return new T.CommandTile(id, cc, {title: 'Vault', onTitle: 'Vault Open', icon: 'bapirlo-vault-symbolic', script: 'bapirlo-vault'});
     case 'brightness': return new T.SliderTile(id, cc, {find: T.FIND.brightness, title: 'Display', icon: 'display-brightness-symbolic'});
     }
     return null;
@@ -75,10 +82,17 @@ export class ControlCentre extends PopupMenu.PopupMenu {
         back.connect('clicked', () => this.closeDetail());
         this._detailIcon = new St.Icon({style_class: 'bcc-detail-icon'});
         this._detailTitle = new St.Label({style_class: 'bcc-detail-title', y_align: Clutter.ActorAlign.CENTER});
+        this._detailSpinner = new Spinner(16, {hideOnStop: true});
+        this._detailSpinner.y_align = Clutter.ActorAlign.CENTER;
         head.add_child(back);
         head.add_child(this._detailIcon);
         head.add_child(this._detailTitle);
+        head.add_child(new St.Widget({x_expand: true}));
+        head.add_child(this._detailSpinner);
         this._detail.add_child(head);
+        this._detailNote = new St.Label({style_class: 'bcc-note', visible: false});
+        this._detailNote.clutter_text.line_wrap = true;
+        this._detail.add_child(this._detailNote);
         this._detailScroll = new St.ScrollView({style_class: 'bcc-detail-scroll', hscrollbar_policy: St.PolicyType.NEVER,
             vscrollbar_policy: St.PolicyType.AUTOMATIC, overlay_scrollbars: true, x_expand: true, y_expand: true});
         this._detailBody = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true});
@@ -107,11 +121,16 @@ export class ControlCentre extends PopupMenu.PopupMenu {
             T.spawn([GLib.build_filenamev([GLib.get_home_dir(), 'bapirlo-os', 'bin', 'bapirlo-lockd']), '--lock-now']);
         });
         fbtn('system-shutdown-symbolic', 'Power off / Restart / Log out', () => this._openPowerMenu());
+        // asks first; sets a one-time EFI BootNext, the boot order stays as it is
+        fbtn('bapirlo-windows-drive-symbolic', 'Restart to Windows', () => {
+            this.close();
+            T.spawn([GLib.build_filenamev([GLib.get_home_dir(), 'bapirlo-os', 'bin', 'bapirlo-restart-windows'])]);
+        });
         foot.add_child(new St.Widget({x_expand: true}));
         this._editBtn = fbtn('document-edit-symbolic', 'Edit tiles', () => this.setEditing(!this.editing));
         this._classicBtn = new St.Button({style_class: 'bcc-pill', can_focus: true, label: 'Classic'});
         this._classicBtn.connect('clicked', () => {
-            this.close(BoxPointer.PopupAnimation.NONE);
+            this.close({animate: false});
             this._openStock();
         });
         foot.add_child(this._classicBtn);
@@ -181,8 +200,7 @@ export class ControlCentre extends PopupMenu.PopupMenu {
                     if (fits(r, c, t.span)) {
                         for (let i = 0; i < t.span; i++)
                             rows[r][c + i] = id;
-                        this._grid.add_child(t);
-                        gl.attach(t, c, r, t.span, 1);
+                        gl.attach(t, c, r, t.span, 1);   // attach() also adds the child
                         placed = true;
                     }
                 }
@@ -267,25 +285,99 @@ export class ControlCentre extends PopupMenu.PopupMenu {
         this._detailTitle.text = d.title;
         this._detailBody.add_child(d.actor);
         this._slide(this._main, this._detail, 1);
+        this._watchDetail(d);
+    }
+
+    // While a page is open: (1) input must stay grabbed by the Control Centre. A grab held by an
+    // actor that is not on screen (or by the borrowed menu's own container) freezes the desktop —
+    // if that ever happens again, close the page to release it, and the whole panel if not enough.
+    // (2) Wi-Fi: spinner while GNOME scans, at most 10 s, then a note instead of spinning forever.
+    _watchDetail(d) {
+        this._stopWatch();
+        const t0 = GLib.get_monotonic_time();
+        const tick = () => {
+            if (this._detailInfo !== d)
+                return GLib.SOURCE_REMOVE;
+            if (this._foreignGrab(d)) {
+                console.warn('bapirlo-cc: page took a stray input grab — closing it to release input');
+                this._watchId = 0;
+                this.closeDetail(false);
+                if (this._foreignGrab(d))
+                    this.close({animate: false});
+                return GLib.SOURCE_REMOVE;
+            }
+            if (d.scanning) {
+                const ms = (GLib.get_monotonic_time() - t0) / 1000;
+                if (ms < SCAN_LIMIT_MS && (d.scanning() || ms < 1000)) {
+                    this._detailSpinner.play();
+                } else {
+                    this._detailSpinner.stop();
+                    if (ms >= SCAN_LIMIT_MS && d.scanning() && !this._detailNote.visible) {
+                        this._detailNote.text = 'Scanning is taking longer than usual. The list keeps updating on its own.';
+                        this._detailNote.show();
+                    }
+                }
+            }
+            return GLib.SOURCE_CONTINUE;
+        };
+        tick();
+        if (this._detailInfo === d)
+            this._watchId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, WATCH_MS, tick);
+    }
+
+    _foreignGrab(d) {
+        const g = global.stage.get_grab_actor();
+        if (!g || this.actor.contains(g))
+            return false;
+        return !g.mapped || g === d.menuActor || d.menuActor?.contains(g);
+    }
+
+    _stopWatch() {
+        if (this._watchId)
+            GLib.source_remove(this._watchId);
+        this._watchId = 0;
+        this._detailSpinner.stop();
+        this._detailNote.hide();
     }
 
     closeDetail(animate = true) {
+        this._finishPending();   // a page still sliding out is handed back now
         const d = this._detailInfo;
         if (!d)
             return;
         this._detailInfo = null;
+        this._stopWatch();
         const finish = () => {
-            d.onClose?.();
+            if (this._pendingFinish === finish)
+                this._pendingFinish = null;
+            try {
+                d.onClose?.();
+            } catch (e) {
+                logError(e, 'bapirlo-cc: closing page');
+            }
             this._detailBody.destroy_all_children();
         };
         if (animate) {
-            this._slide(this._detail, this._main, -1, finish);
+            this._pendingFinish = finish;
+            this._slide(this._detail, this._main, -1, () => this._pendingFinish === finish && finish());
         } else {
             this._detail.hide();
             this._main.show();
             this._main.translation_x = 0;
             this._main.opacity = 255;
             finish();
+        }
+    }
+
+    _finishPending() {
+        const f = this._pendingFinish;
+        this._pendingFinish = null;
+        if (f) {
+            this._detail.remove_all_transitions();
+            this._main.remove_all_transitions();
+            this._detail.hide();
+            this._main.set({translation_x: 0, opacity: 255, visible: true});
+            f();
         }
     }
 
@@ -307,11 +399,10 @@ export class ControlCentre extends PopupMenu.PopupMenu {
     }
 
     _openPowerMenu() {
-        const menu = T.FIND.power();
-        if (!menu)
+        const item = T.FIND.power();
+        if (!item?.menu)
             return;
-        const fake = {menu};
-        const d = T.borrowMenu(fake, 'Power Off', {icon_name: 'system-shutdown-symbolic'});
+        const d = T.borrowMenu(item, 'Power Off', {icon_name: 'system-shutdown-symbolic'});
         // reuse openDetail's page handling with an already-built detail
         this.openDetail({buildDetail: () => d});
     }
@@ -336,19 +427,32 @@ export class ControlCentre extends PopupMenu.PopupMenu {
         }
     }
 
-    close(animate) {
+    close(params) {
         if (!this.isOpen)
-            return;
-        super.close(animate);
+            return false;
+        // Esc on a page goes back to the grid (the menu manager turns Esc into close())
+        if (this._detailInfo && this._isEscape()) {
+            this.closeDetail();
+            return false;
+        }
+        // hand borrowed menus back BEFORE the grab is released
+        this.closeDetail(false);
         if (this.editing)
             this.setEditing(false);
-        this.closeDetail(false);
+        const r = super.close(params);
         for (const t of this._tiles.values())
             t.onClose?.();
+        return r;
+    }
+
+    _isEscape() {
+        const e = Clutter.get_current_event();
+        return e?.type() === Clutter.EventType.KEY_PRESS && e.get_key_symbol() === Clutter.KEY_Escape;
     }
 
     destroy() {
         this.closeDetail(false);
+        this._stopWatch();
         this._settings.disconnectObject(this);
         for (const t of this._tiles.values())
             t.destroy();

@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Bapirlo OS — make the NEXT boot (only the next one) start Windows. Runs as root via
+# bapirlo-bootnext-windows.service; the user command is `bapirlo-restart-windows`.
+#   bapirlo-bootnext-windows check   show which firmware entry would be used (changes nothing)
+#   bapirlo-bootnext-windows set     set EFI BootNext to it            (BootOrder is NOT touched)
+#   bapirlo-bootnext-windows clear   remove a pending BootNext
+# The entry must start the real Windows Boot Manager: its file on the EFI partition has to carry
+# Microsoft's signature and must not be GRUB or Limine. Anything else = refuse (exit 3), so this
+# can never boot you into a loop or change how the laptop normally starts.
+# Never writes to the EFI partition, never creates or reorders boot entries, never touches
+# GRUB or Limine configuration.
+set -euo pipefail
+ESP=$(findmnt -nro TARGET -t vfat /boot/efi 2>/dev/null || findmnt -nro TARGET -t vfat /efi 2>/dev/null || true)
+
+# prints "XXXX<TAB>label<TAB>\EFI\path.efi" for every firmware entry with a file path
+entries() {
+  efibootmgr -v 2>/dev/null | awk '
+    /^Boot[0-9A-Fa-f]{4}/ {
+      num = substr($1, 5, 4); line = $0
+      sub(/^Boot[0-9A-Fa-f]{4}\*? /, "", line)
+      label = line; sub(/\t.*/, "", label)
+      if (match(line, /\\[^)\t ]*\.[Ee][Ff][Ii]/)) print num "\t" label "\t" substr(line, RSTART, RLENGTH)
+    }'
+}
+
+genuine() {  # $1 = \EFI\...\x.efi  → 0 if it is Microsoft's boot manager
+  [ -n "$ESP" ] || return 1
+  local rel f
+  rel=$(printf '%s' "$1" | tr '\\' '/')
+  # FAT is case-insensitive, Linux paths are not: resolve each part case-insensitively
+  f=$ESP
+  IFS=/ read -ra parts <<< "${rel#/}"
+  for p in "${parts[@]}"; do
+    f=$(find "$f" -maxdepth 1 -iname "$p" -print -quit 2>/dev/null)
+    [ -n "$f" ] || return 1
+  done
+  [ -f "$f" ] || return 1
+  grep -aqiE 'GNU GRUB|limine' "$f" && return 1
+  grep -aq 'Microsoft Windows' "$f" && grep -aq 'Microsoft Corporation' "$f"
+}
+
+pick() {
+  local num label path
+  while IFS=$'\t' read -r num label path; do
+    case "${path,,}" in *\\efi\\microsoft\\boot\\bootmgfw.efi) ;; *) continue ;; esac
+    if genuine "$path"; then printf '%s\t%s\t%s\n' "$num" "$label" "$path"; return 0; fi
+    echo "  Boot$num \"$label\" → $path is NOT Microsoft's boot manager (GRUB/Limine or unsigned)" >&2
+  done < <(entries)
+  return 1
+}
+
+case "${1:-check}" in
+  check)
+    echo "BootOrder: $(efibootmgr | sed -n 's/^BootOrder: //p')   BootCurrent: $(efibootmgr | sed -n 's/^BootCurrent: //p')"
+    entries | while IFS=$'\t' read -r n l p; do echo "  Boot$n  $l  $p"; done
+    if w=$(pick); then echo "→ Restart to Windows would use Boot${w%%$'\t'*} ($(cut -f2 <<<"$w"))"; exit 0; fi
+    echo "→ no firmware entry starts the genuine Windows Boot Manager — Restart to Windows is unavailable"; exit 3 ;;
+  set)
+    w=$(pick) || { echo "no genuine Windows Boot Manager entry — not setting BootNext" >&2; exit 3; }
+    efibootmgr --bootnext "${w%%$'\t'*}" >/dev/null
+    echo "next boot: Windows (Boot${w%%$'\t'*}); boot order unchanged" ;;
+  clear) efibootmgr --delete-bootnext >/dev/null 2>&1 || true; echo "BootNext cleared" ;;
+  *) sed -n '2,12p' "$0"; exit 64 ;;
+esac

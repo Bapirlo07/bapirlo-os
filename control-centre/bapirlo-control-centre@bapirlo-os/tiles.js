@@ -63,7 +63,7 @@ export const FIND = {
     volume: () => stockItem('_volumeOutput'),
     brightness: () => stockItem('_brightness'),
     battery: () => stockItem('_system')?.powerToggle ?? null,
-    power: () => stockItem('_system')?.menu ?? null,   // the Power Off / Restart / Log Out menu
+    power: () => stockItem('_system') ?? null,   // its menu = Power Off / Restart / Log Out
 };
 
 // ------------------------------------------------------------------ base tile
@@ -87,7 +87,7 @@ export const Tile = GObject.registerClass({
 
         this.button = new St.Button({
             style_class: 'bcc-tile-button', x_expand: true, y_expand: true, can_focus: true,
-            track_hover: true, button_mask: St.ButtonMask.ONE,   // right-click: own gesture below
+            track_hover: true, button_mask: St.ButtonMask.PRIMARY,   // right-click: own gesture below
         });
         this.add_child(this.button);
         this.button.connect('clicked', (_b, mouseButton) => {
@@ -292,7 +292,7 @@ class BapirloMirrorTile extends Tile {
         const it = this._item;
         if (!it?.menu)
             return null;
-        return borrowMenu(it, this.face.title.text, this.face.icon);
+        return borrowMenu(it, this.face.title.text, this.face.icon, {scanSpinner: it._scanningSpinner});
     }
 
     destroy() {
@@ -305,8 +305,15 @@ class BapirloMirrorTile extends Tile {
 // into the detail page and handed back when the page closes. The menu is never open()ed (that
 // would take a second modal grab); instead it is told it is open so Wi-Fi starts scanning,
 // Bluetooth re-sorts devices, etc.
-export function borrowMenu(item, title, iconActor) {
+// GNOME 51 gives every quick-settings item with a menu its own PopupMenuManager, which answers
+// "open-state-changed" with Main.pushModal(menu.actor) — and menu.actor stays behind, hidden, in
+// the closed stock panel: every click and key then goes to an invisible actor (desktop frozen,
+// Esc / click-outside call the no-op close below). So the menu leaves that manager while borrowed.
+export function borrowMenu(item, title, iconActor, {scanSpinner = null} = {}) {
     const menu = item.menu;
+    // the manager belongs to the item that created the menu (for Power Off: a hidden ShutdownItem)
+    const mgr = menu.sourceActor?._menuManager ?? item._menuManager ?? null;
+    mgr?.removeMenu(menu);
     const box = menu.box;
     const home = box.get_parent();
     home?.remove_child(box);
@@ -327,19 +334,40 @@ export function borrowMenu(item, title, iconActor) {
     // items close "their" menu when activated; keep the Control Centre open instead
     const origClose = menu.close;
     menu.close = () => false;
-    return {
-        title, gicon: iconActor.gicon, icon: iconActor.icon_name, actor: holder,
-        onClose: () => {
-            menu.close = origClose;
+    // each step on its own: one failing must not leave the menu half borrowed
+    const steps = [
+        () => (menu.close = origClose),
+        () => {
             menu.isOpen = wasOpen;
             menu.emit('open-state-changed', false);
-            box.remove_style_class_name('bcc-borrowed-box');
-            if (header)
-                header.visible = headerWas;
+        },
+        () => box.remove_style_class_name('bcc-borrowed-box'),
+        () => header && (header.visible = headerWas),
+        () => {
             stretch.forEach(([c, y]) => (c.y_expand = y));
             box.y_expand = true;
-            holder.remove_child(box);
-            home?.add_child(box);
+        },
+        () => {
+            if (box.get_parent() === holder)
+                holder.remove_child(box);
+            if (home && !box.get_parent())
+                home.add_child(box);
+        },
+        () => mgr?.addMenu(menu),   // after the "closed" signal, so it never grabs
+    ];
+    return {
+        title, gicon: iconActor.gicon, icon: iconActor.icon_name, actor: holder,
+        menuActor: menu.actor,
+        // the stock Wi-Fi spinner lives in the (hidden) header; it is visible while a scan runs
+        scanning: scanSpinner ? () => scanSpinner.opacity > 0 : null,
+        onClose: () => {
+            for (const s of steps) {
+                try {
+                    s();
+                } catch (e) {
+                    logError(e, 'bapirlo-cc: returning a borrowed menu');
+                }
+            }
         },
     };
 }
@@ -796,13 +824,29 @@ class BapirloStorageTile extends Tile {
     }
 
     onOpen() {
-        try {
-            const info = Gio.File.new_for_path('/').query_filesystem_info('filesystem::free,filesystem::size', null);
-            this._free = info.get_attribute_uint64('filesystem::free');
-            this._size = info.get_attribute_uint64('filesystem::size');
-        } catch {
-            this._free = this._size = 0;
+        // async: the shell must never wait on the disk
+        this._cancel?.cancel();
+        this._cancel = new Gio.Cancellable();
+        Gio.File.new_for_path('/').query_filesystem_info_async('filesystem::free,filesystem::size',
+            GLib.PRIORITY_DEFAULT, this._cancel, (f, res) => {
+                try {
+                    const info = f.query_filesystem_info_finish(res);
+                    this._free = info.get_attribute_uint64('filesystem::free');
+                    this._size = info.get_attribute_uint64('filesystem::size');
+                } catch (e) {
+                    if (e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+                        return;
+                    this._free = this._size = 0;
+                }
+                this._show();
+            });
+        if (this._size === undefined) {   // first open: the answer is a moment away
+            this.face.sub.text = '…';
+            this._detailText = 'Checking free space…';
         }
+    }
+
+    _show() {
         const gb = this._free / 1e9;
         this.face.sub.text = `${gb.toFixed(gb < 100 ? 1 : 0)} GB free`;
         this._detailText = `${gb.toFixed(1)} GB free of ${Math.round(this._size / 1e9)} GB on the Linux drive`;
@@ -818,6 +862,7 @@ class BapirloStorageTile extends Tile {
             if (this._bar.get_stage())
                 this._used.width = Math.round(Math.max(0, this._bar.width) * frac);
         };
+        this._bar.disconnectObject(this);
         this._bar.connectObject('notify::width', w, this);
         w();
     }
@@ -852,6 +897,7 @@ class BapirloStorageTile extends Tile {
     }
 
     destroy() {
+        this._cancel?.cancel();
         this._bar.disconnectObject(this);
         super.destroy();
     }
@@ -927,6 +973,73 @@ class BapirloMediaTile extends Tile {
 
     destroy() {
         this._btn?.disconnectObject(this);
+        super.destroy();
+    }
+});
+
+// ------------------------------------------------------------------ script-backed switches (round 7)
+// AirPlay, Remote access, Live Captions, Vault: a bin/ script answers `status` (exit 0 = on) and
+// does `toggle`. The state is read only when the panel opens and shortly after a click — nothing
+// runs while the Control Centre is closed.
+export const CommandTile = GObject.registerClass(
+class BapirloCommandTile extends Tile {
+    _init(id, cc, {title, onTitle = title, icon, script}) {
+        super._init(id, 'small', cc);
+        this.face = buildFace(this);
+        this._title = title;
+        this._onTitle = onTitle;
+        this._script = `${BIN}/${script}`;
+        this.face.icon.icon_name = icon;
+        this.face.title.text = title;
+        this._on = false;
+        this.onOpen();
+    }
+
+    _set(on) {
+        this._on = on;
+        this.setActive(on);
+        this.face.title.text = on ? this._onTitle : this._title;
+    }
+
+    onOpen() {
+        this._cancel?.cancel();
+        this._cancel = new Gio.Cancellable();
+        let proc;
+        try {
+            proc = Gio.Subprocess.new([this._script, 'status'],
+                Gio.SubprocessFlags.STDOUT_SILENCE | Gio.SubprocessFlags.STDERR_SILENCE);
+        } catch {
+            this.reactive = false;
+            return;
+        }
+        proc.wait_check_async(this._cancel, (p, res) => {
+            try {
+                p.wait_check_finish(res);
+                this._set(true);
+            } catch (e) {
+                if (!e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+                    this._set(false);
+            }
+        });
+    }
+
+    activate() {
+        this._set(!this._on);   // answer the click at once; the re-checks below correct it
+        spawn([this._script, 'toggle']);
+        for (const ms of [1500, 4000]) {
+            const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {
+                this._timers.delete(id);
+                this.onOpen();
+                return GLib.SOURCE_REMOVE;
+            });
+            (this._timers ??= new Set()).add(id);
+        }
+    }
+
+    destroy() {
+        this._cancel?.cancel();
+        for (const id of this._timers ?? [])
+            GLib.source_remove(id);
         super.destroy();
     }
 });

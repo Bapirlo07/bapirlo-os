@@ -1,0 +1,9 @@
+[Unit]
+Description=Bapirlo Doctor 90 s after each login
+
+[Timer]
+OnStartupSec=90s
+Unit=bapirlo-doctor.service
+
+[Install]
+WantedBy=timers.target

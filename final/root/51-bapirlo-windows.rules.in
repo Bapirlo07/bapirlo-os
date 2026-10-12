@@ -1,0 +1,10 @@
+// Bapirlo OS — "Restart to Windows" without a password: @USER@ may START (only start) the one-shot
+// unit that sets EFI BootNext to the genuine Windows Boot Manager. Local, active session only.
+polkit.addRule(function (action, subject) {
+    if (action.id === "org.freedesktop.systemd1.manage-units" &&
+        subject.user === "@USER@" && subject.local && subject.active &&
+        action.lookup("unit") === "bapirlo-bootnext-windows.service" &&
+        action.lookup("verb") === "start")
+        return polkit.Result.YES;
+    return polkit.Result.NOT_HANDLED;
+});

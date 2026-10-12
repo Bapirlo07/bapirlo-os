@@ -1,0 +1,11 @@
+[Unit]
+Description=Bapirlo OS — lock the Vault when the session ends
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecStop=@BIN@/bapirlo-vault autolock
+
+[Install]
+WantedBy=default.target

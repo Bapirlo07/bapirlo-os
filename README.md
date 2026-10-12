@@ -1,114 +1,95 @@
 <p align="center">
-  <img src="docs/screenshots/welcome-icon.png" width="96" alt="Bapirlo Welcome icon">
+  <img src="screenshots/welcome-icon.png" width="96" alt="Bapirlo OS icon">
 </p>
 
 <h1 align="center">BAPIRLO OS · <i>Kuro</i></h1>
 
 <p align="center">
-  A manga-styled, ink-black and crimson GNOME 50 desktop on top of CachyOS:<br>
-  themed from the first GRUB frame to the shutdown splash, built to stay out of the way while gaming and streaming.
+  A manga-styled, ink-black and crimson GNOME desktop on top of CachyOS:
+  themed from the first boot frame to the shutdown splash, with Mac-style controls,
+  and built to stay out of the way while gaming and streaming.<br>
+  <b>CachyOS · GNOME 51 (Wayland) · LightDM · MSI Pulse 16 (Intel + RTX 4060)</b>
 </p>
+
+<p align="center"><img src="screenshots/desktop.jpg" width="860" alt="Bapirlo OS desktop"></p>
 
 ---
 
 ## Features
 
-**One look, everywhere.** A single palette (`tools/palette.py`: ink `#0E0A0D`, crimson `#E11D2E`,
-ember `#FF4655`, sakura `#F08AA4`, paper `#F2E9EC`) feeds every themed surface.
+**One look, everywhere.** A single palette (`tools/palette.py`: ink `#0E0A0D`, crimson `#E11D2E`, ember `#FF4655`,
+sakura `#F08AA4`, paper `#F2E9EC`) themes GRUB, Plymouth, the login screen, GNOME Shell, GTK3/GTK4/libadwaita,
+Qt (Kvantum), the terminal, Spotify, Discord and Chrome.
 
 | Area | What you get |
 |---|---|
-| **Boot** | GRUB theme, a Plymouth splash with an animated "awakening" scene (per-monitor layout, password card, *See you soon* / *Be right back* on shutdown and reboot), a themed LightDM greeter |
-| **Shell** | One 44 px floating top bar with a mini player, workspace dots, quick-launch, power-mode chip, replay dot, weather and an update count. Dock with intellihide, ArcMenu on Super, Coverflow Alt-Tab, rounded corners, Tiling Shell snap layouts, desktop cube |
-| **Living colours** | `bapirlo-autotheme` (matugen) derives the second accent from the wallpaper. The wallpaper switches between a bright day grade and a dark night grade at local sunrise and sunset, and Night Light follows the same times |
-| **Bapirlo Welcome** | A GTK4/libadwaita control centre that opens on the first login of the day. It shows the clock, weather, today's calendar events, battery, CPU temperature, power mode, storage and updates, plus quick launchers and **Gaming / Quiet / Do Not Disturb** switches |
-| **AI on a key** | Super+A summons a floating Claude Code terminal from anywhere; press again to hide it |
-| **Gaming** | Fullscreen game detection triggers DND, a held Turbo profile and a 30 s instant-replay buffer on the iGPU's encoder. Also MangoHud, and an OBS hook |
+| **Boot & login** | GRUB theme, Plymouth "awakening" splash per monitor (*See you soon* / *Be right back* on shutdown and reboot), an animated web-greeter login that is also the lock screen |
+| **Top bar** | Capsule layout: Bapirlo logo with a Mac-style menu, workspace numbers, quick launch, power-mode chip, app name, a **Dynamic Island** clock, then media, weather, CPU, places, drives, tray and Control Centre. It hides over fullscreen apps and comes back from the top edge |
+| **Control Centre** | Mac-style tiles for Wi-Fi, Bluetooth (with device lists), power mode, Do Not Disturb, Night Light, Caffeine, screen recording, Dark Style, sound, brightness, AirPlay, remote access, captions, Vault, battery, storage, now playing, and **Restart to Windows** |
+| **Dynamic Island** | The clock capsule grows to show volume and brightness, media, notifications, battery and screenshots |
+| **Launchpad & desk** | Full-screen app grid on Super+G, desktop widgets (calendar, *up next*, system), a login briefing, picture-in-picture kept on top, and privacy dots for the mic, camera and screen sharing |
+| **Gaming** | A fullscreen game turns on DND, holds the Performance profile and starts a 30 s instant-replay buffer on the iGPU encoder. MangoHud and an OBS hook are included |
 | **Laptop (MSI)** | `msi-ec` + `bapirlo-perfd`: Turbo on AC, Eco + silent fans on battery, 80 % charge limit |
-| **Maintenance** | A Timeshift snapshot before every system update, one-click update from the top bar, and a monthly cleanup that tells you what it removed |
-| **Security** | ufw that denies incoming traffic, with only GSConnect, Steam LAN, mDNS and Samba allowed, and only from home networks. Auto-lock after 10 minutes, Bitwarden |
-| **Capture** | Print opens an area/window/screen screenshot in **Satty** for annotation. Super+Shift+C copies a colour's hex to the clipboard |
-| **Little things** | Sound theme (Kenney, CC0), media widget you can drag anywhere, session restore, emoji picker, clipboard history, fastfetch + starship + Alacritty + cava + Vesktop + Spotify + Chrome themes |
+| **iPhone & Windows** | LocalSend (AirDrop-style), an AirPlay receiver, KDE Connect, an iCloud web app, AirPods battery (LibrePods), the Windows drive in Files (read-only by default, with a safety check), a shared folder, Bluetooth key sync, and one-shot *Restart to Windows* (EFI BootNext) |
+| **Productivity** | Bapirlo Writer (Claude rewrite + offline LanguageTool), Super+A Claude Code terminal, an encrypted Vault, a daily Downloads tidy, clipboard history, emoji picker, Satty screenshots |
+| **Staying healthy** | A Timeshift snapshot before every update (keeps 3). **Bapirlo Doctor** runs after every update and login, and tells you when an extension no longer supports the new GNOME. Spotify's theme is re-applied after Spotify updates. A monthly cleanup runs too |
+| **Docs** | A full plain-English manual in a themed **Bapirlo OS Guide** app ([MANUAL.md](MANUAL.md)) and a one-page [emergency sheet](EMERGENCY.md) ([PDF](EMERGENCY.pdf)) |
 
-Everything is a plain script. Each one **backs up before it changes anything** (into
-`~/theme-backups`), and each one has a `restore` that puts things back.
+Everything is a plain script. Each one **backs up before it changes anything** (into `~/theme-backups`) and has its own `restore`.
 
 ## Screenshots
 
-<p align="center"><img src="docs/screenshots/welcome.png" width="720" alt="Bapirlo Welcome"></p>
-
-<!-- Add more: press Print, pick an area, save in Satty, then copy from ~/Pictures/Screenshots to docs/screenshots/.
-     Suggested: desktop.png (bar + dock), lock.png (greeter), boot.gif (Plymouth), alt-tab.png -->
-
-## Install
-
-> Built and tested on **CachyOS + GNOME 50** (Wayland), on an MSI laptop with Intel + NVIDIA graphics.
-> The installer replays the same scripts that built the original machine. Each script was tested
-> there, but the whole run has **not** yet been tested on a fresh install, so read what each
-> phase does before you confirm it.
-
-1. A fresh CachyOS **GNOME** install, with Timeshift on a disk that has space for a snapshot.
-2. Clone to exactly `~/bapirlo-os`, because the builders expect that path:
-   ```bash
-   git clone https://github.com/Bapirlo07/bapirlo-os ~/bapirlo-os
-   cd ~/bapirlo-os
-   ```
-3. Run the installer as your normal user (it asks for sudo when it needs it). **Bring your own
-   wallpaper**: the original art is third-party fan art and isn't redistributed.
-   ```bash
-   ./install.sh --dry-run --wallpaper ~/Pictures/my-art.jpg                       # see the plan
-   ./install.sh --wallpaper ~/Pictures/my-art.jpg --city London --lat 51.507 --lon -0.128
-   ./install.sh --wallpaper … --boot                                              # + GRUB / Plymouth / LightDM
-   ```
-   Phases: checks → a Timeshift snapshot "Before Bapirlo OS" → packages (pacman, then the AUR
-   through **paru**, which shows every PKGBUILD) → WhiteSur at pinned commits + the Kuro patch →
-   generated art → extensions (GNOME 50 builds only) → desktop scripts → optional boot theme.
-4. Log out and back in.
-
-**Undo:** `bash ~/bapirlo-os/<script>.sh restore` for any single part, or roll back to the
-"Before Bapirlo OS" snapshot with `sudo timeshift --restore`.
-
-## Shortcuts
-
-| Keys | Action |
+| | |
 |---|---|
-| Super | ArcMenu |
-| Super+Space | Run / search |
-| **Super+A** | Claude Code floating terminal (show / hide) |
-| Super+Return | Drop-down terminal (ddterm) |
-| Super+V | Clipboard history |
-| Super+. | Emoji picker |
-| Super+L | Lock |
-| **Print** | Screenshot, then annotate in Satty |
-| Shift+Print / Ctrl+Print / Alt+Print | GNOME screenshot & recording UI / full screen / window |
-| **Super+Shift+C** | Colour picker (hex to clipboard) |
-| Super+Alt+G / Super+Alt+R | Save the last 30 s / start-stop the replay buffer |
-| Right Shift+F12 | MangoHud on/off |
-| Ctrl+Super+←/→ · Ctrl+Super+D · Ctrl+Super+F4 | Switch / add / remove workspace |
+| <img src="screenshots/topbar.png" alt="Top bar"> | |
+| <img src="screenshots/control-centre.png" width="360" alt="Control Centre"> | <img src="screenshots/launchpad.jpg" width="520" alt="Launchpad"> |
+| <img src="screenshots/login.jpg" width="520" alt="Login screen"> | <img src="screenshots/welcome.png" width="360" alt="Bapirlo Welcome"> |
 
-## Repo layout
+<sub>Screenshots use a neutral wallpaper. The real theme is generated from whatever picture you give the installer.</sub>
 
+## Install (fresh CachyOS + GNOME)
+
+Requirements: CachyOS with the GNOME desktop (GNOME 50 or 51), your normal user with sudo, internet, and about 6 GB free.
+The theme is built around **your own wallpaper**. The original art is third-party and is not in this repo.
+
+```bash
+sudo pacman -S --needed git
+git clone https://github.com/Bapirlo07/bapirlo-os.git ~/bapirlo-os
+cd ~/bapirlo-os
+./install.sh --dry-run --wallpaper ~/Pictures/your-art.jpg        # see every step first
+./install.sh --wallpaper ~/Pictures/your-art.jpg --city "London" --lat 51.51 --lon -0.13
+# optional: theme GRUB, Plymouth and the login screen too (read 50-boot-v2.sh first — machine-specific)
+./install.sh --wallpaper ~/Pictures/your-art.jpg --boot
 ```
-install.sh              fresh-install orchestrator
-NN-*.sh                 one script per feature, run in number order; each has `restore`
-bin/                    small daemons & tools (autotheme, daycycle, lockd, replay, mode, capture, update…)
-welcome-app/            Bapirlo Welcome (Python, GTK4 + libadwaita)
-ai/ bar/ game/ media-widget/ session/ sounds/   GNOME Shell extensions written for Bapirlo OS
-round2/ round3/         config files, units and root helpers those rounds install
-tools/                  generators: palette, art, GRUB / Plymouth / LightDM / shell theme builders
-build/                  hand-tuned theme sources (CSS, configs); generated images are not committed
-apps/                   app themes (Alacritty, starship, cava, Vesktop, Spicetify, Chrome, VS Code)
-patches/                the one-line WhiteSur colour patch
-```
+
+The installer:
+- takes a Timeshift snapshot **"Before Bapirlo OS"** first;
+- shows every package and asks before installing it (AUR packages go through `paru`, which shows each PKGBUILD);
+- never touches partitions, `/etc/fstab`, the EFI partition or your boot loader configuration (unless you pass `--boot`, which themes GRUB).
+
+Log out and back in at the end, then open **Bapirlo OS Guide** and run **Bapirlo Doctor**.
+
+**Undo:** every script has `bash <script>.sh restore`, or restore the "Before Bapirlo OS" snapshot in Timeshift.
+
+## Layout
+
+| Path | What |
+|---|---|
+| `NN-*.sh` | One script per step, in the order they were made (`install.sh` runs them in order) |
+| `bar/` `control-centre/` `dynamic-island/` `media-widget/` `desk/` `game/` `ai/` `sounds/` `session/` | Bapirlo's own GNOME Shell extensions (most have a headless test harness in `test/`) |
+| `apps/` | Welcome, About, **Guide**, app themes (Spicetify, Vesktop, Chrome, VS Code, Starship, cava) |
+| `writer/` | Bapirlo Writer (GTK4) |
+| `bin/` | The `bapirlo-*` commands (`bapirlo-doctor`, `bapirlo-mode`, `bapirlo-vault`, `bapirlo-restart-windows` …) |
+| `windows/` | Dual-boot helpers (`bapirlo-windows`, `bapirlo-bt-sync`) |
+| `greeter/` | The web-greeter login / lock screen theme |
+| `config/settings.dconf` | Exported GNOME + extension settings, with personal data removed (`tools/export-settings.py`) |
+| `round2/` `round3/` `round7/` `final/` | Units, polkit rules, icons and configs those rounds install |
+| `tools/` | Palette, art builders, icon generators, the settings exporter |
+| `MANUAL.md` · `EMERGENCY.md` | The manual and the emergency sheet |
 
 ## Credits
 
-- [WhiteSur GTK / icon / cursor themes](https://github.com/vinceliuice) by vinceliuice, used as the base.
-- [Bangers](https://github.com/googlefonts/bangers) font (SIL OFL 1.1, included in `assets/fonts`), and Inter.
-- Sounds: [Kenney](https://kenney.nl), CC0.
-- The GNOME extensions it configures, by their authors: ArcMenu, Blur my Shell, Dash2Dock Lite,
-  Burn My Windows, Vitals, SimpleWeather, Clipboard Indicator, Caffeine, Rounded Window Corners
-  Reborn, Desktop Cube, GSConnect, Coverflow Alt-Tab, ddterm, Tiling Shell, Emoji Copy, Smart Auto
-  Move NG, Arch Update, Gtk4 Desktop Icons NG.
-- The "KURO. SCATTER." wallpaper on the original machine is fan art colored by eSM1LE. It isn't
-  included in this repo; use your own picture.
+GNOME and every extension author (ArcMenu, Blur my Shell, Burn My Windows, Dash2Dock Animated, Vitals, Logo Menu,
+Just Perfection, Lock Keys, Bluetooth Battery Meter, Alphabetical App Grid, Wiggly, GSConnect, Coverflow Alt-Tab, ddterm,
+Rounded Window Corners Reborn, Desktop Cube, SimpleWeather, Clipboard Indicator, Emoji Copy, Caffeine, Arch Update,
+Smart Auto Move NG, DING). WhiteSur by vinceliuice. Bangers font (OFL). Kenney sound effects (CC0). CachyOS.

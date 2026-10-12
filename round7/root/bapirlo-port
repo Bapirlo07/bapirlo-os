@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Bapirlo OS — open / close the firewall for ONE known feature, only while it is switched on.
+#   bapirlo-port open|close|status airplay|localsend
+# Rules go into ufw's own runtime chains (ufw-user-input / ufw6-user-input) and are NOT saved:
+# they vanish on close, on `ufw reload` and on every reboot, so "off" is always the default.
+# Only home-network sources are allowed (same ranges as KDE Connect in round 3; eduroam/public
+# Wi-Fi isolate clients anyway). Called by bapirlo-port@<feature>.service (polkit lets the
+# desktop user start/stop just those units), never with arbitrary ports.
+set -euo pipefail
+NETS4=(192.168.0.0/16 10.0.0.0/8 172.20.10.0/28)
+NETS6=(fe80::/10 fc00::/7)
+case "${2:-}" in
+  # UxPlay -p: TCP 7000 7001 7100 · UDP 6000 6001 7011 (mDNS 5353 is already open on home networks)
+  airplay)   TCP=7000,7001,7100; UDP=6000,6001,7011 ;;
+  # LocalSend: TCP 53317 (transfers) · UDP 53317 (multicast discovery)
+  localsend) TCP=53317; UDP=53317 ;;
+  *) echo "usage: bapirlo-port open|close|status airplay|localsend" >&2; exit 2 ;;
+esac
+TAG="bapirlo-$2"
+
+rules() {   # print "cmd chain args…" for every rule of this feature
+  for n in "${NETS4[@]}"; do
+    echo "iptables ufw-user-input -s $n -p tcp -m multiport --dports $TCP"
+    echo "iptables ufw-user-input -s $n -p udp -m multiport --dports $UDP"
+  done
+  for n in "${NETS6[@]}"; do
+    echo "ip6tables ufw6-user-input -s $n -p tcp -m multiport --dports $TCP"
+    echo "ip6tables ufw6-user-input -s $n -p udp -m multiport --dports $UDP"
+  done
+}
+
+close() {
+  rules | while read -r cmd chain spec; do
+    # delete every copy (an earlier crash could have left two)
+    while $cmd -w -D "$chain" $spec -m comment --comment "$TAG" -j ACCEPT 2>/dev/null; do :; done
+  done
+}
+
+case "$1" in
+  open)
+    $(command -v iptables) -w -nL ufw-user-input >/dev/null 2>&1 || { echo "ufw is not running — nothing opened" >&2; exit 1; }
+    close
+    rules | while read -r cmd chain spec; do
+      $cmd -w -I "$chain" 1 $spec -m comment --comment "$TAG" -j ACCEPT
+    done
+    echo "$2: open for home networks ($TCP tcp · $UDP udp)" ;;
+  close) close; echo "$2: closed" ;;
+  status)
+    if iptables -w -S ufw-user-input 2>/dev/null | grep -q -- "--comment $TAG"; then echo open; else echo closed; exit 1; fi ;;
+  *) echo "usage: bapirlo-port open|close|status airplay|localsend" >&2; exit 2 ;;
+esac

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=AirPlay Receiver
+Comment=Mirror your iPhone screen here (switch on / off)
+Exec=@BIN@/bapirlo-airplay toggle
+Icon=bapirlo-airplay
+StartupNotify=false
+Categories=AudioVideo;
+Keywords=iphone;mirror;screen;uxplay;

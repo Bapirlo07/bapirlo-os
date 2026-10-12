@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Bapirlo OS — open / close Launchpad (the dock icon runs this; Super+G does the same inside the shell)
+exec gdbus call --session --dest org.gnome.Shell --object-path /os/bapirlo/Desk \
+  --method os.bapirlo.Desk.Launchpad >/dev/null

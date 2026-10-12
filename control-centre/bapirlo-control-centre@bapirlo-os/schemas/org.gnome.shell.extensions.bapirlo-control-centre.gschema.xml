@@ -2,11 +2,11 @@
 <schemalist>
   <schema id="org.gnome.shell.extensions.bapirlo-control-centre" path="/org/gnome/shell/extensions/bapirlo-control-centre/">
     <key name="tiles" type="as">
-      <default>['wifi', 'bluetooth', 'power', 'dnd', 'nightlight', 'caffeine', 'record', 'darkmode', 'volume', 'brightness', 'battery', 'storage', 'media']</default>
+      <default>['wifi', 'bluetooth', 'power', 'dnd', 'nightlight', 'caffeine', 'record', 'darkmode', 'volume', 'brightness', 'airplay', 'remote', 'captions', 'vault', 'battery', 'storage', 'media']</default>
       <summary>Tiles shown, in order</summary>
     </key>
     <key name="open-classic" type="as">
-      <default><![CDATA[['<Super><Alt>s']]]></default>
+      <default><![CDATA[['<Shift><Super>s']]]></default>
       <summary>Open GNOME's original quick settings</summary>
     </key>
   </schema>

@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Bapirlo OS — the Bapirlo "Kuro" theme for Spotify (Spicetify), kept on through Spotify updates.
+#   bapirlo-spicetify apply     install the theme and patch Spotify (restarts Spotify if it is open)
+#   bapirlo-spicetify auto      what the watcher runs: re-apply only if Spotify changed since last time
+#   bapirlo-spicetify status    exit 0 = applied · 1 = not applied · 2 = nothing to do (no Spotify yet)
+#   bapirlo-spicetify off       give Spotify back its own look (spicetify restore)
+# The watcher (bapirlo-spicetify.path, user unit) fires when spotify-launcher unpacks a new
+# Spotify version into ~/.local/share/spotify-launcher/install — so a Spotify update never
+# leaves you with the plain theme. Theme files: ~/bapirlo-os/apps/spicetify/Bapirlo
+set -uo pipefail
+OS_DIR=$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)
+SPOTIFY_DIR=$HOME/.local/share/spotify-launcher/install/usr/share/spotify
+SPICE=${XDG_CONFIG_HOME:-$HOME/.config}/spicetify
+STATE=${XDG_STATE_HOME:-$HOME/.local/state}/bapirlo
+MARK=$STATE/spicetify-applied
+mkdir -p "$STATE"
+
+note() { notify-send -a Spotify -i spotify-launcher "$@" 2>/dev/null || true; }
+have() { command -v spicetify >/dev/null && [ -x "$SPOTIFY_DIR/spotify" ]; }
+# the Spotify build we are looking at: binary size + mtime changes with every update
+fingerprint() { stat -c '%s-%Y' "$SPOTIFY_DIR/spotify" 2>/dev/null; }
+# spicetify unpacks xpui.spa into Apps/xpui and marks index.html; a fresh Spotify has only the .spa
+patched() { grep -qs spicetify "$SPOTIFY_DIR/Apps/xpui/index.html"; }
+
+apply() {
+  have || { echo "Spicetify or Spotify missing (open Spotify once first)"; return 2; }
+  spicetify config >/dev/null 2>&1 || true            # first run writes config-xpui.ini
+  mkdir -p "$SPICE/Themes"; rm -rf "$SPICE/Themes/Bapirlo"; cp -a "$OS_DIR/apps/spicetify/Bapirlo" "$SPICE/Themes/"
+  spicetify config spotify_path "$SPOTIFY_DIR" prefs_path "$HOME/.config/spotify/prefs" \
+    current_theme Bapirlo color_scheme Kuro inject_css 1 replace_colors 1 overwrite_assets 0 >/dev/null
+  # after an update the old backup no longer matches: take a new one, then apply
+  if spicetify -q backup apply >/tmp/bapirlo-spicetify.$$ 2>&1 || spicetify -q restore backup apply >>/tmp/bapirlo-spicetify.$$ 2>&1; then
+    fingerprint > "$MARK"; rm -f /tmp/bapirlo-spicetify.$$
+    echo "Spicetify: Bapirlo theme applied"; return 0
+  fi
+  cat /tmp/bapirlo-spicetify.$$ >&2; rm -f /tmp/bapirlo-spicetify.$$
+  return 1
+}
+
+case "${1:-status}" in
+  apply) apply ;;
+  auto)
+    have || exit 0
+    # spotify-launcher is still unpacking: give it a moment to finish writing files
+    sleep 8
+    if patched && [ "$(cat "$MARK" 2>/dev/null)" = "$(fingerprint)" ]; then exit 0; fi
+    if apply >/dev/null; then note "Spotify updated" "The Bapirlo theme was put back on."
+    else note -u critical "Spotify updated" "Couldn't re-apply the Bapirlo theme — run: bapirlo-spicetify apply"; fi
+    exit 0 ;;
+  status)
+    have || { echo "no Spotify / Spicetify yet"; exit 2; }
+    if patched; then echo "Spicetify theme applied"; exit 0; fi
+    echo "Spotify is running without the Bapirlo theme"; exit 1 ;;
+  off) spicetify restore && rm -f "$MARK" ;;
+  *) sed -n '2,10p' "$0"; exit 64 ;;
+esac

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Bapirlo OS — refuse a commit that contains secrets or personal data.
+# Installed as .git/hooks/pre-commit by:  ln -sf ../../tools/pre-commit .git/hooks/pre-commit
+# Personal words (your name, uni, city, Wi-Fi names, phone name…) live OUTSIDE the repo, one per
+# line, in ~/.config/bapirlo/private-words — so the list itself is never committed.
+# Skip once (only if you are sure):  git commit --no-verify
+set -uo pipefail
+added=$(git diff --cached -U0 --no-color --diff-filter=ACMR -- . ':(exclude)*.png' ':(exclude)*.jpg' ':(exclude)*.pdf' \
+        ':(exclude)*.ttf' ':(exclude)*.gif' ':(exclude)*.mp4' ':(exclude)*.compiled' ':(exclude)tools/pre-commit' \
+        | grep '^+' | grep -v '^+++')
+fail=0
+check() {  # check LABEL REGEX
+  local hits
+  hits=$(grep -nE -- "$2" <<<"$added" | head -5)
+  [ -n "$hits" ] && { echo "✘ $1:"; sed 's/^/    /' <<<"$hits"; fail=1; }
+}
+check "API key / token"   'sk-ant-[A-Za-z0-9_-]{8,}|ghp_[A-Za-z0-9]{20,}|github_pat_|AKIA[0-9A-Z]{16}|xox[baprs]-|AIza[0-9A-Za-z_-]{30,}'
+check "private key"       'BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY'
+check "password in clear" '(^|[^-a-z])(pass(word)?|passwd|psk|secret)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"'$@{ ]{6,}'
+check "Wi-Fi config"      '^\+\[wifi-security\]|^\+psk='
+check "home path"         "/home/$(id -un)\b"
+check "email address"     '[A-Za-z0-9._%+-]+@(gmail|outlook|hotmail|yahoo|icloud|live|proton)\.[a-z.]+'
+words=${XDG_CONFIG_HOME:-$HOME/.config}/bapirlo/private-words
+if [ -s "$words" ]; then
+  while IFS= read -r w; do
+    [ -n "$w" ] && [ "${w:0:1}" != "#" ] && check "personal word \"$w\"" "$(printf '%s' "$w" | sed 's/[][\.*^$/]/\\&/g')"
+  done < "$words"
+fi
+[ $fail = 0 ] || { echo; echo "Commit stopped — remove the lines above (or git commit --no-verify if they are fine)."; exit 1; }
+exit 0

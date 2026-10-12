@@ -1,0 +1,8 @@
+[Unit]
+Description=Bapirlo OS — tidy ~/Downloads (once a day)
+
+[Service]
+Type=oneshot
+ExecStart=@BIN@/bapirlo-tidy
+Nice=19
+IOSchedulingClass=idle

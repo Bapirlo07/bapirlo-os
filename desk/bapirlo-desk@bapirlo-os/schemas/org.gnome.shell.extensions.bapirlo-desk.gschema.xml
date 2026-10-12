@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <enum id="org.gnome.shell.extensions.bapirlo-desk.briefing-mode">
+    <value nick="first-login" value="0"/>
+    <value nick="every-login" value="1"/>
+    <value nick="off" value="2"/>
+  </enum>
+  <enum id="org.gnome.shell.extensions.bapirlo-desk.corner">
+    <value nick="bottom-left" value="0"/>
+    <value nick="top-left" value="1"/>
+    <value nick="top-right" value="2"/>
+    <value nick="bottom-right" value="3"/>
+  </enum>
+  <schema id="org.gnome.shell.extensions.bapirlo-desk" path="/org/gnome/shell/extensions/bapirlo-desk/">
+    <key name="launchpad-toggle" type="as">
+      <default><![CDATA[['<Super>g']]]></default>
+      <summary>Open / close Launchpad</summary>
+    </key>
+    <key name="briefing-show" type="as">
+      <default><![CDATA[['<Super><Alt>b']]]></default>
+      <summary>Show the briefing card again</summary>
+    </key>
+    <key name="briefing-mode" enum="org.gnome.shell.extensions.bapirlo-desk.briefing-mode">
+      <default>'first-login'</default>
+      <summary>When the login briefing appears: first-login (of the day), every-login, off</summary>
+    </key>
+    <key name="briefing-last" type="s">
+      <default>''</default>
+      <summary>Date (YYYY-MM-DD) the briefing last appeared by itself</summary>
+    </key>
+    <key name="briefing-delay" type="i">
+      <range min="2" max="60"/>
+      <default>5</default>
+      <summary>Seconds after login before the briefing slides in</summary>
+    </key>
+    <key name="widgets" type="b">
+      <default>true</default>
+      <summary>Desktop widgets (calendar, deadlines, system) on the wallpaper</summary>
+    </key>
+    <key name="widgets-corner" enum="org.gnome.shell.extensions.bapirlo-desk.corner">
+      <default>'bottom-left'</default>
+      <summary>Where the widget row sits on the primary screen</summary>
+    </key>
+    <key name="pip-on-top" type="b">
+      <default>true</default>
+      <summary>Keep picture-in-picture and Live Captions windows above everything</summary>
+    </key>
+    <key name="privacy-dots" type="b">
+      <default>true</default>
+      <summary>Coloured dots in the top bar while mic / camera / screen sharing are in use</summary>
+    </key>
+    <key name="airpods" type="b">
+      <default>true</default>
+      <summary>AirPods battery chip in the top bar (data from LibrePods)</summary>
+    </key>
+  </schema>
+</schemalist>

@@ -8,7 +8,7 @@
 # Night Light, Caffeine, screen recording, dark style, volume + brightness, battery, storage,
 # now playing. Long-press or right-click a tile to expand it inside the panel (networks, devices,
 # outputs, power modes…). Pencil button = edit: drag to reorder, − to remove, + to add.
-# GNOME's original menu is untouched: "Classic" button or Super+Alt+S.
+# GNOME's original menu is untouched: "Classic" button or Shift+Super+S.
 # Tiles mirror GNOME's own quick-settings backends; nothing polls, nothing runs while closed.
 #
 # Off switch:  gnome-extensions disable bapirlo-control-centre@bapirlo-os   (GNOME's menu is back at once)

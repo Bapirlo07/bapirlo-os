@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Bapirlo OS — AirPlay screen mirroring from the iPhone (UxPlay). OFF by default.
+#   bapirlo-airplay toggle | on | off | status      (Control Centre "AirPlay" tile)
+# On:  opens ONLY the AirPlay ports, for home networks only (bapirlo-port@airplay, polkit, no
+#      password), then runs UxPlay as the transient user unit bapirlo-airplay.service.
+# Off: stops UxPlay and closes the ports again (also when UxPlay crashes or you log out).
+# iPhone: Control Centre → Screen Mirroring → "Bapirlo OS", type the 4-digit code once — the
+# phone is remembered after that (~/.uxplay.register). Both must be on the same Wi-Fi
+# (home Wi-Fi or the iPhone's hotspot; eduroam blocks device-to-device traffic).
+set -euo pipefail
+UNIT=bapirlo-airplay.service
+FW=bapirlo-port@airplay.service
+CONF=${XDG_CONFIG_HOME:-$HOME/.config}/bapirlo/airplay.conf
+mkdir -p "${CONF%/*}"
+# one fixed code per install, so a remembered iPhone never has to type it again
+[ -f "$CONF" ] || printf 'PIN=%04d\nNAME="Bapirlo OS"\n' $((10#$(od -An -N2 -tu2 /dev/urandom | tr -d ' ') % 9000 + 1000)) > "$CONF"
+. "$CONF"
+
+note() { notify-send -a "AirPlay" -i bapirlo-airplay "$@" 2>/dev/null || true; }
+
+on() {
+  command -v uxplay >/dev/null || { note "AirPlay isn't installed" "Run 800-round7-install.sh first."; exit 1; }
+  systemctl start "$FW" || { note "AirPlay: firewall didn't open" "See: journalctl -u $FW"; exit 1; }
+  # -p: fixed ports (the firewall needs them) · -nh: no "@hostname" · -pin: code on first pairing
+  # -reg: remember paired iPhones · Nice 0 + iGPU VA-API decode, nothing runs while off
+  systemd-run --user --quiet --unit="$UNIT" --collect \
+    -p ExecStopPost="/usr/bin/systemctl stop $FW" -p TimeoutStopSec=5 \
+    -E VK_DRIVER_FILES=/usr/share/vulkan/icd.d/intel_icd.json -E __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json \
+    uxplay -n "$NAME" -nh -p -pin "$PIN" -reg
+  note "AirPlay is on" "iPhone: Control Centre → Screen Mirroring → $NAME · code $PIN (first time only)"
+}
+off() {
+  systemctl --user stop "$UNIT" 2>/dev/null || true
+  systemctl stop "$FW" 2>/dev/null || true
+  note "AirPlay is off" "Ports closed."
+}
+active() { systemctl --user -q is-active "$UNIT"; }
+
+case "${1:-}" in
+  on) active || on ;;
+  off) off ;;
+  toggle) if active; then off; else on; fi ;;
+  status) if active; then echo "on (code $PIN, firewall $(systemctl is-active $FW))"; else echo off; exit 1; fi ;;
+  pin) echo "$PIN" ;;
+  *) sed -n 2,10p "$0"; exit 1 ;;
+esac

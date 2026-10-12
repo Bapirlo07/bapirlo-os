@@ -1,0 +1,10 @@
+[Unit]
+Description=Bapirlo OS — download new iCloud Photos to ~/Pictures/iCloud
+ConditionACPower=true
+
+[Service]
+Type=oneshot
+ExecStart=@BIN@/bapirlo-icloud sync
+Nice=19
+IOSchedulingClass=idle
+TimeoutStartSec=3h

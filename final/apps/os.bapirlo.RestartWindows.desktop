@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Restart to Windows
+Comment=Restart straight into Windows, this once (the next normal restart comes back here)
+Exec=@OS@/bin/bapirlo-restart-windows
+Icon=bapirlo-windows
+Terminal=false
+Categories=System;
+Keywords=windows;reboot;restart;dual;boot;

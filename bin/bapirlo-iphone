@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Bapirlo OS — iPhone integration in one place.
+#   bapirlo-iphone            status of everything (KDE Connect link, AirPlay, LocalSend, iCloud)
+#   bapirlo-iphone setup      GSConnect for the KDE Connect iOS app (run again after pairing a new phone)
+# GSConnect setup: service on, this laptop shows as "Bapirlo OS", for every paired phone →
+#   clipboard shared both ways, files/links from the phone → ~/Downloads/iPhone, and the
+#   "Run command" list on the phone gets: Lock, AirPlay on/off, Vault lock, Play/Pause, Suspend.
+# The KDE Connect iOS app only talks while it is OPEN on the phone (iOS suspends it in the
+# background) — open it, then share / use the touchpad.
+set -euo pipefail
+BIN=$HOME/bapirlo-os/bin
+GS=/org/gnome/shell/extensions/gsconnect
+DEST=$HOME/Downloads/iPhone
+
+setup() {
+  mkdir -p "$DEST"
+  dconf write $GS/enabled true
+  dconf write $GS/name "'Bapirlo OS'"
+  dconf write $GS/discoverable true
+  local cmds="{'lock': <{'name': 'Lock laptop', 'command': '$BIN/bapirlo-lockd --lock-now'}>, \
+'airplay': <{'name': 'AirPlay on/off', 'command': '$BIN/bapirlo-airplay toggle'}>, \
+'vault': <{'name': 'Lock Vault', 'command': '$BIN/bapirlo-vault autolock'}>, \
+'play': <{'name': 'Play / Pause', 'command': 'playerctl play-pause'}>, \
+'suspend': <{'name': 'Sleep', 'command': 'systemctl suspend'}>}"
+  for d in $(dconf read $GS/devices | tr -d "[]',"); do
+    local P=$GS/device/$d
+    [ "$(dconf read $P/paired)" = true ] || continue
+    dconf write $P/plugin/clipboard/receive-content true
+    dconf write $P/plugin/clipboard/send-content true
+    dconf write $P/plugin/share/receive-directory "'$DEST'"
+    dconf write $P/plugin/runcommand/command-list "$cmds"
+    echo "set up: $(dconf read $P/name)"
+  done
+}
+
+status() {
+  echo "KDE Connect (GSConnect): service $( [ "$(dconf read $GS/enabled)" = true ] && echo on || echo OFF ) as $(dconf read $GS/name)"
+  for d in $(dconf read $GS/devices | tr -d "[]',"); do
+    echo "  $(dconf read $GS/device/$d/name) — paired $(dconf read $GS/device/$d/paired), last seen at $(dconf read $GS/device/$d/last-connection)"
+  done
+  echo "AirPlay:   $("$BIN/bapirlo-airplay" status 2>/dev/null || echo off)"
+  echo "LocalSend: $("$BIN/bapirlo-localsend" status 2>/dev/null || echo 'not running')"
+  echo "iCloud:    $("$BIN/bapirlo-icloud" status 2>/dev/null | head -1 || true)"
+}
+
+case "${1:-status}" in
+  setup) setup ;;
+  status) status ;;
+  *) sed -n 2,10p "$0"; exit 1 ;;
+esac

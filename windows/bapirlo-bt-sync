@@ -16,17 +16,17 @@ LTK/EDIV/ERand/IRK.
 """
 import configparser, os, re, shutil, subprocess, sys, tempfile, time
 
-UUID = "B4A053F6A053BE14"
+UUID = "@WIN_UUID@"   # filled in by 700-windows-link.sh
 BT = "/var/lib/bluetooth"
 USER = os.environ.get("SUDO_USER") or os.environ.get("USER", "root")
-BK = f"/home/{USER}/theme-backups"
+BK = os.path.join(os.path.expanduser(f"~{USER}"), "theme-backups")
 
 
 def run(*a, **k):
     return subprocess.run(a, capture_output=True, text=True, **k)
 
 
-def mac(s):  # 'e4c767129f2f' -> 'E4:C7:67:12:9F:2F'
+def mac(s):  # 'a1b2c3d4e5f6' -> 'A1:B2:C3:D4:E5:F6'
     s = s.replace(":", "").upper()
     return ":".join(s[i:i + 2] for i in range(0, 12, 2))
 

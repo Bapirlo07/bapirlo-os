@@ -6,12 +6,14 @@
 #     (paru -Syu calls pacman twice — repo packages, then AUR — that is still one update)
 #   · keeps the newest 3 automatic "Before update" snapshots and deletes older ones
 #     (your own snapshots — "Before round 3" etc. — and the weekly ones are never touched)
+#   · skipped when / has less than 15G free (BAPIRLO_SNAP_MIN_FREE_GB)
 #   · never blocks the update: if the snapshot fails you get a loud warning and pacman goes on
 #   · skip once:   sudo touch /run/bapirlo-nosnap      (cleared at reboot)
 #   · off for good: sudo rm /etc/pacman.d/hooks/00-bapirlo-timeshift.hook
 set -uo pipefail
 TAG="Before update"
 KEEP=${BAPIRLO_SNAP_KEEP:-3}
+MIN_FREE_GB=${BAPIRLO_SNAP_MIN_FREE_GB:-15}
 STAMP=/var/lib/bapirlo/last-presnap
 mkdir -p /var/lib/bapirlo
 
@@ -19,6 +21,12 @@ mkdir -p /var/lib/bapirlo
 command -v timeshift >/dev/null || exit 0
 if [ -f "$STAMP" ] && [ $(( $(date +%s) - $(stat -c %Y "$STAMP") )) -lt 3600 ]; then
   echo ":: Bapirlo: snapshot already taken $(( ($(date +%s) - $(stat -c %Y "$STAMP")) / 60 )) min ago — skipping"
+  exit 0
+fi
+
+free_gb=$(df --output=avail -BG /timeshift 2>/dev/null | tail -1 | tr -dc 0-9)
+if [ -n "$free_gb" ] && [ "$free_gb" -lt "$MIN_FREE_GB" ]; then
+  echo "!! Bapirlo: only ${free_gb}G free (< ${MIN_FREE_GB}G) — snapshot SKIPPED so the update has room" >&2
   exit 0
 fi
 

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Launchpad
+Comment=All your apps in a full-screen grid (Super+G)
+Exec=@BIN@/bapirlo-launchpad
+Icon=bapirlo-launchpad
+StartupNotify=false
+Categories=Utility;
+Keywords=apps;grid;launcher;

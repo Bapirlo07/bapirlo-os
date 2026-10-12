@@ -11,7 +11,7 @@ set -euo pipefail
 [ "$(id -u)" -eq 0 ] || { echo "Run with sudo."; exit 1; }
 U=${SUDO_USER:?run via sudo from your user}
 H=$(getent passwd "$U" | cut -d: -f6)
-ROOT_UUID=1966f774-d958-432b-8de5-84f2897c5d4e     # /dev/nvme0n1p6 (/)
+ROOT_UUID=$(findmnt -no UUID /)                    # the partition / lives on
 CONF=/etc/timeshift/timeshift.json
 DROPIN=/etc/systemd/system/cronie.service.d/bapirlo-lowprio.conf
 CRON=/etc/cron.d/timeshift-hourly

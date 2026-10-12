@@ -1,0 +1,406 @@
+# Bapirlo OS — exported GNOME settings (tools/export-settings.py). Personal data removed;
+# @HOME@ = your home folder. Load: sed "s|@HOME@|$HOME|g" config/settings.dconf | dconf load /
+
+[org/gnome/shell/extensions/SmartAutoMoveNG]
+activate-workspace=false
+edit-saved-windows-height-max=1600
+edit-saved-windows-position-x-max=4480
+edit-saved-windows-position-y-max=1600
+edit-saved-windows-width-max=2560
+freeze-saves=false
+notifications=false
+overrides='{}'
+quicksettings=true
+sync-mode='RESTORE'
+
+[org/gnome/shell/extensions/appindicator]
+icon-brightness=0.25
+icon-contrast=0.14999999999999999
+icon-opacity=255
+icon-saturation=1.0
+icon-size=20
+
+[org/gnome/shell/extensions/arch-update]
+always-visible=false
+boot-wait=120
+check-cmd="/bin/sh -c \"/usr/bin/checkupdates; /usr/bin/paru -Qua 2>/dev/null | grep -v '\\[ignored\\]'\""
+check-interval=60
+notify=false
+show-count=true
+update-cmd="alacritty --class bapirlo-update -T 'Bapirlo update' -e @HOME@/bapirlo-os/bin/bapirlo-update"
+
+[org/gnome/shell/extensions/arcmenu]
+activate-on-launch=true
+arcmenu-hotkey=['Super_L']
+arcmenu-hotkey-overlay-key-enabled=true
+icon-size-apps=-1
+icon-size-buttons=-1
+icon-size-categories=-1
+icon-size-misc=-1
+icon-size-shortcuts=-1
+menu-background-color='rgba(22,16,21,0.97)'
+menu-border-color='rgba(225,29,46,0.28)'
+menu-border-radius=16
+menu-border-width=1
+menu-button-active-bg-color=(true, 'rgb(225,29,46)')
+menu-button-active-fg-color=(true, 'rgb(255,255,255)')
+menu-button-border-radius=(true, 10)
+menu-button-fg-color=(true, 'rgb(255,70,85)')
+menu-button-hover-bg-color=(true, 'rgba(225,29,46,0.20)')
+menu-button-hover-fg-color=(true, 'rgb(255,255,255)')
+menu-button-icon='@HOME@/bapirlo-os/assets/bapirlo-symbolic.svg'
+menu-button-icon-size=64
+menu-button-padding=-1
+menu-foreground-color='rgb(242,233,236)'
+menu-item-active-bg-color='rgb(225,29,46)'
+menu-item-active-fg-color='rgb(255,255,255)'
+menu-item-hover-bg-color='rgba(225,29,46,0.20)'
+menu-item-hover-fg-color='rgb(255,255,255)'
+menu-layout='11'
+menu-separator-color='rgba(242,233,236,0.08)'
+override-menu-theme=true
+position-in-panel='Left'
+prefs-visible-page=0
+recently-installed-apps=['cmake-gui.desktop', 'google-chrome.desktop', 'mcontrolcenter.desktop', 'timeshift-gtk.desktop', 'com.microsoft.VSCode.desktop', 'com.desktop.ding.desktop', 'com.github.amezin.ddterm.desktop', 'bitwarden.desktop', 'ms-365-electron.desktop', 'kvantummanager.desktop', 'qt6ct.desktop', 'jetbrains-rustrover-04dd54d3-f9c7-4b50-8f00-7331333d3ca1.desktop', 'jetbrains-datagrip-74be7ec6-06e4-4561-848c-f672e7fc17ff.desktop', 'os.bapirlo.Writer.desktop', 'uxplay.desktop', 'localsend.desktop', 'me.kavishdevar.librepods.desktop', 'rustdesk.desktop', 'os.bapirlo.Launchpad.desktop', 'os.bapirlo.iCloud.desktop', 'os.bapirlo.AirPlay.desktop', 'os.bapirlo.Vault.desktop']
+runner-font-size=0
+runner-hotkey=['<Super>space']
+runner-hotkey-open-primary-monitor=false
+runner-menu-height=440
+runner-menu-height-static=false
+runner-menu-width=640
+runner-position='Centered'
+runner-search-display-style='List'
+runner-searchbar-location='Top'
+runner-show-settings-button=false
+search-entry-border-radius=(true, 12)
+update-notifier-project-version=74
+
+[org/gnome/shell/extensions/bapirlo-control-centre]
+open-classic=['<Shift><Super>s']
+tiles=['wifi', 'bluetooth', 'dnd', 'nightlight', 'caffeine', 'darkmode', 'volume', 'brightness', 'airplay', 'remote', 'vault', 'battery', 'storage', 'media']
+
+[org/gnome/shell/extensions/bapirlo-desk]
+
+[org/gnome/shell/extensions/blur-my-shell]
+rounded-blur-found=false
+settings-version=2
+
+[org/gnome/shell/extensions/blur-my-shell/appfolder]
+blur=true
+brightness=0.55000000000000004
+sigma=30
+
+[org/gnome/shell/extensions/blur-my-shell/applications]
+blacklist=['firefox', 'Firefox', 'mpv', 'com.github.rafostar.Clapper', 'steam', 'Steam', 'gamescope', 'obs', 'org.gnome.Loupe']
+blur=false
+dynamic-opacity=true
+enable-all=true
+opacity=235
+
+[org/gnome/shell/extensions/blur-my-shell/dash-to-dock]
+blur=true
+brightness=0.55000000000000004
+sigma=30
+static-blur=true
+style-dash-to-dock=0
+
+[org/gnome/shell/extensions/blur-my-shell/lockscreen]
+blur=true
+
+[org/gnome/shell/extensions/blur-my-shell/overview]
+blur=true
+
+[org/gnome/shell/extensions/blur-my-shell/panel]
+blur=false
+brightness=0.55000000000000004
+corner-radius=16
+customize=true
+noise-amount=0.17999999999999999
+noise-lightness=0.0
+override-background=false
+sigma=30
+static-blur=true
+style-panel=0
+unblur-in-overview=true
+
+[org/gnome/shell/extensions/blur-my-shell/popup]
+blur=false
+
+[org/gnome/shell/extensions/blur-my-shell/window-list]
+brightness=0.59999999999999998
+sigma=30
+
+[org/gnome/shell/extensions/burn-my-windows]
+show-support-dialog=false
+
+[org/gnome/shell/extensions/caffeine]
+cli-toggle=true
+enable-fullscreen=true
+indicator-position-max=3
+show-indicator='only-active'
+show-notifications=false
+show-timer=true
+user-enabled=true
+
+[org/gnome/shell/extensions/clipboard-indicator]
+display-mode=0
+move-item-first=true
+next-entry=@as []
+notify-on-copy=false
+paste-on-select=true
+prev-entry=@as []
+private-mode-binding=@as []
+toggle-menu=['<Super>v']
+
+[org/gnome/shell/extensions/com/github/hermes83/compiz-windows-effect]
+friction=3.0
+resize-effect=false
+
+[org/gnome/shell/extensions/coverflowalttab]
+animation-time=0.25
+bind-to-switch-applications=true
+bind-to-switch-windows=true
+current-workspace-only='current'
+desaturate-factor=0.25
+dim-factor=0.55000000000000004
+easing-function='ease-out-cubic'
+hide-panel=true
+highlight-color=(1.0, 0.27500000000000002, 0.33300000000000002)
+highlight-use-theme-color=false
+icon-style='Overlay'
+overlay-icon-opacity=0.90000000000000002
+overlay-icon-size=96.0
+position='Bottom'
+randomize-animation-times=false
+switcher-background-color=(0.88235294117647056, 0.11372549019607843, 0.1803921568627451)
+switcher-style='Coverflow'
+tint-blend=0.12
+tint-color=(0.88200000000000001, 0.114, 0.17999999999999999)
+tint-use-theme-color=false
+use-glitch-effect=false
+use-tint=true
+
+[org/gnome/shell/extensions/dash2dock-lite]
+animate-icons=true
+animation-bounce-height=0.29999999999999999
+animation-magnify=0.29999999999999999
+animation-rise=0.14999999999999999
+animation-spread=0.5
+autohide-dash=true
+autohide-dodge=true
+autohide-speed=0.34999999999999998
+background-color=(0.085999999999999993, 0.063, 0.082000000000000003, 0.62)
+blur-background=true
+border-color=(0.88200000000000001, 0.114, 0.17999999999999999, 0.28000000000000003)
+border-radius=2.0
+border-thickness=1
+customize-label=true
+dock-padding=0.40000000000000002
+drawing-accent-color=(0.88200000000000001, 0.114, 0.17999999999999999, 1.0)
+drawing-dark-color=(0.13700000000000001, 0.10199999999999999, 0.122, 1.0)
+drawing-secondary-color=(1.0, 0.56100000000000005, 0.624, 1.0)
+edge-distance=0.40000000000000002
+icon-size=0.27000000000000002
+icon-spacing=0.40000000000000002
+label-background-color=(0.085999999999999993, 0.063, 0.082000000000000003, 0.93999999999999995)
+label-border-color=(0.88200000000000001, 0.114, 0.17999999999999999, 0.28000000000000003)
+label-border-radius=3.0
+label-border-thickness=1
+label-foreground-color=(0.94899999999999995, 0.91400000000000003, 0.92500000000000004, 1.0)
+lamp-app-animation=false
+notification-badge-color=(1.0, 0.27500000000000002, 0.33300000000000002, 1.0)
+open-app-animation=true
+pressure-sense=false
+running-indicator-color=(1.0, 0.56100000000000005, 0.624, 1.0)
+running-indicator-size=0
+running-indicator-style=1
+separator-color=(0.32200000000000001, 0.23100000000000001, 0.26700000000000002, 1.0)
+separator-thickness=1
+
+[org/gnome/shell/extensions/desktop-cube]
+do-explode=true
+enable-desktop-dragging=true
+enable-desktop-edge-switch=false
+enable-overview-dragging=true
+enable-overview-edge-switch=false
+enable-panel-dragging=false
+window-parallax=0.5
+
+[org/gnome/shell/extensions/emoji-copy]
+active-keybind=true
+always-show=false
+emoji-keybind=['<Super>period']
+emojisize=28
+keep-open=false
+nbcols=9
+paste-on-select=true
+recently-used=['😂', '❤️', '😍', '😭', '😊', '😒', '😘', '😩', '🤔']
+window-location='cursor'
+
+[org/gnome/shell/extensions/gtk4-ding]
+free-position-icons=true
+icon-size='standard'
+show-desktop-widgets=false
+show-home=true
+show-network-volumes=false
+show-second-monitor=false
+show-trash=true
+show-volumes=true
+start-corner='top-left'
+
+[org/gnome/shell/extensions/ncom/github/hermes83/compiz-alike-magic-lamp-effect]
+duration=300.0
+x-tiles=8.0
+y-tiles=8.0
+
+[org/gnome/shell/extensions/rounded-window-corners-reborn]
+border-width=0
+keep-shadow-for-maximized-fullscreen=false
+settings-version=uint32 9
+skip-libadwaita-app=true
+
+[org/gnome/shell/extensions/simple-weather]
+is-activated=true
+my-loc-provider='disable'
+panel-box='center'
+panel-priority=int64 1
+show-panel-icon=true
+symbolic-icons-panel=true
+temp-unit='celsius'
+unit-preset='uk'
+weather-provider='open-meteo'
+
+[org/gnome/shell/extensions/tilingshell]
+enable-blur-selected-tilepreview=false
+enable-blur-snap-assistant=false
+enable-move-keybindings=true
+enable-snap-assist=true
+enable-window-border=false
+inner-gaps=uint32 10
+layouts-json='[{"id":"Layout 1","tiles":[{"x":0,"y":0,"width":0.22,"height":0.5,"groups":[1,2]},{"x":0,"y":0.5,"width":0.22,"height":0.5,"groups":[1,2]},{"x":0.22,"y":0,"width":0.56,"height":1,"groups":[2,3]},{"x":0.78,"y":0,"width":0.22,"height":0.5,"groups":[3,4]},{"x":0.78,"y":0.5,"width":0.22,"height":0.5,"groups":[3,4]}]},{"id":"Layout 2","tiles":[{"x":0,"y":0,"width":0.22,"height":1,"groups":[1]},{"x":0.22,"y":0,"width":0.56,"height":1,"groups":[1,2]},{"x":0.78,"y":0,"width":0.22,"height":1,"groups":[2]}]},{"id":"Layout 3","tiles":[{"x":0,"y":0,"width":0.33,"height":1,"groups":[1]},{"x":0.33,"y":0,"width":0.67,"height":1,"groups":[1]}]},{"id":"Layout 4","tiles":[{"x":0,"y":0,"width":0.67,"height":1,"groups":[1]},{"x":0.67,"y":0,"width":0.33,"height":1,"groups":[1]}]}]'
+outer-gaps=uint32 10
+overridden-settings="{\"org.gnome.mutter.keybindings\":{\"toggle-tiled-right\":\"['<Super>Right']\",\"toggle-tiled-left\":\"['<Super>Left']\"},\"org.gnome.desktop.wm.keybindings\":{\"maximize\":\"['<Super>Up']\",\"unmaximize\":\"['<Super>Down', '<Alt>F5']\"},\"org.gnome.mutter\":{\"edge-tiling\":\"true\"}}"
+override-alt-tab=false
+selected-layouts=[['Layout 1'], ['Layout 1']]
+show-indicator=false
+snap-assistant-animation-time=uint32 180
+tile-preview-animation-time=uint32 120
+window-use-custom-border-color=false
+
+[org/gnome/shell/extensions/user-theme]
+name='Bapirlo-Kuro'
+
+[org/gnome/shell/extensions/vitals]
+alphabetize=false
+fixed-widths=true
+hide-icons=false
+hot-sensors=['_processor_usage_', '_temperature_processor_0_', '_memory_usage_']
+include-public-ip=false
+monitor-cmd='gnome-system-monitor'
+position-in-panel=2
+show-battery=false
+show-fan=false
+show-gpu=false
+show-storage=false
+show-system=false
+show-voltage=false
+update-time=3
+
+[org/gnome/settings-daemon/plugins/media-keys]
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-lock/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-replay-save/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-replay-toggle/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-shot/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-pick/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-writer/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-captions/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-vault/']
+home=['<Super>e']
+screensaver=@as []
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-captions]
+binding='<Super><Alt>c'
+command='@HOME@/bapirlo-os/bin/bapirlo-captions toggle'
+name='bapirlo-captions'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-lock]
+binding='<Super>l'
+command='@HOME@/bapirlo-os/bin/bapirlo-lockd --lock-now'
+name='Lock screen (Bapirlo)'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-pick]
+binding='<Shift><Super>c'
+command='@HOME@/bapirlo-os/bin/bapirlo-capture pick'
+name='Colour picker'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-replay-save]
+binding='<Super><Alt>g'
+command='@HOME@/bapirlo-os/bin/bapirlo-replay save'
+name='Save last 30 s (instant replay)'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-replay-toggle]
+binding='<Super><Alt>r'
+command='@HOME@/bapirlo-os/bin/bapirlo-replay toggle'
+name='Instant replay on/off'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-shot]
+binding='Print'
+command='@HOME@/bapirlo-os/bin/bapirlo-capture shot'
+name='Screenshot + annotate (Satty)'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-vault]
+binding='<Super><Alt>v'
+command='@HOME@/bapirlo-os/bin/bapirlo-vault toggle'
+name='bapirlo-vault'
+
+[org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-writer]
+binding='<Shift><Super>h'
+command='@HOME@/bapirlo-os/writer/bapirlo-writer --clipboard'
+name='Bapirlo Writer (clipboard)'
+
+[org/gnome/desktop/wm/keybindings]
+maximize=['<Super>Up']
+show-desktop=['<Super>d']
+switch-applications=['<Super>Tab']
+switch-applications-backward=['<Shift><Super>Tab']
+switch-input-source=['XF86Keyboard']
+switch-input-source-backward=['<Shift>XF86Keyboard']
+switch-to-workspace-left=['<Super>Page_Up', '<Super>KP_Prior', '<Super><Alt>Left', '<Control><Alt>Left', '<Control><Super>Left']
+switch-to-workspace-right=['<Super>Page_Down', '<Super>KP_Next', '<Super><Alt>Right', '<Control><Alt>Right', '<Control><Super>Right']
+switch-windows=['<Alt>Tab']
+switch-windows-backward=['<Shift><Alt>Tab']
+unmaximize=['<Super>Down', '<Alt>F5']
+
+[org/gnome/shell/keybindings]
+screenshot=['<Primary>Print']
+show-screenshot-ui=['<Shift>Print']
+toggle-application-view=@as []
+toggle-message-tray=['<Super>m']
+
+[org/gnome/mutter/keybindings]
+toggle-tiled-left=['<Super>Left']
+toggle-tiled-right=['<Super>Right']
+
+[org/gnome/desktop/wm/preferences]
+button-layout='appmenu:minimize,maximize,close'
+num-workspaces=5
+titlebar-font='Inter SemiBold 10.5'
+
+[org/gnome/desktop/interface]
+accent-color='red'
+clock-show-date=true
+clock-show-seconds=false
+clock-show-weekday=true
+color-scheme='prefer-dark'
+cursor-theme='WhiteSur-cursors'
+document-font-name='Inter 11'
+enable-animations=true
+enable-hot-corners=true
+font-name='Inter 10.5'
+gtk-theme='WhiteSur-Dark-red'
+icon-theme='Bapirlo'
+monospace-font-name='JetBrainsMono Nerd Font 10.5'
+show-battery-percentage=true
+
+[org/gnome/mutter]
+dynamic-workspaces=true
+edge-tiling=true
+overlay-key='Super_L'
+workspaces-only-on-primary=true
+
+[org/gnome/mutter/keybindings]
+toggle-tiled-left=['<Super>Left']
+toggle-tiled-right=['<Super>Right']

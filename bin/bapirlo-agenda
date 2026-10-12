@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — your calendar as JSON, for the desktop widgets and the login briefing.
+
+  bapirlo-agenda [--from EPOCH] [--to EPOCH]      default: today 00:00 → +8 days
+
+Reads every enabled calendar and task list in Evolution Data Server — that is GNOME Online
+Accounts' Google Calendar (and Google Tasks), the same data GNOME's clock menu shows.
+Runs as a short-lived process (the shell itself never loads libecal) and exits.
+Output: {"events": [{"summary", "start", "end", "allDay", "calendar"}], "tasks": [{"summary", "due"}]}
+"""
+import datetime
+import json
+import sys
+
+import gi
+
+gi.require_version("EDataServer", "1.2")
+gi.require_version("ECal", "2.0")
+from gi.repository import ECal, EDataServer  # noqa: E402
+
+TIMEOUT_S = 1   # wait for an account to come online at most this long; its cache is used anyway
+
+
+def arg(name, default):
+    if name in sys.argv:
+        return int(sys.argv[sys.argv.index(name) + 1])
+    return default
+
+
+def text(prop):
+    return prop.get_value() if prop else ""
+
+
+def main():
+    today = datetime.datetime.combine(datetime.date.today(), datetime.time())
+    start = arg("--from", int(today.timestamp()))
+    end = arg("--to", int((today + datetime.timedelta(days=8)).timestamp()))
+    reg = EDataServer.SourceRegistry.new_sync(None)
+    events, tasks = [], []
+
+    for src in reg.list_enabled(EDataServer.SOURCE_EXTENSION_CALENDAR):
+        try:
+            client = ECal.Client.connect_sync(src, ECal.ClientSourceType.EVENTS, TIMEOUT_S, None)
+        except Exception as e:  # offline account, broken source — skip it, keep the rest
+            print(f"skip {src.get_display_name()}: {e}", file=sys.stderr)
+            continue
+
+        def add(comp, istart, iend, *_):
+            events.append({
+                "summary": text(comp.get_summary()) or "(no title)",
+                "start": istart.as_timet(), "end": iend.as_timet(),
+                "allDay": bool(istart.is_date()),
+                "calendar": src.get_display_name(),
+            })
+            return True
+
+        client.generate_instances_sync(start, end, None, add)
+
+    for src in reg.list_enabled(EDataServer.SOURCE_EXTENSION_TASK_LIST):
+        try:
+            client = ECal.Client.connect_sync(src, ECal.ClientSourceType.TASKS, TIMEOUT_S, None)
+            _, comps = client.get_object_list_as_comps_sync("#t", None)
+        except Exception as e:
+            print(f"skip {src.get_display_name()}: {e}", file=sys.stderr)
+            continue
+        for comp in comps:
+            due = comp.get_due()
+            if not due or comp.get_status() == 3:   # 3 = ICAL_STATUS_COMPLETED
+                continue
+            t = due.get_value().as_timet()
+            if t <= end:   # overdue ones too
+                tasks.append({"summary": text(comp.get_summary()) or "(no title)", "due": t})
+
+    events.sort(key=lambda e: e["start"])
+    tasks.sort(key=lambda t: t["due"])
+    json.dump({"events": events, "tasks": tasks}, sys.stdout)
+
+
+if __name__ == "__main__":
+    main()

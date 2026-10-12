@@ -1,0 +1,121 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — tidy ~/Downloads once a day.
+
+  bapirlo-tidy            sort now (skipped if it already ran today — the daily timer)
+  bapirlo-tidy --force    sort now even if it ran today
+  bapirlo-tidy --dry-run  show what it would do, change nothing
+
+Loose files in ~/Downloads go into Documents, Images, Videos, Installers, Archives
+(~/Downloads/iPhone is where LocalSend puts what your iPhone sends — left alone).
+Installers older than 30 days go to the BIN (Files → Trash; restorable), never deleted.
+Never touches: folders, files still downloading (.crdownload/.part/…), files changed in the
+last 10 minutes, hidden files, or anything with no known type. Name clashes get " (2)".
+Ends with one notification summarising what moved.
+"""
+import datetime
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+DL = Path.home() / "Downloads"
+STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "bapirlo/tidy-last"
+INSTALLER_DAYS = 30
+SETTLE_S = 600
+
+TYPES = {
+    "Documents": {".pdf", ".doc", ".docx", ".odt", ".rtf", ".txt", ".md", ".xls", ".xlsx", ".ods", ".csv",
+                  ".ppt", ".pptx", ".odp", ".pages", ".numbers", ".key", ".epub", ".tex", ".json", ".xml"},
+    "Images": {".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".heif", ".avif", ".bmp", ".tif", ".tiff",
+               ".svg", ".raw", ".cr2", ".nef", ".dng", ".ico", ".psd", ".xcf"},
+    "Videos": {".mp4", ".mkv", ".mov", ".webm", ".avi", ".m4v", ".wmv", ".flv", ".3gp", ".ts"},
+    "Installers": {".exe", ".msi", ".deb", ".rpm", ".appimage", ".flatpakref", ".flatpak", ".dmg", ".pkg",
+                   ".run", ".snap", ".apk", ".ipa", ".msix", ".zst"},
+    "Archives": {".zip", ".7z", ".rar", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".tbz2", ".txz", ".lz", ".zstd"},
+}
+PARTIAL = {".crdownload", ".part", ".partial", ".download", ".tmp", ".opdownload"}
+FOLDERS = list(TYPES) + ["iPhone"]
+
+
+def kind(p: Path):
+    name = p.name.lower()
+    if name.endswith((".pkg.tar.zst", ".pkg.tar.xz")):
+        return "Installers"
+    if name.endswith((".tar.gz", ".tar.xz", ".tar.bz2", ".tar.zst")):
+        return "Archives"
+    ext = p.suffix.lower()
+    if ext == ".zst":   # a bare .zst that isn't a package is just an archive
+        return "Archives"
+    for folder, exts in TYPES.items():
+        if ext in exts:
+            return folder
+    return None
+
+
+def free_name(dest: Path) -> Path:
+    if not dest.exists():
+        return dest
+    stem, suf = dest.stem, dest.suffix
+    n = 2
+    while (cand := dest.with_name(f"{stem} ({n}){suf}")).exists():
+        n += 1
+    return cand
+
+
+def main():
+    dry = "--dry-run" in sys.argv
+    force = "--force" in sys.argv
+    today = datetime.date.today().isoformat()
+    if not (dry or force) and STATE.exists() and STATE.read_text().strip() == today:
+        return
+    if not DL.is_dir():
+        return
+    now = time.time()
+    moved = {f: 0 for f in TYPES}
+    binned = []
+
+    for f in FOLDERS:
+        if not dry:
+            (DL / f).mkdir(exist_ok=True)
+
+    for p in sorted(DL.iterdir()):
+        if not p.is_file() or p.is_symlink() or p.name.startswith("."):
+            continue
+        if p.suffix.lower() in PARTIAL or (DL / (p.name + ".crdownload")).exists():
+            continue
+        if now - p.stat().st_mtime < SETTLE_S:
+            continue
+        k = kind(p)
+        if not k:
+            continue
+        dest = free_name(DL / k / p.name)
+        print(f"{p.name} → {k}/{dest.name}")
+        if not dry:
+            p.rename(dest)
+        moved[k] += 1
+
+    inst = DL / "Installers"
+    if inst.is_dir():
+        for p in sorted(inst.iterdir()):
+            if p.is_file() and now - p.stat().st_mtime > INSTALLER_DAYS * 86400:
+                print(f"Installers/{p.name} → bin (older than {INSTALLER_DAYS} days)")
+                if not dry and subprocess.run(["gio", "trash", "--", str(p)]).returncode == 0:
+                    binned.append(p.name)
+                elif dry:
+                    binned.append(p.name)
+
+    if dry:
+        return
+    STATE.parent.mkdir(parents=True, exist_ok=True)
+    STATE.write_text(today)
+    parts = [f"{n} → {k}" for k, n in moved.items() if n]
+    if binned:
+        parts.append(f"{len(binned)} old installer{'s' if len(binned) > 1 else ''} → bin")
+    if parts:
+        subprocess.run(["notify-send", "-a", "Downloads", "-i", "folder-download-symbolic",
+                        "Downloads tidied", " · ".join(parts)], check=False)
+
+
+if __name__ == "__main__":
+    main()

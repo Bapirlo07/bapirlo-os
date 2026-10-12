@@ -1,0 +1,10 @@
+[Unit]
+Description=Bapirlo OS — iCloud Photos every 6 hours (first run 20 min after login)
+
+[Timer]
+OnStartupSec=20min
+OnUnitActiveSec=6h
+RandomizedDelaySec=10min
+
+[Install]
+WantedBy=timers.target

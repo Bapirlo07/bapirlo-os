@@ -1,0 +1,6 @@
+[Unit]
+Description=Bapirlo OS — boot Windows once at the next restart (EFI BootNext)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/bapirlo/bapirlo-bootnext-windows set

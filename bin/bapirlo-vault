@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# Bapirlo OS — Vault: an encrypted folder for private files (gocryptfs, AES-256-GCM).
+#   bapirlo-vault toggle | unlock | lock | status   (Start menu "Vault", Control Centre tile, Super+Alt+V)
+# Encrypted store: ~/.local/share/bapirlo/vault (safe to back up / sync — it's ciphertext).
+# Unlocked view:   ~/Vault — only while unlocked; asks for the Vault password.
+# Locks itself after 15 minutes with no file activity (gocryptfs -idle; a file you still have
+# open keeps it unlocked until you close it), when the screen locks, before suspend, and on
+# logout. First use creates it: choose a password (12+ characters) and SAVE THE RECOVERY KEY it
+# shows — without the password or that key the files are gone for good.
+# Not indexed by search; thumbnails made inside it are wiped on lock.
+set -euo pipefail
+CIPHER=${XDG_DATA_HOME:-$HOME/.local/share}/bapirlo/vault
+MNT=$HOME/Vault
+IDLE=15m
+ICON=bapirlo-vault
+note() { notify-send -a Vault -i "$ICON" "$@" 2>/dev/null || true; }
+mounted() { mountpoint -q "$MNT"; }
+ask() { zenity --password --title="$1" --icon="$ICON" 2>/dev/null; }
+
+create() {
+  local p1 p2 out
+  while :; do
+    p1=$(zenity --forms --title="New Vault" --icon="$ICON" \
+         --text="Choose a Vault password (12+ characters).\nIt can't be recovered — keep it in Bitwarden." \
+         --add-password="Password" --add-password="Again" --separator=$'\n' 2>/dev/null) || exit 1
+    p2=$(sed -n 2p <<<"$p1"); p1=$(sed -n 1p <<<"$p1")
+    [ "$p1" = "$p2" ] || { zenity --error --text="The two passwords differ." 2>/dev/null; continue; }
+    [ ${#p1} -ge 12 ] || { zenity --error --text="Use at least 12 characters." 2>/dev/null; continue; }
+    break
+  done
+  mkdir -p "$CIPHER"; chmod 700 "$CIPHER"
+  out=$(printf '%s\n' "$p1" | gocryptfs -init -q -- "$CIPHER" 2>&1) || { note "Couldn't create the Vault" "$out"; rmdir "$CIPHER" 2>/dev/null; exit 1; }
+  local key; key=$(grep -oE '([0-9a-f]{8}-){7}[0-9a-f]{8}' <<<"$out" | head -1)
+  zenity --info --title="Vault recovery key" --icon="$ICON" --width=520 \
+    --text="Your Vault is ready.\n\nRecovery key — write it down or save it in Bitwarden NOW.\nIt opens the Vault if you forget the password:\n\n<b><tt>$key</tt></b>" 2>/dev/null || true
+  unset p1 p2 key out
+}
+
+unlock() {
+  command -v gocryptfs >/dev/null || { note "Vault isn't installed" "Run 800-round7-install.sh first."; exit 1; }
+  mounted && { gio open "$MNT" 2>/dev/null & exit 0; }
+  [ -f "$CIPHER/gocryptfs.conf" ] || create
+  mkdir -p "$MNT"; chmod 700 "$MNT"
+  gio set "$MNT" metadata::custom-icon-name "$ICON" 2>/dev/null || true
+  local pw err
+  for _ in 1 2 3; do
+    pw=$(ask "Unlock Vault") || exit 1
+    if err=$(printf '%s\n' "$pw" | gocryptfs -q -idle "$IDLE" -- "$CIPHER" "$MNT" 2>&1); then
+      unset pw
+      note "Vault unlocked" "~/Vault — locks after 15 min idle, on screen lock and on suspend."
+      gio open "$MNT" 2>/dev/null &
+      return 0
+    fi
+    zenity --error --text="Wrong password." 2>/dev/null || true
+  done
+  unset pw; note "Vault stays locked" "${err:-}"; exit 1
+}
+
+lock() {
+  mounted || return 0
+  # thumbnails of files inside the Vault would leak previews — remove them
+  python3 - "$MNT" <<'PY' 2>/dev/null || true
+import hashlib, os, sys, urllib.parse
+root = sys.argv[1]; th = os.path.expanduser("~/.cache/thumbnails")
+for d, _, files in os.walk(root):
+    for f in files:
+        uri = "file://" + urllib.parse.quote(os.path.join(d, f))
+        h = hashlib.md5(uri.encode()).hexdigest() + ".png"
+        for size in ("normal", "large", "x-large", "xx-large", "fail/gnome-thumbnail-factory"):
+            try: os.remove(os.path.join(th, size, h))
+            except OSError: pass
+PY
+  if fusermount3 -u "$MNT" 2>/dev/null; then
+    [ "${QUIET:-}" ] || note "Vault locked" ""
+  elif [ "${FORCE:-}" ]; then
+    fusermount3 -uz "$MNT" && note "Vault locked" "Some files were still open — they were closed."
+  else
+    note "Vault is still in use" "Close the files from ~/Vault, then lock again."; exit 1
+  fi
+}
+
+case "${1:-}" in
+  unlock) unlock ;;
+  lock) lock ;;
+  # screen lock / suspend / logout: lock even with files open (lazy unmount)
+  autolock) QUIET=1 FORCE=1 lock ;;
+  toggle) if mounted; then lock; else unlock; fi ;;
+  status) if mounted; then echo unlocked; else echo locked; exit 1; fi ;;
+  *) sed -n 2,11p "$0"; exit 1 ;;
+esac

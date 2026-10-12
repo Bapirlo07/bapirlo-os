@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Vault
+Comment=Encrypted folder for private files (Super+Alt+V)
+Exec=@BIN@/bapirlo-vault toggle
+Icon=bapirlo-vault
+StartupNotify=false
+Categories=Utility;Security;
+Keywords=encrypt;private;safe;lock;
+Actions=lock;
+
+[Desktop Action lock]
+Name=Lock Vault now
+Exec=@BIN@/bapirlo-vault autolock

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Bapirlo Doctor
+GenericName=Health check
+Comment=Checks extensions, services, snapshots, disk space and the Spotify theme — changes nothing
+Exec=alacritty --class os.bapirlo.Doctor,os.bapirlo.Doctor --title "Bapirlo Doctor" -e fish -c "@OS@/bin/bapirlo-doctor; echo; read -P 'Press Enter to close ' _"
+Icon=bapirlo-doctor
+Terminal=false
+Categories=System;
+Keywords=doctor;health;check;extensions;broken;update;bapirlo;
+StartupWMClass=os.bapirlo.Doctor

@@ -1,7 +1,8 @@
 // Bapirlo Bar — capsule layout of the whole top bar (GNOME Shell 51).
-//   left:   [ArcMenu logo] [workspace numbers] (quick launch · power chip) [focused app name]
+//   left:   [Bapirlo logo menu] [workspace numbers] (quick launch · power chip) [focused app name]
 //   centre: clock + date — the Dynamic Island's resting capsule
-//   right:  (media · weather · Vitals)  (updates · replay · tray icons · the rest)  (Control Centre)
+//   right:  (media · AirPods · weather · Vitals)  (updates · replay · places · drives · lock keys ·
+//           tray icons · the rest)  (Control Centre)
 // ( ) = a soft capsule: a St.BoxLayout the item containers are moved into, so related things sit
 // together. Other extensions keep adding their buttons to the panel boxes; every child-added
 // queues one idle re-layout that sorts newcomers into place. A capsule hides when nothing in it
@@ -12,12 +13,12 @@ import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const LEFT = ['ArcMenu', 'bapirlo-ws'];
+const LEFT = ['LogoMenu', 'ArcMenu', 'bapirlo-ws'];   // ArcMenu's button is hidden when Logo Menu runs
 const LAUNCH = ['bapirlo-launch', 'bapirlo-power'];
 const AFTER_LAUNCH = ['bapirlo-appname'];   // last on the left: its width changes, nothing after it moves
-const STATUS = ['bapirlo-media', 'simple-weather@romanlefler.com', 'vitalsMenu'];
-const EXTRAS_FIRST = ['ArchUpdateIndicator', 'bapirlo-replay'];
-const SYSTEM = ['screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings'];
+const STATUS = ['bapirlo-media', 'bapirlo-airpods', 'simple-weather@romanlefler.com', 'vitalsMenu'];
+const EXTRAS_FIRST = ['ArchUpdateIndicator', 'bapirlo-replay', 'places-menu', 'drive-menu', 'lockkeys'];
+const SYSTEM = ['bapirlo-privacy', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings'];
 export const HIDDEN = ['clipboardIndicator'];   // Super+V still opens its menu (see states.js)
 
 export class CapsuleLayout {

@@ -1,0 +1,225 @@
+#!/usr/bin/env python3
+"""Bapirlo OS Guide — the manual in a themed window (GTK4 / libadwaita + WebKit).
+
+  bapirlo-guide                 open the manual          (Start menu "Bapirlo OS Guide")
+  bapirlo-guide --emergency     open the one-page emergency sheet
+  bapirlo-guide --html OUT      just write the styled HTML (used to make the phone PDF)
+
+Reads ~/bapirlo-os/MANUAL.md and EMERGENCY.md live, so it always shows the current text.
+Ctrl+F searches, Ctrl+P prints / saves as PDF, links open in your browser.
+"""
+import html
+import os
+import re
+import sys
+
+import markdown
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+DOCS = os.path.normpath(os.path.join(HERE, "..", ".."))   # the repo root: MANUAL.md, EMERGENCY.md
+FILES = {"manual": "MANUAL.md", "emergency": "EMERGENCY.md"}
+
+CSS = """
+:root { color-scheme: dark; --ink:#0E0A0D; --surface:#161015; --raised:#1F161C; --line:rgba(225,29,46,.28);
+        --crimson:#E11D2E; --ember:#FF4655; --sakura:#F08AA4; --paper:#F2E9EC; --muted:#B9A6AF; }
+* { box-sizing: border-box; }
+html { background: var(--ink); }
+body { margin: 0; padding: 28px 40px 80px; max-width: 980px; margin-inline: auto; color: var(--paper);
+       font: 15px/1.6 Inter, "Noto Sans", sans-serif; background: var(--ink); }
+h1 { font-family: Bangers, Inter, sans-serif; font-weight: normal; letter-spacing: 2px; font-size: 44px;
+     margin: 8px 0 4px; color: #fff; text-shadow: 3px 3px 0 #7A0F1A; }
+h2 { font-family: Bangers, Inter, sans-serif; font-weight: normal; letter-spacing: 1.5px; font-size: 28px;
+     color: var(--ember); margin: 44px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+h3 { font-size: 17px; margin: 26px 0 8px; color: #fff; }
+h4 { font-size: 15px; margin: 18px 0 6px; color: var(--sakura); }
+a { color: var(--ember); text-decoration: none; } a:hover { text-decoration: underline; }
+p, li { color: var(--paper); } li { margin: 3px 0; }
+strong { color: #fff; }
+code { font: 13px/1.4 "JetBrains Mono", "Fira Code", monospace; background: var(--raised); color: #FFD6DC;
+       padding: 1px 6px; border-radius: 6px; border: 1px solid rgba(242,233,236,.06); }
+pre { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
+      overflow-x: auto; } pre code { background: none; border: 0; padding: 0; color: var(--paper); }
+table { border-collapse: separate; border-spacing: 0; width: 100%; margin: 10px 0 18px; background: var(--surface);
+        border: 1px solid var(--line); border-radius: 14px; overflow: hidden; font-size: 14px; }
+th { text-align: left; background: rgba(225,29,46,.16); color: #fff; font-weight: 700; padding: 8px 12px; }
+td { padding: 7px 12px; border-top: 1px solid rgba(242,233,236,.06); vertical-align: top; }
+tr:hover td { background: rgba(242,233,236,.03); }
+td:first-child code, td:first-child kbd { white-space: nowrap; }
+kbd { font: 600 12.5px Inter, sans-serif; background: #2A1E25; border: 1px solid rgba(242,233,236,.18);
+      border-bottom-width: 3px; border-radius: 6px; padding: 0 6px; color: #fff; white-space: nowrap; }
+blockquote { margin: 14px 0; padding: 10px 16px; background: rgba(225,29,46,.10); border-left: 4px solid var(--crimson);
+             border-radius: 0 12px 12px 0; } blockquote p { margin: 4px 0; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 30px 0; }
+.toc { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 10px 20px; margin: 16px 0 8px; }
+.toc ul { list-style: none; padding-left: 14px; margin: 4px 0; } .toc > ul { padding-left: 0; }
+.toc a { color: var(--paper); } .toc a:hover { color: var(--ember); }
+::selection { background: var(--crimson); color: #fff; }
+::-webkit-scrollbar { width: 10px; } ::-webkit-scrollbar-thumb { background: #3A2A33; border-radius: 10px; }
+@media print { @page { size: A4; margin: 10mm; } html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } body { padding: 0; max-width: none; font-size: 10.5px; line-height: 1.38; } h1 { font-size: 30px; } h2 { margin-top: 10px; font-size: 18px; } pre { padding: 6px 10px; }
+               table { font-size: 10.5px; } }
+"""
+
+
+def render(name):
+    path = os.path.join(DOCS, FILES[name])
+    try:
+        text = open(path, encoding="utf-8").read()
+    except OSError:
+        text = f"# Missing\n\n`{path}` was not found."
+    # [[Ctrl+Alt+F3]]-style keys → <kbd>
+    text = re.sub(r"\[\[([^\]]+)\]\]", lambda m: "+".join(f"<kbd>{html.escape(k)}</kbd>" for k in m.group(1).split("+")), text)
+    md = markdown.Markdown(extensions=["tables", "fenced_code", "toc", "sane_lists", "attr_list"],
+                           extension_configs={"toc": {"toc_depth": "2-3", "title": ""}})
+    body = md.convert(text)
+    if name == "manual" and "[TOC]" not in text:
+        first_h2 = body.find("<h2")
+        if first_h2 > 0:
+            body = body[:first_h2] + md.toc.replace('<div class="toc">', '<div class="toc"><b>Contents</b>', 1) + body[first_h2:]
+    # the emergency sheet prints as ONE tall page that reads well on a phone
+    extra = ("@media print { @page { size: 120mm 262mm; margin: 5mm; } body { font-size: 9.6px; line-height: 1.36; }"
+             " h1 { font-size: 24px; margin: 0 0 2px; } h2 { font-size: 15px; margin: 9px 0 3px; padding-bottom: 2px; }"
+             " p, li { margin: 1px 0; } ol, ul { padding-left: 16px; margin: 2px 0; } code { font-size: 8.8px; padding: 0 3px; }"
+             " kbd { font-size: 8.4px; padding: 0 3px; border-bottom-width: 2px; } }"
+             if name == "emergency" else "")
+    return (f"<!doctype html><html><head><meta charset='utf-8'><title>Bapirlo OS Guide</title>"
+            f"<style>{CSS}{extra}</style></head><body>{body}</body></html>")
+
+
+def write_html(out, name):
+    with open(out, "w", encoding="utf-8") as f:
+        f.write(render(name))
+
+
+def main():
+    args = sys.argv[1:]
+    if args[:1] == ["--html"]:
+        write_html(args[1], "emergency" if "--emergency" in args else "manual")
+        return 0
+
+    import gi
+    gi.require_version("Gtk", "4.0")
+    gi.require_version("Adw", "1")
+    gi.require_version("WebKit", "6.0")
+    from gi.repository import Adw, Gdk, Gio, GObject, Gtk, WebKit
+
+    APP_CSS = """
+    window.bapirlo-guide, window.bapirlo-guide headerbar { background-color: #0E0A0D; color: #F2E9EC; }
+    window.bapirlo-guide headerbar { border-bottom: 1px solid rgba(225,29,46,.28); box-shadow: none; }
+    .brand { font-family: Bangers; font-size: 17pt; letter-spacing: 2px; color: #FFFFFF; }
+    togglebutton.kuro { border-radius: 10px; padding: 4px 12px; font-weight: 600; }
+    togglebutton.kuro:checked { background-color: #E11D2E; color: #FFFFFF; }
+    searchbar > revealer > box { background-color: #161015; border-bottom: 1px solid rgba(225,29,46,.28); }
+    """
+
+    class Guide(Adw.Application):
+        def __init__(self):
+            super().__init__(application_id="os.bapirlo.Guide", flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
+            self.page = "emergency" if "--emergency" in args else "manual"
+
+        def do_command_line(self, cl):
+            argv = cl.get_arguments()[1:]
+            if "--emergency" in argv:
+                self.page = "emergency"
+            self.activate()
+            if getattr(self, "web", None):
+                self.show(self.page)
+            return 0
+
+        def do_activate(self):
+            if getattr(self, "win", None):
+                self.win.present()
+                return
+            Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)
+            prov = Gtk.CssProvider()
+            prov.load_from_string(APP_CSS)
+            Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), prov,
+                                                      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+            win = self.win = Adw.ApplicationWindow(application=self, title="Bapirlo OS Guide",
+                                                   default_width=1060, default_height=820)
+            win.add_css_class("bapirlo-guide")
+            head = Adw.HeaderBar()
+            title = Gtk.Label(label="BAPIRLO OS GUIDE")
+            title.add_css_class("brand")
+            head.set_title_widget(title)
+            box = Gtk.Box(spacing=6)
+            self.tabs = {}
+            group = None
+            for key, label in (("manual", "Manual"), ("emergency", "Emergency")):
+                b = Gtk.ToggleButton(label=label)
+                b.add_css_class("kuro")
+                if group:
+                    b.set_group(group)
+                group = group or b
+                b.connect("toggled", lambda btn, k=key: btn.get_active() and self.show(k))
+                box.append(b)
+                self.tabs[key] = b
+            head.pack_start(box)
+            find_btn = Gtk.ToggleButton(icon_name="system-search-symbolic", tooltip_text="Search (Ctrl+F)")
+            print_btn = Gtk.Button(icon_name="document-print-symbolic", tooltip_text="Print / save as PDF (Ctrl+P)")
+            head.pack_end(print_btn)
+            head.pack_end(find_btn)
+
+            self.web = WebKit.WebView()
+            settings = self.web.get_settings()
+            settings.set_enable_developer_extras(False)
+            settings.set_enable_javascript(False)
+            self.web.set_background_color(Gdk.RGBA(red=14 / 255, green=10 / 255, blue=13 / 255, alpha=1))
+            self.web.connect("decide-policy", self.on_policy)
+
+            self.entry = Gtk.SearchEntry(placeholder_text="Search the guide…", hexpand=True)
+            self.entry.connect("search-changed", self.on_search)
+            self.entry.connect("activate", lambda *_: self.web.get_find_controller().search_next())
+            bar = Gtk.SearchBar(child=self.entry, show_close_button=True)
+            bar.connect_entry(self.entry)
+            bar.bind_property("search-mode-enabled", find_btn, "active",
+                              GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE)
+            bar.set_key_capture_widget(win)
+
+            print_btn.connect("clicked", lambda *_: WebKit.PrintOperation.new(self.web).run_dialog(win))
+            ctl = Gtk.ShortcutController()
+            ctl.add_shortcut(Gtk.Shortcut(trigger=Gtk.ShortcutTrigger.parse_string("<Control>f"),
+                                          action=Gtk.CallbackAction.new(lambda *_: bar.set_search_mode(True) or True)))
+            ctl.add_shortcut(Gtk.Shortcut(trigger=Gtk.ShortcutTrigger.parse_string("<Control>p"),
+                                          action=Gtk.CallbackAction.new(lambda *_: print_btn.emit("clicked") or True)))
+            ctl.add_shortcut(Gtk.Shortcut(trigger=Gtk.ShortcutTrigger.parse_string("<Control>w"),
+                                          action=Gtk.CallbackAction.new(lambda *_: win.close() or True)))
+            win.add_controller(ctl)
+
+            view = Adw.ToolbarView()
+            view.add_top_bar(head)
+            view.add_top_bar(bar)
+            view.set_content(self.web)
+            win.set_content(view)
+            self.tabs[self.page].set_active(True)
+            self.show(self.page)
+            win.present()
+
+        def show(self, key):
+            self.page = key
+            if not self.tabs[key].get_active():
+                self.tabs[key].set_active(True)
+            self.web.load_html(render(key), "file://" + DOCS + "/")
+
+        def on_search(self, entry):
+            fc = self.web.get_find_controller()
+            text = entry.get_text()
+            if text:
+                fc.search(text, WebKit.FindOptions.CASE_INSENSITIVE | WebKit.FindOptions.WRAP_AROUND, 500)
+            else:
+                fc.search_finish()
+
+        def on_policy(self, view, decision, kind):
+            if kind != WebKit.PolicyDecisionType.NAVIGATION_ACTION:
+                return False
+            uri = decision.get_navigation_action().get_request().get_uri()
+            if uri.startswith(("http://", "https://", "mailto:")):
+                Gio.AppInfo.launch_default_for_uri(uri, None)
+                decision.ignore()
+                return True
+            return False
+
+    return Guide().run([sys.argv[0]] + args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

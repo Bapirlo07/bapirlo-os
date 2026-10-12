@@ -1,0 +1,268 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — Doctor: one health check for everything Bapirlo OS added.
+
+  bapirlo-doctor              full report in the terminal (Start menu "Bapirlo Doctor")
+  bapirlo-doctor --notify     quiet; a notification only when something needs you
+                              (run after every system update and 1 min after each login)
+  bapirlo-doctor --json       machine-readable report
+
+Checks
+  · every enabled extension supports the GNOME version on disk (an update to GNOME that an
+    extension does not list = it gets switched off at your next login) and is ACTIVE in the
+    running shell (not ERROR / OUT OF DATE)
+  · Bapirlo services and timers (failed units), the pacman snapshot hook, Timeshift age
+  · Spicetify still applied to Spotify, free disk space, the Windows drive's safety flags
+    (only if it is mounted), JS errors from Bapirlo extensions in this login's shell log
+Never changes anything. Exit code 0 = all good, 1 = something needs a look.
+"""
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import time
+
+HOME = os.path.expanduser("~")
+OS_DIR = os.path.join(HOME, "bapirlo-os")
+STATE = os.path.join(os.environ.get("XDG_STATE_HOME", HOME + "/.local/state"), "bapirlo")
+EXT_DIRS = [os.path.join(os.environ.get("XDG_DATA_HOME", HOME + "/.local/share"), "gnome-shell/extensions"),
+            "/usr/share/gnome-shell/extensions"]
+# extensions that are expected to be off (no build for this GNOME yet) — reported as info only
+KNOWN_OFF = {"tilingshell@ferrarodomenico.com"}
+USER_UNITS = ["bapirlo-lockd.service", "bapirlo-autotheme.service", "bapirlo-vault-guard.service",
+              "bapirlo-daycycle.timer", "bapirlo-tidy.timer", "bapirlo-doctor.path", "bapirlo-spicetify.path"]
+SYSTEM_UNITS = ["bapirlo-perfd.service", "bapirlo-cleanup.timer", "cronie.service"]
+MIN_FREE_GB = 15
+
+
+def run(*cmd, timeout=10):
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        return r.returncode, r.stdout.strip()
+    except (OSError, subprocess.TimeoutExpired):
+        return 127, ""
+
+
+def shell_major():
+    _, out = run("gnome-shell", "--version")
+    m = re.search(r"(\d+)", out)
+    return m.group(1) if m else "?"
+
+
+def gsettings_list(key):
+    _, out = run("gsettings", "get", "org.gnome.shell", key)
+    return re.findall(r"'([^']+)'", out)
+
+
+def ext_meta(uuid):
+    for d in EXT_DIRS:
+        p = os.path.join(d, uuid, "metadata.json")
+        if os.path.isfile(p):
+            try:
+                return json.load(open(p)), d.startswith("/usr")
+            except (OSError, ValueError):
+                return {}, d.startswith("/usr")
+    return None, False
+
+
+def ext_state(uuid):
+    _, out = run("gnome-extensions", "info", uuid)
+    m = re.search(r"State:\s*(.+)", out)
+    return m.group(1).strip() if m else "UNKNOWN"
+
+
+def check_extensions(major, rep):
+    enabled = gsettings_list("enabled-extensions")
+    if run("gsettings", "get", "org.gnome.shell", "disable-user-extensions")[1] == "true":
+        rep.problem("Extensions", "ALL user extensions are switched off (Extensions app → main switch)")
+    for uuid in enabled:
+        meta, system = ext_meta(uuid)
+        if meta is None:
+            rep.problem("Extensions", f"{uuid}: enabled but not installed")
+            continue
+        versions = [str(v).split(".")[0] for v in meta.get("shell-version", [])]
+        state = ext_state(uuid)
+        name = meta.get("name", uuid)
+        if major not in versions:
+            rep.problem("Extensions", f"{name}: does not list GNOME {major} (supports {', '.join(versions) or '?'})"
+                        " — it will be off after your next login until it is updated")
+        elif state in ("ERROR", "OUT OF DATE"):
+            rep.problem("Extensions", f"{name}: {state} in the running shell")
+        elif state not in ("ACTIVE", "ENABLED"):
+            # just installed / just updated: the shell loads it at the next login
+            rep.info("Extensions", f"{name}: {state.lower()} (loads at next login)")
+        else:
+            rep.ok("Extensions", name)
+    for uuid in KNOWN_OFF:
+        if os.path.isdir(os.path.join(EXT_DIRS[0], uuid)):
+            meta, _ = ext_meta(uuid)
+            versions = [str(v).split(".")[0] for v in (meta or {}).get("shell-version", [])]
+            if major in versions:
+                rep.info("Extensions", f"{(meta or {}).get('name', uuid)} now supports GNOME {major} — you can switch it back on")
+
+
+def check_units(rep):
+    for u in USER_UNITS:
+        code, st = run("systemctl", "--user", "is-active", u)
+        _, en = run("systemctl", "--user", "is-enabled", u)
+        if st == "failed":
+            rep.problem("Services", f"{u} failed — journalctl --user -u {u} -b")
+        elif en in ("enabled", "static", "alias") or st == "active":
+            rep.ok("Services", u)
+        elif en == "disabled" or not en:
+            rep.info("Services", f"{u} is not enabled")
+    for u in SYSTEM_UNITS:
+        _, st = run("systemctl", "is-active", u)
+        if st == "failed":
+            rep.problem("Services", f"{u} failed — journalctl -u {u} -b")
+        elif st in ("active", "activating") or u.endswith(".timer"):
+            rep.ok("Services", u)
+    _, failed = run("systemctl", "--user", "--failed", "--no-legend", "--plain")
+    for line in failed.splitlines():
+        unit = line.split()[0] if line.split() else ""
+        if unit and unit not in USER_UNITS:
+            rep.info("Services", f"{unit} (not Bapirlo) failed this boot")
+
+
+def check_snapshots(rep):
+    hook = "/etc/pacman.d/hooks/00-bapirlo-timeshift.hook"
+    if os.path.exists(hook):
+        rep.ok("Backups", "snapshot before every system update (pacman hook)")
+    else:
+        rep.problem("Backups", "the pre-update snapshot hook is missing")
+    snaps = "/timeshift/snapshots"
+    try:
+        names = sorted(n for n in os.listdir(snaps) if re.match(r"\d{4}-\d\d-\d\d_\d\d-\d\d-\d\d$", n))
+    except OSError:
+        names = []
+    if not names:
+        rep.problem("Backups", "no Timeshift snapshots found")
+        return
+    newest = time.mktime(time.strptime(names[-1], "%Y-%m-%d_%H-%M-%S"))
+    days = (time.time() - newest) / 86400
+    (rep.ok if days < 10 else rep.problem)("Backups", f"{len(names)} snapshots, newest {days:.0f} days old ({names[-1]})")
+
+
+def check_disk(rep):
+    free = shutil.disk_usage("/").free / 1024 ** 3
+    if free < MIN_FREE_GB:
+        rep.problem("Disk", f"only {free:.1f} GB free — updates skip their safety snapshot below {MIN_FREE_GB} GB "
+                    "(Control Centre → Storage, or bapirlo-cleanup-now)")
+    else:
+        rep.ok("Disk", f"{free:.1f} GB free")
+
+
+def check_spicetify(rep):
+    if not shutil.which("spicetify"):
+        return
+    code, out = run(os.path.join(OS_DIR, "bin/bapirlo-spicetify"), "status", timeout=20)
+    if code == 0:
+        rep.ok("Spotify", out or "Spicetify theme applied")
+    elif code == 2:
+        rep.info("Spotify", out)
+    else:
+        rep.problem("Spotify", (out or "Spicetify is not applied") + " — run: bapirlo-spicetify apply")
+
+
+def check_windows(rep):
+    tool = "/usr/local/bin/bapirlo-windows"
+    if not os.access(tool, os.X_OK):
+        return
+    m = re.search(r"^UUID=([0-9A-Fa-f-]+)", open(tool).read(), re.M)
+    if not m:
+        return
+    uuid = m.group(1)
+    _, mp = run("findmnt", "-nro", "TARGET", "-S", f"UUID={uuid}")
+    if not mp:
+        rep.ok("Windows", "drive not mounted (mounts read-only when you open it)")
+        return
+    _, opts = run("findmnt", "-nro", "OPTIONS", "-S", f"UUID={uuid}")
+    rw = ",rw," in f",{opts},"
+    rep.ok("Windows", f"mounted {'READ-WRITE' if rw else 'read-only'} at {mp.splitlines()[0]}")
+    if rw:
+        rep.info("Windows", "read-write: run 'bapirlo-windows ro' when you are done")
+
+
+def check_shell_log(rep):
+    code, out = run("journalctl", "--user", "-b", "-o", "cat", "--no-pager", "_COMM=gnome-shell", timeout=20)
+    if code != 0:
+        code, out = run("journalctl", "-b", "-o", "cat", "--no-pager", "/usr/bin/gnome-shell", timeout=20)
+    errs = {}
+    for line in out.splitlines():
+        if ("JS ERROR" in line or "Error" in line) and "bapirlo" in line:
+            key = re.sub(r"\d+", "#", line)[:140]
+            errs[key] = errs.get(key, 0) + 1
+    for k, n in list(errs.items())[:5]:
+        rep.problem("Shell log", f"{n}× {k}")
+    if not errs:
+        rep.ok("Shell log", "no errors from Bapirlo extensions this login")
+
+
+class Report:
+    def __init__(self):
+        self.items = []
+
+    def ok(self, sec, msg):
+        self.items.append(("ok", sec, msg))
+
+    def info(self, sec, msg):
+        self.items.append(("info", sec, msg))
+
+    def problem(self, sec, msg):
+        self.items.append(("problem", sec, msg))
+
+    @property
+    def problems(self):
+        return [i for i in self.items if i[0] == "problem"]
+
+
+def main():
+    args = sys.argv[1:]
+    major = shell_major()
+    rep = Report()
+    rep.ok("GNOME", f"GNOME Shell {major} on disk")
+    for check in (lambda r: check_extensions(major, r), check_units, check_snapshots, check_disk,
+                  check_spicetify, check_windows, check_shell_log):
+        try:
+            check(rep)
+        except Exception as e:  # a broken check must not hide the others
+            rep.info("Doctor", f"a check failed to run: {e}")
+
+    if "--json" in args:
+        json.dump([dict(level=a, section=b, message=c) for a, b, c in rep.items], sys.stdout, indent=1)
+        print()
+    elif "--notify" in args:
+        os.makedirs(STATE, exist_ok=True)
+        probs = [m for _, _, m in rep.problems]
+        sig = "\n".join(probs)
+        last = os.path.join(STATE, "doctor-last")
+        try:
+            prev = open(last).read()
+        except OSError:
+            prev = ""
+        open(last, "w").write(sig)
+        if probs and sig != prev:   # tell once per new set of problems, not after every update
+            body = "\n".join("• " + p for p in probs[:4]) + (f"\n…and {len(probs) - 4} more" if len(probs) > 4 else "")
+            subprocess.run(["notify-send", "-a", "Bapirlo Doctor", "-i", "bapirlo-doctor", "-u", "critical",
+                            f"Bapirlo Doctor: {len(probs)} thing{'s' if len(probs) > 1 else ''} need a look",
+                            body + "\nOpen “Bapirlo Doctor” from the Start menu for details."], check=False)
+    else:
+        colour = sys.stdout.isatty()
+        mark = {"ok": ("\033[32m✔\033[0m" if colour else "OK "), "info": ("\033[36mℹ\033[0m" if colour else "i  "),
+                "problem": ("\033[1;31m✘\033[0m" if colour else "!! ")}
+        print("Bapirlo Doctor —", time.strftime("%d %b %Y %H:%M"))
+        sec = None
+        for level, s, msg in rep.items:
+            if s != sec:
+                print(f"\n{s}")
+                sec = s
+            print(f"  {mark[level]} {msg}")
+        n = len(rep.problems)
+        print("\n" + ("All good." if not n else f"{n} problem{'s' if n > 1 else ''} — see ✘ above."
+                      " The manual's Troubleshooting section says what to do."))
+    return 1 if rep.problems else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

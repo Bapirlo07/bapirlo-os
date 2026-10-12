@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Bapirlo OS — LocalSend (AirDrop-style sharing with the LocalSend iPhone app).
+#   bapirlo-localsend            open LocalSend (Start menu / dock "LocalSend")
+#   bapirlo-localsend status
+# Port 53317 is opened for home networks ONLY while LocalSend runs (bapirlo-port@localsend)
+# and closed again when you quit it. Received files land in ~/Downloads/iPhone.
+# First run presets: name "Bapirlo OS", dark, received files → ~/Downloads/iPhone, quitting the
+# window really quits (no hidden tray app keeping the port open).
+set -euo pipefail
+FW=bapirlo-port@localsend.service
+DEST=$HOME/Downloads/iPhone
+PREFS=${XDG_DATA_HOME:-$HOME/.local/share}/org.localsend.localsend_app/shared_preferences.json
+mkdir -p "$DEST"
+
+if [ "${1:-}" = status ]; then
+  pgrep -x localsend >/dev/null && echo "running (firewall $(systemctl is-active $FW))" || { echo "not running"; exit 1; }
+  exit 0
+fi
+if [ ! -s "$PREFS" ]; then
+  mkdir -p "${PREFS%/*}"
+  python3 - "$PREFS" "$DEST" <<'PY'
+import json, sys
+json.dump({"flutter.ls_alias": "Bapirlo OS", "flutter.ls_theme": "dark",
+           "flutter.ls_destination": sys.argv[2], "flutter.ls_minimize_to_tray": False,
+           "flutter.ls_save_to_history": True}, open(sys.argv[1], "w"))
+PY
+fi
+# already open → just bring it forward
+if pgrep -x localsend >/dev/null; then exec localsend; fi
+
+systemctl start "$FW" || notify-send -a LocalSend -i bapirlo-localsend "LocalSend: firewall didn't open" "Receiving may not work — journalctl -u $FW"
+trap 'systemctl stop "$FW" 2>/dev/null || true' EXIT
+localsend "$@" || true

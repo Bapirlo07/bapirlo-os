@@ -1,0 +1,10 @@
+[Unit]
+Description=Bapirlo OS — tidy ~/Downloads once a day (never at login: first run 10 min in)
+
+[Timer]
+OnStartupSec=10min
+OnUnitActiveSec=24h
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

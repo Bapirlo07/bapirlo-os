@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=LocalSend
+Comment=Send files to and from your iPhone (received → Downloads/iPhone)
+Exec=@BIN@/bapirlo-localsend
+Icon=bapirlo-localsend
+StartupWMClass=org.localsend.localsend_app
+Categories=Network;FileTransfer;
+Keywords=airdrop;share;iphone;files;

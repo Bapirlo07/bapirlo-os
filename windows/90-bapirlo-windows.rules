@@ -1,7 +1,7 @@
 # Bapirlo OS — dual boot: show the Windows partition in Files as "Windows" (mountable without a
 # password by the logged-in user, through udisks; options in /etc/udisks2/mount_options.conf),
 # and hide the two Windows recovery partitions so they can't be mounted by accident.
-# Matches by filesystem UUID only. Remove this file + `udevadm control --reload` to undo.
-SUBSYSTEM=="block", ENV{ID_FS_UUID}=="B4A053F6A053BE14", ENV{UDISKS_NAME}="Windows", ENV{UDISKS_ICON_NAME}="bapirlo-windows-drive", ENV{UDISKS_SYMBOLIC_ICON_NAME}="bapirlo-windows-drive-symbolic", ENV{UDISKS_SYSTEM}="0", ENV{UDISKS_AUTO}="0"
-SUBSYSTEM=="block", ENV{ID_FS_UUID}=="6AA42337A42304E3", ENV{UDISKS_IGNORE}="1"
-SUBSYSTEM=="block", ENV{ID_FS_UUID}=="CEA45661A4564BD9", ENV{UDISKS_IGNORE}="1"
+# Matches by filesystem UUID only (filled in by 700-windows-link.sh from lsblk). Remove this file +
+# `udevadm control --reload` to undo.
+SUBSYSTEM=="block", ENV{ID_FS_UUID}=="@WIN_UUID@", ENV{UDISKS_NAME}="Windows", ENV{UDISKS_ICON_NAME}="bapirlo-windows-drive", ENV{UDISKS_SYMBOLIC_ICON_NAME}="bapirlo-windows-drive-symbolic", ENV{UDISKS_SYSTEM}="0", ENV{UDISKS_AUTO}="0"
+@RECOVERY_RULES@

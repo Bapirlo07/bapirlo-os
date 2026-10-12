@@ -1,0 +1,13 @@
+[Unit]
+Description=Watch Spotify (spotify-launcher) for updates
+
+[Path]
+# spotify-launcher unpacks every new Spotify version here
+PathChanged=%h/.local/share/spotify-launcher/install/usr/share/spotify
+PathChanged=%h/.local/share/spotify-launcher/install/usr/share/spotify/Apps
+Unit=bapirlo-spicetify.service
+TriggerLimitIntervalSec=5min
+TriggerLimitBurst=4
+
+[Install]
+WantedBy=default.target

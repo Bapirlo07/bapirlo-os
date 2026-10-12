@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Bapirlo OS — Live Captions: offline, real-time subtitles for whatever is playing (lectures,
+# videos, calls). Runs fully on this laptop (Live Captions / aprilasr, English), nothing is sent
+# anywhere. OFF unless you switch it on — it uses some CPU while running.
+#   bapirlo-captions toggle | on | off | status   (Control Centre "Captions" tile, Super+Alt+C)
+# The caption window floats above everything (bapirlo-desk keeps it on top + remembers where
+# you put it). In its settings you can switch to captioning your microphone instead.
+set -euo pipefail
+APP=net.sapples.LiveCaptions
+running() { flatpak ps --columns=application 2>/dev/null | grep -qx "$APP"; }
+case "${1:-}" in
+  on) running || { flatpak info --user "$APP" >/dev/null 2>&1 || flatpak info "$APP" >/dev/null 2>&1 || {
+          notify-send -a "Live Captions" -i bapirlo-captions "Live Captions isn't installed" "Run: bash ~/bapirlo-os/810-round7.sh"; exit 1; }
+        setsid -f flatpak run "$APP" >/dev/null 2>&1; } ;;
+  off) flatpak kill "$APP" 2>/dev/null || true ;;
+  toggle) if running; then "$0" off; else "$0" on; fi ;;
+  status) if running; then echo on; else echo off; exit 1; fi ;;
+  *) sed -n 2,8p "$0"; exit 1 ;;
+esac

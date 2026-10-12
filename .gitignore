@@ -23,3 +23,29 @@ location.json
 # --- greeter theme images built from the wallpaper (tools/build-greeter.sh)
 /greeter/bapirlo/img/bg*.jpg
 /greeter/bapirlo/img/avatar*.png
+
+# --- screenshots that show the fan-art wallpaper: local only
+/screenshots/local/
+
+# --- secrets & personal data: never commit (tools/pre-commit also scans every commit)
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.kdbx
+*.keyring
+id_rsa*
+id_ed25519*
+*.nmconnection
+rclone.conf
+*secret*
+*token*
+*credentials*
+*password*
+api-key*
+config/local*
+# exported settings get checked by the exporter; raw dumps are not allowed
+*.dconf.raw
+dconf-dump*

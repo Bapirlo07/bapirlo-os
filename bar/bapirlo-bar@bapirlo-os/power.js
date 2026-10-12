@@ -32,7 +32,7 @@ class BapirloPowerChip extends Group {
         super._init('Bapirlo power mode', 'bapirlo-power', true);
         this._chip = new St.Button({
             style_class: 'bapirlo-power-chip', can_focus: true, track_hover: true,
-            button_mask: St.ButtonMask.ONE | St.ButtonMask.THREE,
+            button_mask: St.ButtonMask.PRIMARY | St.ButtonMask.SECONDARY,
             child: new St.BoxLayout({style_class: 'bapirlo-power-box', y_align: Clutter.ActorAlign.CENTER}),
         });
         this._icon = new St.Icon({style_class: 'bapirlo-power-icon'});

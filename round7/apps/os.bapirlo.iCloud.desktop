@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=iCloud
+Comment=Photos, Drive, Notes and more on iCloud.com
+Exec=google-chrome-stable --app=https://www.icloud.com/
+Icon=bapirlo-icloud
+StartupWMClass=chrome-www.icloud.com__-Default
+Categories=Network;
+Keywords=apple;iphone;photos;drive;notes;

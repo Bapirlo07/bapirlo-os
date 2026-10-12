@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Bapirlo OS — RustDesk remote access. OFF by default, never started at boot.
+#   bapirlo-remote toggle | on | off | status     (Control Centre "Remote" tile)
+#   bapirlo-remote password                       show the permanent password (from your keyring)
+#   bapirlo-remote id                             show this laptop's RustDesk ID
+# On = rustdesk.service runs (polkit lets your session start/stop it without a password).
+# No inbound firewall port: RustDesk connects OUT to its rendezvous/relay servers; direct-IP
+# access and LAN discovery are switched off. Permanent password only, no click-to-accept,
+# disconnects after 30 min idle (set by 800-round7-install.sh).
+# GNOME Wayland: the FIRST connection shows a "share your screen / remote control" prompt on the
+# laptop — tick "remember" there once. Remote access only works while you are logged in
+# (not at the login / lock screen).
+set -euo pipefail
+UNIT=rustdesk.service
+IDF=${XDG_CONFIG_HOME:-$HOME/.config}/bapirlo/rustdesk-id
+note() { notify-send -a "Remote access" -i bapirlo-remote "$@" 2>/dev/null || true; }
+id() { cat "$IDF" 2>/dev/null || echo "(unknown — open RustDesk once)"; }
+active() { systemctl -q is-active "$UNIT"; }
+
+case "${1:-}" in
+  on)
+    command -v rustdesk >/dev/null || { note "RustDesk isn't installed" "Run 800-round7-install.sh first."; exit 1; }
+    active || systemctl start "$UNIT"
+    note "Remote access is ON" "RustDesk ID $(id) · connect from the RustDesk app with your permanent password" ;;
+  off)
+    systemctl stop "$UNIT" 2>/dev/null || true
+    pkill -x rustdesk 2>/dev/null || true   # the per-session helper the service started
+    note "Remote access is OFF" "Nobody can connect." ;;
+  toggle) if active; then "$0" off; else "$0" on; fi ;;
+  status) if active; then echo "on — ID $(id)"; else echo off; exit 1; fi ;;
+  password) secret-tool lookup app bapirlo service rustdesk && echo || { echo "not in the keyring"; exit 1; } ;;
+  id) id; echo ;;
+  *) sed -n 2,13p "$0"; exit 1 ;;
+esac

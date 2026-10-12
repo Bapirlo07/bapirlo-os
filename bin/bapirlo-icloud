@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Bapirlo OS — iCloud Photos → ~/Pictures/iCloud (icloudpd). OFF until you run `setup`.
+#   bapirlo-icloud setup     sign in once (Apple ID password + 2FA code), then syncs every 6 h
+#   bapirlo-icloud sync      download new photos now
+#   bapirlo-icloud status | off
+# Before setup, on the iPhone: Settings → [your name] → iCloud →
+#   • "Access iCloud Data on the Web" = ON
+#   • Advanced Data Protection = OFF (icloudpd can't read ADP-encrypted libraries)
+# 2FA: setup asks for the 6-digit code Apple shows on your iPhone. Apple makes the sign-in
+# expire about every 2 months — you get a notification; just run `bapirlo-icloud setup` again.
+# Your password lives in the GNOME keyring (not in a file). Download only — nothing on iCloud is
+# ever changed or deleted. Runs only on mains power, at idle priority, never at login.
+set -euo pipefail
+CONF=${XDG_CONFIG_HOME:-$HOME/.config}/bapirlo/icloud.conf
+DEST=$HOME/Pictures/iCloud
+COOKIES=$HOME/.local/share/bapirlo/icloudpd
+TIMER=bapirlo-icloud.timer
+note() { notify-send -a "iCloud Photos" -i bapirlo-icloud "$@" 2>/dev/null || true; }
+need() { command -v icloudpd >/dev/null || { echo "icloudpd isn't installed — run 800-round7-install.sh and say yes to icloudpd-bin."; exit 1; }; }
+
+setup() {
+  need
+  local who=""
+  [ -f "$CONF" ] && . "$CONF" && who=${APPLE_ID:-}
+  read -rp "Apple ID (email)${who:+ [$who]}: " a; APPLE_ID=${a:-$who}
+  [ -n "$APPLE_ID" ] || exit 1
+  mkdir -p "${CONF%/*}" "$DEST" "$COOKIES"; chmod 700 "$COOKIES"
+  printf 'APPLE_ID=%q\n' "$APPLE_ID" > "$CONF"
+  echo
+  echo "1) Type your Apple ID password when asked (it is saved in the GNOME keyring)."
+  echo "2) Apple sends a 6-digit code to your iPhone — type it here."
+  echo
+  icloudpd --username "$APPLE_ID" --cookie-directory "$COOKIES" --auth-only \
+           --password-provider keyring --password-provider console --mfa-provider console
+  systemctl --user daemon-reload
+  systemctl --user enable --now "$TIMER"
+  echo; echo "Signed in. First download starts in the background now (can take a while)."
+  systemctl --user start --no-block bapirlo-icloud.service
+}
+
+sync() {
+  need
+  [ -f "$CONF" ] || { echo "Not set up — run: bapirlo-icloud setup"; exit 1; }
+  . "$CONF"
+  mkdir -p "$DEST"
+  local log; log=$(mktemp)
+  # keyring only + no console: if Apple wants a new 2FA code it fails fast instead of waiting
+  if icloudpd --username "$APPLE_ID" --cookie-directory "$COOKIES" --directory "$DEST" \
+       --password-provider keyring --mfa-provider console --folder-structure "{:%Y/%m}" \
+       --no-progress-bar --until-found 50 --log-level info </dev/null >"$log" 2>&1; then
+    local n; n=$(grep -c "Downloaded " "$log" || true)
+    [ "${n:-0}" -gt 0 ] && note "iCloud Photos" "$n new photo$([ "$n" -gt 1 ] && echo s) in Pictures/iCloud"
+    rm -f "$log"
+  else
+    if grep -qiE "two-factor|2fa|mfa|authenticat|password|expired" "$log"; then
+      note "iCloud needs you to sign in again" "Open a terminal and run: bapirlo-icloud setup"
+    else
+      note "iCloud Photos sync failed" "$(tail -1 "$log")"
+    fi
+    tail -20 "$log"; rm -f "$log"; exit 1
+  fi
+}
+
+case "${1:-}" in
+  setup) setup ;;
+  sync) sync ;;
+  status) [ -f "$CONF" ] && . "$CONF" && echo "account: $APPLE_ID"; systemctl --user list-timers "$TIMER" --no-pager | head -2;
+          echo "photos: $(find "$DEST" -type f 2>/dev/null | wc -l) in $DEST" ;;
+  off) systemctl --user disable --now "$TIMER" 2>/dev/null || true; echo "automatic download off (photos and sign-in kept)" ;;
+  *) sed -n 2,13p "$0"; exit 1 ;;
+esac

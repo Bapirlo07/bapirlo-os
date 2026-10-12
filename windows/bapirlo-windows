@@ -9,7 +9,7 @@
 #   bapirlo-windows off        unmount
 #   bapirlo-windows bookmarks  add Files bookmarks (Windows Desktop/Documents/Downloads/Pictures/Shared)
 set -euo pipefail
-UUID=B4A053F6A053BE14
+UUID=@WIN_UUID@   # filled in by 700-windows-link.sh
 DEV=/dev/disk/by-uuid/$UUID
 BK=$HOME/theme-backups
 

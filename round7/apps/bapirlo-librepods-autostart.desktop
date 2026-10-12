@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=LibrePods (AirPods)
+Comment=AirPods battery for the top bar — starts hidden 20 s after login
+Exec=sh -c 'sleep 20; exec nice -n 5 librepods --hide'
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

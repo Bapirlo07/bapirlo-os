@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Bapirlo OS — Restart to Windows (Start menu "Restart to Windows", Control Centre power page).
+#   bapirlo-restart-windows          ask, then restart straight into Windows (this once)
+#   bapirlo-restart-windows --yes    no question
+# How: the root unit bapirlo-bootnext-windows.service sets EFI "BootNext" to the genuine Windows
+# Boot Manager (polkit lets your session start just that unit). BootNext is used for ONE boot and
+# then cleared by the firmware, so the next normal restart comes back to Bapirlo OS. Your boot
+# order, GRUB and Limine are never changed.
+set -euo pipefail
+UNIT=bapirlo-bootnext-windows.service
+# GTK4 dialogs on the Intel GPU (keeps the NVIDIA GPU asleep, no stall)
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/intel_icd.json
+note() { notify-send -a "Restart to Windows" -i bapirlo-windows-drive "$@" 2>/dev/null || true; }
+
+if ! systemctl cat "$UNIT" >/dev/null 2>&1; then
+  note -u critical "Not set up" "Run: sudo bash ~/bapirlo-os/900-final-install.sh"
+  echo "$UNIT is not installed"; exit 1
+fi
+if [ "${1:-}" != --yes ]; then
+  zenity --question --title "Restart to Windows" --icon bapirlo-windows-drive \
+    --text "Restart into <b>Windows</b> now?\n\nSave your work first — open apps will close.\nThe next normal restart comes back to Bapirlo OS." \
+    --ok-label "Restart to Windows" --cancel-label "Cancel" 2>/dev/null || exit 0
+fi
+if ! systemctl start "$UNIT"; then
+  note -u critical "Couldn't select Windows" "Nothing was changed. Details: journalctl -u $UNIT -b"
+  exit 1
+fi
+next=$(efibootmgr 2>/dev/null | sed -n 's/^BootNext: //p')
+[ -n "$next" ] || { note -u critical "Couldn't select Windows" "BootNext was not set — nothing was changed."; exit 1; }
+# the Vault locks itself on logout/suspend; lock it now too so nothing stays open
+"$(dirname "$(readlink -f "$0")")/bapirlo-vault" lock >/dev/null 2>&1 || true
+systemctl reboot

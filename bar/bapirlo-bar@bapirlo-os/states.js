@@ -8,6 +8,7 @@
 // Clipboard Indicator's button is hidden (layout.js); Super+V opens its menu under the
 // extras capsule instead of at the hidden button.
 import Gio from 'gi://Gio';
+import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
@@ -27,10 +28,16 @@ const DISCHARGING = 2;
 // role → tooltip text (only icon-only items, or items whose meaning isn't obvious)
 const TIPS = {
     'ArcMenu': () => 'Start — Super',
+    'LogoMenu': () => 'Bapirlo menu — Start menu is Super, apps are Super+G',
+    'places-menu': () => 'Places — folders, bookmarks and the Windows drive',
+    'drive-menu': () => 'USB drives — click to open or eject',
+    'lockkeys': () => 'Caps Lock / Num Lock is on',
     'quickSettings': () => 'Control Centre — Super+S · scroll for volume',
     'bapirlo-media': b => b.has_style_class_name('bmb-idle') ? 'Media — nothing playing'
         : `${b._title?.text ?? 'Media'} — middle-click to play / pause`,
     'vitalsMenu': () => 'CPU · temperature · memory (every 3 s) — click for more',
+    'bapirlo-airpods': () => 'AirPods battery (left · right) — click for case + noise control',
+    'bapirlo-privacy': b => `${b.accessible_name} — red mic · green camera · blue screen sharing`,
     'ArchUpdateIndicator': b => {
         const n = parseInt(b.label?.text ?? '', 10);
         return n > 0 ? `${n} update${n > 1 ? 's' : ''} available — click to see them` : 'System is up to date';
@@ -60,7 +67,27 @@ export class BarStates {
         this._hideProfileGauge();
         this._markAlerts();
         this._anchorClipboard();
+        this._iconPlaces();
         this._addTips();
+    }
+
+    // Places Status Indicator says "Places" in words; in the extras capsule it is a folder icon
+    _iconPlaces() {
+        const places = Main.panel.statusArea['places-menu'];
+        if (!places || places === this._places)
+            return;
+        const label = places.get_children().find(c => c instanceof St.Label);
+        if (!label)
+            return;
+        label.hide();
+        const icon = new St.Icon({icon_name: 'folder-symbolic', style_class: 'system-status-icon'});
+        places.insert_child_at_index(icon, 0);   // a panel button only allocates its first child
+        this._places = places;
+        this._placesBits = {label, icon};
+        places.connectObject('destroy', () => {
+            this._places = null;
+            this._placesBits = null;
+        }, this);
     }
 
     _syncBattery() {
@@ -147,6 +174,12 @@ export class BarStates {
             delete bp._bapirloSetPosition;
         }
         this._clipBoxPointer = null;
+        if (this._places) {
+            this._places.disconnectObject(this);
+            this._placesBits.icon.destroy();
+            this._placesBits.label.show();
+            this._places = this._placesBits = null;
+        }
         for (const button of this._tipped) {
             button.disconnectObject(this);
             button.menu?.disconnectObject?.(this);

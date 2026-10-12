@@ -25,7 +25,7 @@ class BapirloLauncher extends St.Button {
             style_class: 'bapirlo-launcher',
             can_focus: true,
             track_hover: true,
-            button_mask: St.ButtonMask.ONE | St.ButtonMask.TWO,
+            button_mask: St.ButtonMask.PRIMARY | St.ButtonMask.MIDDLE,
             accessible_name: app.get_name(),
         });
         this.app = app;

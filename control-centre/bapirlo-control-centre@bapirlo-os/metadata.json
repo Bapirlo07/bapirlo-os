@@ -1,7 +1,7 @@
 {
   "uuid": "bapirlo-control-centre@bapirlo-os",
   "name": "Bapirlo Control Centre",
-  "description": "Mac-style control centre for Bapirlo OS: tile grid, expandable Wi-Fi/Bluetooth/sound, power mode, recording, battery, storage and now playing. GNOME's quick settings stay available (Classic button / Super+Alt+S).",
+  "description": "Mac-style control centre for Bapirlo OS: tile grid, expandable Wi-Fi/Bluetooth/sound, power mode, recording, battery, storage and now playing. GNOME's quick settings stay available (Classic button / Shift+Super+S).",
   "shell-version": ["50", "51"],
   "settings-schema": "org.gnome.shell.extensions.bapirlo-control-centre",
   "url": "https://github.com/Bapirlo07/bapirlo-os",

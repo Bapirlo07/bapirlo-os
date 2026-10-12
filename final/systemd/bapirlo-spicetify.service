@@ -1,0 +1,7 @@
+[Unit]
+Description=Re-apply the Bapirlo Spotify theme (Spicetify) after Spotify updated itself
+
+[Service]
+Type=oneshot
+ExecStart=@BIN@/bapirlo-spicetify auto
+Nice=10

@@ -1,0 +1,11 @@
+[Unit]
+Description=Bapirlo Doctor after every system update (pacman package database changed)
+
+[Path]
+PathChanged=/var/lib/pacman/local
+Unit=bapirlo-doctor.service
+TriggerLimitIntervalSec=10min
+TriggerLimitBurst=3
+
+[Install]
+WantedBy=default.target

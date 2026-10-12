@@ -1,12 +1,12 @@
 // Browser-preview stand-in for web-greeter's LightDM bridge. Never loaded inside web-greeter
 // (index.html only adds it when window.qt is missing). Password "kuro" succeeds.
-// Query flags: ?lock  ?nousers  ?secondary
+// Query flags: ?lock  ?nousers  ?secondary  ?name=Shown+Name  ?user=login
 "use strict";
 (() => {
   const q = new URLSearchParams(location.search);
   const sig = () => { const cbs = []; return { connect: (f) => cbs.push(f), emit: (...a) => cbs.forEach((f) => f(...a)) }; };
   const users = q.has("nousers") ? [] : [{
-    username: "kuro", display_name: "Kuro", image: q.get("avatar") || "img/avatar.png", session: "gnome-classic",
+    username: q.get("user") || "kuro", display_name: q.get("name") || "Kuro", image: q.get("avatar") || "img/avatar.png", session: "gnome-classic",
   }];
   const lm = {
     users, lock_hint: q.has("lock"), select_user_hint: "", authentication_user: "",

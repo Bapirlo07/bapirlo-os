@@ -202,3 +202,10 @@
 #panel .panel-button .bapirlo-alert .system-status-icon,
 #panel .panel-button .bapirlo-low-battery .system-status-icon,
 #panel .panel-button .bapirlo-low-battery StLabel { color: #FF4655; }
+
+/* ---------------------------------------------------------------- Bapirlo logo (Logo Menu) */
+/* the brand mark keeps its ember colour (ArcMenu's button used to carry it); white while open */
+#panel .panel-button .menu-button { color: #FF4655; }
+#panel .panel-button:hover .menu-button,
+#panel .panel-button:active .menu-button,
+#panel .panel-button:checked .menu-button { color: #ffffff; }
