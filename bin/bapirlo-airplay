@@ -1,34 +1,105 @@
 #!/usr/bin/env bash
 # Bapirlo OS — AirPlay screen mirroring from the iPhone (UxPlay). OFF by default.
-#   bapirlo-airplay toggle | on | off | status      (Control Centre "AirPlay" tile)
-# On:  opens ONLY the AirPlay ports, for home networks only (bapirlo-port@airplay, polkit, no
-#      password), then runs UxPlay as the transient user unit bapirlo-airplay.service.
-# Off: stops UxPlay and closes the ports again (also when UxPlay crashes or you log out).
+#   bapirlo-airplay toggle | on | off | status | pin      (Control Centre "AirPlay" tile)
+# On:  checks the Wi-Fi first (campus / open Wi-Fi blocks phone-to-laptop traffic → offers the
+#      iPhone hotspot), opens ONLY the AirPlay ports for home networks (bapirlo-port@airplay,
+#      polkit, no password), then runs UxPlay as the transient user unit bapirlo-airplay.service.
+# Off: stops UxPlay and closes the ports again (also when UxPlay crashes, you log out, or nobody
+#      connected for IDLE_MIN minutes).
 # iPhone: Control Centre → Screen Mirroring → "Bapirlo OS", type the 4-digit code once — the
-# phone is remembered after that (~/.uxplay.register). Both must be on the same Wi-Fi
-# (home Wi-Fi or the iPhone's hotspot; eduroam blocks device-to-device traffic).
+# phone is remembered after that (~/.uxplay.register + a fixed server key, so it stays the same
+# "Apple TV" to the phone across restarts).
 set -euo pipefail
 UNIT=bapirlo-airplay.service
 FW=bapirlo-port@airplay.service
 CONF=${XDG_CONFIG_HOME:-$HOME/.config}/bapirlo/airplay.conf
+KEY=${CONF%/*}/airplay.pem
 mkdir -p "${CONF%/*}"
 # one fixed code per install, so a remembered iPhone never has to type it again
 [ -f "$CONF" ] || printf 'PIN=%04d\nNAME="Bapirlo OS"\n' $((10#$(od -An -N2 -tu2 /dev/urandom | tr -d ' ') % 9000 + 1000)) > "$CONF"
+# defaults for settings added later (override any of them in airplay.conf)
+HOTSPOT=iPhone          # NetworkManager connection of the iPhone's Personal Hotspot
+SIZE=2560x1600@60       # asked of the iPhone; it scales to its own aspect ratio
+FPS=60
+IDLE_MIN=15             # switch off after this long with nobody connected (0 = never)
 . "$CONF"
 
 note() { notify-send -a "AirPlay" -i bapirlo-airplay "$@" 2>/dev/null || true; }
 
+# Campus (802.1X, e.g. eduroam) and open Wi-Fi isolate devices from each other: the iPhone would
+# never see the laptop. Home Wi-Fi (WPA-PSK) and the iPhone hotspot are fine.
+net_check() {
+  local con km
+  con=$(nmcli -t -f NAME,TYPE con show --active 2>/dev/null | awk -F: '$2=="802-11-wireless"{print $1; exit}')
+  [ -n "$con" ] || return 0                     # wired / offline: let it try
+  [ "$con" = "$HOTSPOT" ] && return 0
+  km=$(nmcli -g 802-11-wireless-security.key-mgmt con show "$con" 2>/dev/null || true)
+  case "$km" in wpa-psk|sae) return 0 ;; esac
+  if nmcli -t -f NAME con show 2>/dev/null | grep -qxF "$HOTSPOT"; then
+    # in the background, so the receiver starts anyway (avahi re-announces on the new network)
+    ( a=$(notify-send -a "AirPlay" -i bapirlo-airplay -A hotspot="Use iPhone hotspot" \
+          "“$con” blocks screen mirroring" \
+          "Campus and public Wi-Fi keep devices apart. Turn on Personal Hotspot on the iPhone, then switch." 2>/dev/null) || true
+      [ "$a" = hotspot ] || exit 0
+      if nmcli con up "$HOTSPOT" >/dev/null 2>&1; then note "On the iPhone hotspot" "Screen Mirroring → $NAME"
+      else note "Couldn't join “$HOTSPOT”" "Is Personal Hotspot on? Keep its settings page open on the iPhone."; fi
+    ) & disown
+  else
+    note "“$con” blocks screen mirroring" "Use home Wi-Fi or the iPhone's Personal Hotspot."
+  fi
+}
+
 on() {
   command -v uxplay >/dev/null || { note "AirPlay isn't installed" "Run 800-round7-install.sh first."; exit 1; }
+  net_check
   systemctl start "$FW" || { note "AirPlay: firewall didn't open" "See: journalctl -u $FW"; exit 1; }
-  # -p: fixed ports (the firewall needs them) · -nh: no "@hostname" · -pin: code on first pairing
-  # -reg: remember paired iPhones · Nice 0 + iGPU VA-API decode, nothing runs while off
+  # iGPU (Intel VA-API) decode + display; nothing runs while off
   systemd-run --user --quiet --unit="$UNIT" --collect \
     -p ExecStopPost="/usr/bin/systemctl stop $FW" -p TimeoutStopSec=5 \
     -E VK_DRIVER_FILES=/usr/share/vulkan/icd.d/intel_icd.json -E __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json \
-    uxplay -n "$NAME" -nh -p -pin "$PIN" -reg
+    "$(readlink -f "$0")" _run
   note "AirPlay is on" "iPhone: Control Centre → Screen Mirroring → $NAME · code $PIN (first time only)"
 }
+
+# Inside the unit: run UxPlay and follow its log for connect / disconnect / idle switch-off.
+run() {
+  umask 077                                   # the server key (airplay.pem) stays private
+  # -p: fixed ports (the firewall needs them) · -nh: no "@hostname" · -pin: code on first pairing
+  # -reg + -key: remember paired iPhones and keep the same identity · -nohold: a reconnecting
+  # phone replaces its stale session · -scrsv 1: screen stays awake while video is showing
+  coproc UX { exec stdbuf -oL -eL uxplay -n "$NAME" -nh -p -pin "$PIN" -reg -key "$KEY" -nohold \
+    -scrsv 1 -s "$SIZE" -fps "$FPS" 2>&1; }
+  local pid=$UX_PID fd line who="" conns=0 idle="" rc n
+  [ "$IDLE_MIN" -gt 0 ] && idle=$((IDLE_MIN * 60))
+  exec {fd}<&"${UX[0]}"                       # bash drops UX[] when UxPlay exits; keep our own copy
+  trap 'kill "$pid" 2>/dev/null; wait "$pid" 2>/dev/null; exit 0' TERM INT
+  while :; do
+    if IFS= read -r ${idle:+-t "$idle"} line <&"$fd"; then
+      printf '%s\n' "$line"                     # → journal
+      case "$line" in
+        *"connection request from "*)
+          who=${line#*connection request from }; who=${who% (*}
+          [ "$conns" -gt 0 ] || note "${who:-iPhone} connected" "Stop mirroring on the iPhone to end."
+          conns=$((conns > 0 ? conns : 1))
+          ;;
+        *"Open connections: "*)
+          n=${line##*Open connections: }; n=${n%%[!0-9]*}; n=${n:-0}
+          [ "$n" -eq 0 ] && [ "$conns" -gt 0 ] && note "Mirroring ended" "AirPlay stays on — switch it off in Control Centre."
+          conns=$n
+          ;;
+        *"Client Authentication Failure"*) note "AirPlay: wrong code" "The code is $PIN." ;;
+      esac
+    else
+      rc=$?
+      [ "$rc" -gt 128 ] || break                # UxPlay exited
+      [ "$conns" -eq 0 ] || continue            # still mirroring: keep going
+      note "AirPlay switched off" "Nobody connected for $IDLE_MIN minutes. Ports closed."
+      kill "$pid" 2>/dev/null; break
+    fi
+  done
+  wait "$pid" 2>/dev/null || true
+}
+
 off() {
   systemctl --user stop "$UNIT" 2>/dev/null || true
   systemctl stop "$FW" 2>/dev/null || true
@@ -42,5 +113,6 @@ case "${1:-}" in
   toggle) if active; then off; else on; fi ;;
   status) if active; then echo "on (code $PIN, firewall $(systemctl is-active $FW))"; else echo off; exit 1; fi ;;
   pin) echo "$PIN" ;;
-  *) sed -n 2,10p "$0"; exit 1 ;;
+  _run) run ;;
+  *) sed -n 2,11p "$0"; exit 1 ;;
 esac

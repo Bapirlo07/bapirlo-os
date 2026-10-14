@@ -78,7 +78,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | App / tool | What it's for | How to open |
 |---|---|---|
 | **LocalSend** | AirDrop-style file sharing with the LocalSend iPhone app (same Wi-Fi). Received files → `~/Downloads/iPhone` | Start menu → LocalSend (opens its firewall port only while it runs) |
-| **AirPlay Receiver** | Mirror the iPhone screen to the laptop (PIN shown on screen) | Control Centre → AirPlay, or Start menu → AirPlay Receiver |
+| **AirPlay Receiver** | Mirror the iPhone screen to the laptop (code shown in the notification, first time only). Needs home Wi-Fi or the iPhone hotspot — on eduroam it offers to switch to the hotspot. Turns itself off after 15 min unused | Control Centre → AirPlay, or Start menu → AirPlay Receiver |
 | **KDE Connect (GSConnect)** | Clipboard both ways, send files/links, run commands on the laptop from the phone | Phone: KDE Connect app (keep it open) · laptop: `bapirlo-iphone` |
 | **iCloud** | iCloud.com (Photos, Drive, Notes) in its own window; optional Photos download | Start menu → iCloud · `bapirlo-icloud setup` |
 | **LibrePods** | AirPods battery, noise control and ear detection | Top bar AirPods chip (when connected) · Start menu → LibrePods |
@@ -276,7 +276,7 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
 ### Phone, sharing & remote
 
 - **LocalSend.** Opening the app opens port 53317, for home networks only, and quitting closes it again.
-- **AirPlay.** UxPlay runs only while the toggle is on and asks for a PIN.
+- **AirPlay.** UxPlay runs only while the toggle is on, asks for a code the first time, and switches off after 15 minutes with nobody connected. Settings: `~/.config/bapirlo/airplay.conf` (IDLE_MIN, SIZE, FPS, HOTSPOT).
 - **RustDesk.** Off by default. When it's on, it connects out to RustDesk's servers, so no ports are opened, and it uses a permanent password saved in your keyring.
   The ID and password are available with `bapirlo-remote id` and `bapirlo-remote password`. It disconnects after 30 minutes idle and works only while you are logged in.
 - **iPhone (GSConnect).** Run `bapirlo-iphone setup` once after pairing. The phone app must be open to talk to the laptop.
