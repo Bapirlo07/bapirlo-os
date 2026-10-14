@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Bapirlo OS Theme Studio — boot splash installer (root; run through pkexec = your password).
+# Installed root-owned to /usr/local/lib/bapirlo/ by `sudo bash ~/bapirlo-os/studio/install.sh root`.
+#
+#   pkexec bapirlo-studio-boot apply STAGE   STAGE must be <your home>/.local/state/bapirlo/studio/boot-stage
+#
+# The Theme Studio app prepares the recoloured splash in STAGE as you. This only:
+#   1. checks it: exactly the splash's own file names, real PNGs, and a script in which nothing but
+#      numbers (the colours) differ from the installed one
+#   2. backs up the splash folder + every initramfs image → ~/theme-backups/<time>-studio-boot
+#   3. copies the files into /usr/share/plymouth/themes/bapirlo-kuro, runs mkinitcpio -P and checks
+#      each image contains the splash — on ANY failure it puts the folder and the images back
+# Never touches GRUB / Limine, kernels, mkinitcpio.conf, partitions or the EFI partition.
+set -euo pipefail
+THEME=/usr/share/plymouth/themes/bapirlo-kuro
+die() { echo "bapirlo-studio-boot: $*" >&2; exit 1; }
+
+[ "$(id -u)" -eq 0 ] || die "needs root (pkexec)"
+[ "${1:-}" = apply ] && [ $# -eq 2 ] || die "usage: bapirlo-studio-boot apply STAGE"
+U=${PKEXEC_UID:-${SUDO_UID:-}}
+[ -n "$U" ] && [ "$U" -ne 0 ] || die "run it through pkexec from your own session"
+UHOME=$(getent passwd "$U" | cut -d: -f6)
+UNAME=$(getent passwd "$U" | cut -d: -f1)
+STAGE=$UHOME/.local/state/bapirlo/studio/boot-stage
+[ "$(realpath -m "$2")" = "$STAGE" ] || die "stage must be $STAGE"
+[ -d "$STAGE" ] && [ ! -L "$STAGE" ] || die "no stage folder"
+[ "$(stat -c %u "$STAGE")" = "$U" ] || die "stage isn't yours"
+[ -d "$THEME" ] || die "$THEME missing"
+
+# ---------------------------------------------------------------- 1. check
+# work on a root-owned private copy so nothing can change between the check and the install
+WORK=$(mktemp -d /run/bapirlo-studio-boot.XXXXXX)
+trap 'rm -rf "$WORK"' EXIT
+want=$(cd "$THEME" && ls -1 -- *.png *.script | sort)
+have=$(cd "$STAGE" && find . -maxdepth 1 -type f \( -name '*.png' -o -name '*.script' \) -printf '%f\n' | sort)
+[ "$want" = "$have" ] || die "stage files don't match the splash: $(diff <(echo "$want") <(echo "$have") | tr '\n' ' ')"
+while read -r f; do
+  s=$STAGE/$f
+  [ -f "$s" ] && [ ! -L "$s" ] || die "$f: not a plain file"
+  [ "$(stat -c %s "$s")" -le $((20 * 1024 * 1024)) ] || die "$f: too big"
+  cp --no-dereference -- "$s" "$WORK/$f"
+  case $f in
+    *.png) [ "$(head -c 8 "$WORK/$f" | od -An -tx1 | tr -d ' \n')" = 89504e470d0a1a0a ] || die "$f: not a PNG" ;;
+    *.script)
+      # identical apart from digits / decimal points = only colours (and nothing executable) changed
+      cmp -s <(tr -d '0-9.' < "$THEME/$f") <(tr -d '0-9.' < "$WORK/$f") || die "$f: changed beyond colour values" ;;
+  esac
+done <<<"$want"
+preset=$(head -c 120 "$STAGE/preset.txt" 2>/dev/null | tr -cd 'A-Za-z0-9._-' || true)
+echo "Checked $(wc -l <<<"$want") splash files for \"${preset:-?}\"."
+
+# ---------------------------------------------------------------- 2. backup
+BK=$UHOME/theme-backups/$(date +%Y%m%d-%H%M%S)-studio-boot
+install -d -o "$UNAME" -g "$(id -gn "$UNAME")" "$BK"
+cp -a "$THEME" "$BK/plymouth-theme"
+mkdir -p "$BK/boot"
+cp -a /boot/initramfs-*.img "$BK/boot/"
+chown -R "$UNAME:" "$BK"
+echo "$BK" > "$UHOME/theme-backups/LATEST-STUDIO-BOOT"; chown "$UNAME:" "$UHOME/theme-backups/LATEST-STUDIO-BOOT"
+echo "Backup: $BK"
+
+rollback() {
+  echo "!! Putting the previous splash and boot images back"
+  rm -rf "$THEME"; cp -a "$BK/plymouth-theme" "$THEME"; chown -R root:root "$THEME"
+  cp -a "$BK"/boot/initramfs-*.img /boot/
+  sync
+  echo "!! Boot is exactly as before."
+}
+
+# ---------------------------------------------------------------- 3. install + rebuild + verify
+while read -r f; do install -o root -g root -m 644 "$WORK/$f" "$THEME/$f"; done <<<"$want"
+echo "Rebuilding the boot images (mkinitcpio -P) — about a minute…"
+if ! mkinitcpio -P > "$WORK/mkinitcpio.log" 2>&1; then
+  tail -15 "$WORK/mkinitcpio.log"; rollback; exit 1
+fi
+ok=1
+for img in /boot/initramfs-*.img; do
+  list=$(lsinitcpio "$img")
+  for need in "usr/share/plymouth/themes/bapirlo-kuro/bapirlo.script" "usr/share/plymouth/themes/bapirlo-kuro/bg.png"; do
+    grep -q "$need" <<<"$list" || { echo "  FAIL $(basename "$img"): $need"; ok=0; }
+  done
+  # the image must carry the NEW splash, not a stale one
+  X=$(mktemp -d /var/tmp/bapirlo-initramfs.XXXXXX)
+  (cd "$X" && lsinitcpio -x "$img" >/dev/null 2>&1) || true
+  for f in bg.png bapirlo.script; do
+    cmp -s "$X/usr/share/plymouth/themes/bapirlo-kuro/$f" "$WORK/$f" || { echo "  FAIL $(basename "$img"): old $f inside"; ok=0; }
+  done
+  rm -rf "$X"
+  [ "$ok" -eq 1 ] && echo "  OK   $(basename "$img")"
+done
+if [ "$ok" -ne 1 ]; then rollback; mkinitcpio -P >/dev/null 2>&1 || true; exit 1; fi
+sync
+# the images are ~250 MB each: keep only this run's copies (older runs keep their splash folder)
+for old in "$UHOME"/theme-backups/*-studio-boot/boot; do
+  [ "$old" = "$BK/boot" ] || rm -rf -- "$old"
+done
+echo "Boot splash updated. You'll see it on the next restart."

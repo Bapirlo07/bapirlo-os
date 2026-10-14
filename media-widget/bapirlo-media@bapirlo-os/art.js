@@ -180,14 +180,27 @@ function wallpaperFile() {
     }
 }
 
+// The frost tint: Kuro "night", or the active Theme Studio preset's night (studio/engine.py)
+const STUDIO_ACTIVE = GLib.build_filenamev([GLib.get_user_state_dir(), 'bapirlo', 'studio', 'active.json']);
+function frostTint() {
+    try {
+        const [, bytes] = GLib.file_get_contents(STUDIO_ACTIVE);
+        const night = JSON.parse(new TextDecoder().decode(bytes)).palette?.night ?? '';
+        if (/^#[0-9a-fA-F]{6}$/.test(night))
+            return parseInt(night.slice(1), 16);
+    } catch {}
+    return 0x161015;
+}
+
 // Pre-blurred, tinted strip of the wallpaper covering [x, x+w) × the monitor's full height,
 // in monitor-logical coordinates. Returns a PNG path, or null (card then uses a plain tint).
 export async function frostStrip(monitor, x, w, cancellable) {
     const wp = wallpaperFile();
     if (!wp)
         return null;
+    const tintRGB = frostTint();
     const out = GLib.build_filenamev([cacheDir(), hashName(
-        `${wp.path}|${wp.mtime}|${wp.opts}|${monitor.width}x${monitor.height}|${x}|${w}|v2`, '.frost.png')]);
+        `${wp.path}|${wp.mtime}|${wp.opts}|${monitor.width}x${monitor.height}|${x}|${w}|v2|${tintRGB}`, '.frost.png')]);
     if (GLib.file_test(out, GLib.FileTest.EXISTS))
         return out;
 
@@ -221,10 +234,10 @@ export async function frostStrip(monitor, x, w, cancellable) {
         GdkPixbuf.InterpType.BILINEAR);
     const mid = tiny.scale_simple(Math.round(w / 3), Math.round(monitor.height / 3), GdkPixbuf.InterpType.BILINEAR);
     const full = mid.scale_simple(Math.round(w), Math.round(monitor.height), GdkPixbuf.InterpType.BILINEAR);
-    // tint: Kuro "night" #161015 at 80% → matches the shell's rgba(22,16,21,.94) surfaces while
+    // tint: Kuro "night" #161015 (or the Theme Studio night) at 80% → matches the shell's surfaces while
     // letting a hint of the wallpaper through
     const tint = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, false, 8, full.get_width(), full.get_height());
-    tint.fill(0x161015ff);
+    tint.fill(((tintRGB << 8) | 0xff) >>> 0);
     tint.composite(full, 0, 0, full.get_width(), full.get_height(), 0, 0, 1, 1,
         GdkPixbuf.InterpType.NEAREST, 204);
     full.savev(`${out}.part.png`, 'png', [], []);

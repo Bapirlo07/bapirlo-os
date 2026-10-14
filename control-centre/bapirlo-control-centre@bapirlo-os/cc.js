@@ -23,6 +23,7 @@ const NAMES = {
     power: 'Power Mode', caffeine: 'Caffeine', record: 'Screen Rec', darkmode: 'Dark Style',
     volume: 'Volume', brightness: 'Brightness', battery: 'Battery', media: 'Now Playing', storage: 'Storage',
     airplay: 'AirPlay', remote: 'Remote Access', captions: 'Live Captions', vault: 'Vault',
+    studio: 'Theme Studio',
 };
 export const ALL_TILES = Object.keys(NAMES);
 
@@ -44,6 +45,7 @@ function makeTile(id, cc) {
     case 'remote': return new T.CommandTile(id, cc, {title: 'Remote', onTitle: 'Remote On', icon: 'bapirlo-remote-symbolic', script: 'bapirlo-remote'});
     case 'captions': return new T.CommandTile(id, cc, {title: 'Captions', icon: 'bapirlo-captions-symbolic', script: 'bapirlo-captions'});
     case 'vault': return new T.CommandTile(id, cc, {title: 'Vault', onTitle: 'Vault Open', icon: 'bapirlo-vault-symbolic', script: 'bapirlo-vault'});
+    case 'studio': return new T.StudioTile(id, cc);
     case 'brightness': return new T.SliderTile(id, cc, {find: T.FIND.brightness, title: 'Display', icon: 'display-brightness-symbolic'});
     }
     return null;

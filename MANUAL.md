@@ -68,6 +68,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | **Screenshot + annotate (Satty)** | Pick an area/window/screen, then draw, blur, add arrows or text | [[Print]] |
 | **GNOME screenshot / screencast UI** | The built-in one (also records a short clip) | [[Shift+Print]] · [[Ctrl+Print]] full screen · [[Alt+Print]] window |
 | **Colour picker** | Click anywhere and the hex colour is copied | [[Shift+Super+C]] |
+| **Theme Studio** | Re-themes all of Bapirlo OS from a wallpaper: preview, Apply, save it, switch back. "Original Bapirlo OS" is always one click away | Start menu → Theme Studio · [[Super+Alt+T]] · Control Centre → Theme Studio (right-click it for your saved themes) · drop pictures in `~/Pictures/Theme Studio` |
 | **Camera** | Webcam photos and video | Start menu → Camera |
 | **Kvantum Manager, Qt6 Settings, Tweaks** | Theme controls (already set to Bapirlo — leave unless you know why) | Start menu → Tools folder |
 | *Editing apps* | None installed yet (GIMP, Kdenlive, Blender…) — `paru -S gimp kdenlive` | — |
@@ -200,6 +201,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | [[Super+Alt+M]] | Media panel |
 | [[Super+Alt+B]] | Show today's briefing |
 | [[Super+Alt+V]] | Vault lock / unlock |
+| [[Super+Alt+T]] | Theme Studio |
 | [[Super+Alt+C]] | Live Captions on / off (once installed) |
 | [[Shift+Super+H]] | Bapirlo Writer on the clipboard text |
 | [[Super+Alt+8]], [[Super+Alt+=]] / [[Super+Alt+-]] | Magnifier on, zoom in / out |
@@ -231,6 +233,16 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
 - **Day/night wallpaper.** The wallpaper switches between a bright day grade and a dark night grade at sunrise and sunset, and Night Light follows the same times.
   *Off:* `systemctl --user disable --now bapirlo-daycycle.timer`.
 - **Wallpaper accent.** The second accent colour (pink) follows the wallpaper, while black and crimson never change. *Off:* `systemctl --user disable --now bapirlo-autotheme.service`.
+- **Theme Studio.** Pick a wallpaper (or drop one into `~/Pictures/Theme Studio` and press *Preview* on the
+  notification). It reads the colours with matugen (the same code as the wallpaper accent), builds a palette in the
+  Kuro shape — same dark base, same contrast — and checks every text/background pair against WCAG AA before you
+  apply. *Apply* re-themes the shell, top bar, dock, ArcMenu, Control Centre, Island, media widget, notifications,
+  GTK 3/4 apps, Qt (Kvantum), terminals, fastfetch, the lock & login screen, and VS Code / Chrome / Spotify / Discord
+  themes when those apps are installed; the screen cross-fades, no logout. Every applied theme is saved; **Original
+  Bapirlo OS** puts back the exact files and settings you had. *Also apply to login & boot* (password) recolours the
+  boot splash and rebuilds the boot images, with a backup and automatic roll-back.
+  How it stays safe: the original themes are never edited; Studio writes recoloured copies (`Bapirlo-Studio-A/B`) and
+  switches names. *Off:* apply Original, then `bash ~/bapirlo-os/studio/install.sh restore`.
 - **Sounds.** The Bapirlo sound theme plays on log-in, notifications and so on. *Off:* Settings → Sound → Alert sound, or `gnome-extensions disable bapirlo-sounds@bapirlo-os`.
 
 ### Top bar, dock & menus

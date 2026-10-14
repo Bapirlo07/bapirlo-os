@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.bapirlo-live" path="/org/gnome/shell/extensions/bapirlo-live/">
+    <key name="live-toggle" type="as">
+      <default><![CDATA[['<Super><Alt>w']]]></default>
+      <summary>Pause / resume the live wallpaper</summary>
+    </key>
+    <key name="paused" type="b">
+      <default>false</default>
+      <summary>Paused by hand (the live-toggle shortcut flips this)</summary>
+    </key>
+    <key name="embers" type="b">
+      <default>true</default>
+      <summary>Embers rising from the bottom of the screen</summary>
+    </key>
+    <key name="petals" type="b">
+      <default>true</default>
+      <summary>Sakura petals drifting down</summary>
+    </key>
+    <key name="glow" type="b">
+      <default>true</default>
+      <summary>Slow pulse on the crimson parts of the art</summary>
+    </key>
+    <key name="parallax" type="b">
+      <default>false</default>
+      <summary>Wallpaper shifts slightly with the pointer (zooms the art 2 %, so a touch softer)</summary>
+    </key>
+    <key name="density" type="d">
+      <range min="0.05" max="1.0"/>
+      <default>0.45</default>
+      <summary>How many particles (0.05 – 1)</summary>
+    </key>
+    <key name="speed" type="d">
+      <range min="0.1" max="3.0"/>
+      <default>1.0</default>
+      <summary>Particle speed multiplier</summary>
+    </key>
+    <key name="fps" type="i">
+      <range min="10" max="60"/>
+      <default>30</default>
+      <summary>Frames per second of the animation (the screen itself stays at its own refresh rate)</summary>
+    </key>
+    <key name="ember-color" type="s">
+      <default>'#FF4655'</default>
+      <summary>Ember colour (palette "ember")</summary>
+    </key>
+    <key name="petal-color" type="s">
+      <default>'#F08AA4'</default>
+      <summary>Petal colour (palette "sakura")</summary>
+    </key>
+    <key name="pause-on-battery" type="b">
+      <default>true</default>
+      <summary>Stop the animation while running on battery</summary>
+    </key>
+    <key name="pause-in-power-saver" type="b">
+      <default>true</default>
+      <summary>Stop the animation in the power-saver profile (Eco / quiet mode)</summary>
+    </key>
+  </schema>
+</schemalist>

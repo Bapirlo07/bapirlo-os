@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<!-- Bapirlo OS Theme Studio: "Also apply to login & boot" — always asks for your password. -->
+<policyconfig>
+  <vendor>Bapirlo OS</vendor>
+  <action id="os.bapirlo.studio-boot">
+    <description>Apply a Theme Studio theme to the boot splash</description>
+    <message>Theme Studio wants to recolour the boot splash and rebuild the boot images</message>
+    <icon_name>bapirlo-studio</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/lib/bapirlo/bapirlo-studio-boot</annotate>
+  </action>
+</policyconfig>

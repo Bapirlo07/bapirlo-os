@@ -1043,3 +1043,81 @@ class BapirloCommandTile extends Tile {
         super.destroy();
     }
 });
+
+// ------------------------------------------------------------------ Theme Studio
+// Tap: open the app. Expand (right-click / long-press): the saved themes — tap one to switch to it
+// (studio/bapirlo-studio apply ID, cross-faded by bapirlo-studio@bapirlo-os). The list is read
+// only when the page opens: a handful of tiny JSON files.
+const STUDIO_DIR = GLib.build_filenamev([HOME, 'bapirlo-os', 'studio']);
+const STUDIO_PRESETS = GLib.build_filenamev([GLib.get_user_data_dir(), 'bapirlo', 'theme-studio', 'presets']);
+const STUDIO_ACTIVE = GLib.build_filenamev([GLib.get_user_state_dir(), 'bapirlo', 'studio', 'active.json']);
+
+function readJson(path) {
+    try {
+        const [, bytes] = GLib.file_get_contents(path);
+        return JSON.parse(new TextDecoder().decode(bytes));
+    } catch {
+        return null;
+    }
+}
+
+export const StudioTile = GObject.registerClass(
+class BapirloStudioTile extends Tile {
+    _init(id, cc) {
+        super._init(id, 'small', cc);
+        this.face = buildFace(this);
+        this.face.icon.icon_name = 'bapirlo-studio-symbolic';
+        this.face.title.text = 'Theme Studio';
+        this.expandable = true;
+    }
+
+    activate() {
+        spawnApp([`${STUDIO_DIR}/bapirlo-theme-studio`]);
+        this._cc.close();
+    }
+
+    _presets() {
+        const out = [{id: 'original', name: 'Original Bapirlo OS', created: Infinity}];
+        try {
+            const en = Gio.File.new_for_path(STUDIO_PRESETS).enumerate_children('standard::name',
+                Gio.FileQueryInfoFlags.NONE, null);
+            let info;
+            while ((info = en.next_file(null))) {
+                const p = readJson(GLib.build_filenamev([STUDIO_PRESETS, info.get_name(), 'preset.json']));
+                if (p?.id && p?.name)
+                    out.push(p);
+            }
+        } catch {}
+        return out.sort((a, b) => (b.created ?? 0) - (a.created ?? 0));
+    }
+
+    buildDetail() {
+        const box = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, style_class: 'bcc-list'});
+        const active = readJson(STUDIO_ACTIVE)?.preset ?? 'original';
+        for (const p of this._presets()) {
+            const row = new St.Button({style_class: 'bcc-row', can_focus: true, x_expand: true});
+            const inner = new St.BoxLayout({x_expand: true});
+            inner.add_child(new St.Icon({icon_name: 'bapirlo-studio-symbolic', style_class: 'bcc-row-icon'}));
+            inner.add_child(Object.assign(label(p.name, 'bcc-row-label'), {x_expand: true}));
+            if (p.id === active) {
+                row.add_style_pseudo_class('checked');
+                inner.add_child(new St.Icon({icon_name: 'object-select-symbolic', style_class: 'bcc-row-tick'}));
+            }
+            row.child = inner;
+            row.connect('clicked', () => {
+                if (p.id !== active)
+                    spawn([`${STUDIO_DIR}/bapirlo-studio`, 'apply', p.id]);
+                this._cc.close();
+            });
+            box.add_child(row);
+        }
+        const open = new St.Button({style_class: 'bcc-row', can_focus: true, x_expand: true});
+        const oi = new St.BoxLayout({x_expand: true});
+        oi.add_child(new St.Icon({icon_name: 'list-add-symbolic', style_class: 'bcc-row-icon'}));
+        oi.add_child(label('New theme from a wallpaper…', 'bcc-row-label'));
+        open.child = oi;
+        open.connect('clicked', () => this.activate());
+        box.add_child(open);
+        return {title: 'Theme Studio', icon: 'bapirlo-studio-symbolic', actor: box};
+    }
+});

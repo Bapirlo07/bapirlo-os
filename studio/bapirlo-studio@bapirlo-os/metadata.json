@@ -1,0 +1,8 @@
+{
+  "uuid": "bapirlo-studio@bapirlo-os",
+  "name": "Bapirlo Theme Studio",
+  "description": "Theme Studio's half inside GNOME Shell: smooth cross-fade when a theme is applied, the recoloured stylesheet for the Bapirlo extensions, and a rebuild after a theme source changed.",
+  "shell-version": ["50", "51"],
+  "url": "https://github.com/Bapirlo07/bapirlo-os",
+  "version": 1
+}

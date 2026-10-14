@@ -15,7 +15,7 @@
   background-color: rgba(10, 7, 9, 0.97);
   border: 1px solid rgba(225, 29, 46, 0.30);
   border-radius: 24px;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55), 0 0 18px rgba(225, 29, 46, 0.18);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55);
   color: #F2E9EC;
   font-family: Inter;
 }

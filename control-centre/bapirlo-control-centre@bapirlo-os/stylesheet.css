@@ -50,7 +50,7 @@
 .bcc-tile:insensitive .bcc-title, .bcc-tile:insensitive .bcc-subtitle, .bcc-tile:insensitive .bcc-icon { color: rgba(242, 233, 236, 0.55); }
 
 /* recording: pulsing is avoided (no animation loop) — solid ember ring instead */
-.bcc-recording:checked .bcc-icon-circle { background-color: #FF4655; box-shadow: 0 0 0 3px rgba(255, 70, 85, 0.35), 0 0 16px rgba(255, 70, 85, 0.6); }
+.bcc-recording:checked .bcc-icon-circle { background-color: #FF4655; box-shadow: 0 0 0 3px rgba(255, 70, 85, 0.35); }
 
 /* low battery / low disk */
 .bcc-low { border-color: rgba(255, 70, 85, 0.75); background-color: rgba(225, 29, 46, 0.18); }
