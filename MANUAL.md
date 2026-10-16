@@ -100,7 +100,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | **Emoji picker** | Search and paste emoji | [[Super+.]] |
 | **Vault** | An encrypted folder (`~/Vault`) for private files; locks itself after 15 min idle, on lock and on logout | [[Super+Alt+V]] · Control Centre → Vault |
 | **Bitwarden** | Password manager | Start menu → Bitwarden |
-| **Downloads tidy** | Once a day sorts loose files in Downloads into folders; old installers go to the Bin | Automatic |
+| **Downloads tidy** | Once a day sorts loose files in Downloads into folders; old installers and duplicate files go to the Bin | Automatic · `bapirlo-tidy --dupes` to clear duplicates now |
 | **Google Drive** | Drive as a folder (`~/GoogleDrive`) | `bapirlo-gdrive setup` once |
 | **Picture-in-picture** | PiP windows from Chrome/Firefox stay on top and remember their place | Automatic |
 | **Caffeine** | Stop the screen from sleeping (e.g. during a lecture video) | Control Centre → Caffeine |
@@ -287,6 +287,7 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
 - **Vault.** An encrypted folder (gocryptfs). Unlock it with [[Super+Alt+V]] and your Vault password. It locks after 15 minutes idle, on screen lock, before suspend and at logout.
   **Without the password or the recovery key it can't be opened, by anyone.**
 - **Downloads tidy.** Runs once a day and moves loose files into folders. Installers older than 30 days go to the Bin, never deleted.
+  *Duplicates:* identical files (e.g. `CV.pdf` and `CV (1).pdf`) keep one copy and the rest go to the Bin. Run `bapirlo-tidy --dupes` to do it right now, or `bapirlo-tidy --dupes --dry-run` to just see the list.
   *Off:* `systemctl --user disable --now bapirlo-tidy.timer`.
 - **Firewall.** Blocks everything coming in. Only phone sharing, Steam LAN and mDNS are allowed, and only from home networks. *Check:* `sudo ufw status`.
 

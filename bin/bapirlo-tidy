@@ -4,16 +4,21 @@
   bapirlo-tidy            sort now (skipped if it already ran today — the daily timer)
   bapirlo-tidy --force    sort now even if it ran today
   bapirlo-tidy --dry-run  show what it would do, change nothing
+  bapirlo-tidy --dupes    only bin duplicates, now (add --dry-run to just list them)
 
 Loose files in ~/Downloads go into Documents, Images, Videos, Installers, Archives
 (~/Downloads/iPhone is where LocalSend puts what your iPhone sends — left alone).
 Installers older than 30 days go to the BIN (Files → Trash; restorable), never deleted.
 Never touches: folders, files still downloading (.crdownload/.part/…), files changed in the
 last 10 minutes, hidden files, or anything with no known type. Name clashes get " (2)".
+Duplicates (byte-identical files anywhere in Downloads except iPhone/) keep one copy — a name
+without " (1)"/"copy" first, so "CV.pdf" beats "CV (1).pdf", then the newest — the rest go to the BIN.
 Ends with one notification summarising what moved.
 """
 import datetime
+import hashlib
 import os
+import re
 import subprocess
 import sys
 import time
@@ -34,6 +39,7 @@ TYPES = {
                    ".run", ".snap", ".apk", ".ipa", ".msix", ".zst"},
     "Archives": {".zip", ".7z", ".rar", ".tar", ".gz", ".tgz", ".bz2", ".xz", ".tbz2", ".txz", ".lz", ".zstd"},
 }
+COPY_MARK = re.compile(r"(\s*\(\d+\)|[\s_-]*copy(\s*\d+)?)$", re.I)
 PARTIAL = {".crdownload", ".part", ".partial", ".download", ".tmp", ".opdownload"}
 FOLDERS = list(TYPES) + ["iPhone"]
 
@@ -63,10 +69,64 @@ def free_name(dest: Path) -> Path:
     return cand
 
 
+def digest(p: Path) -> str:
+    h = hashlib.sha256()
+    with p.open("rb") as f:
+        while chunk := f.read(1 << 20):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def bin_dupes(dry: bool, now: float) -> int:
+    """Bin byte-identical copies; returns how many went (or would go) to the bin."""
+    by_size = {}
+    for d in [DL] + [DL / f for f in TYPES]:
+        if not d.is_dir():
+            continue
+        for p in d.iterdir():
+            if not p.is_file() or p.is_symlink() or p.name.startswith("."):
+                continue
+            if p.suffix.lower() in PARTIAL or now - p.stat().st_mtime < SETTLE_S:
+                continue
+            st = p.stat()
+            if st.st_size:
+                by_size.setdefault(st.st_size, []).append(p)
+
+    binned = 0
+    for same_size in by_size.values():
+        if len(same_size) < 2:
+            continue
+        by_hash = {}
+        for p in same_size:
+            try:
+                by_hash.setdefault(digest(p), []).append(p)
+            except OSError:
+                continue
+        for group in by_hash.values():
+            if len(group) < 2:
+                continue
+            group.sort(key=lambda p: (bool(COPY_MARK.search(p.stem)), -p.stat().st_mtime, str(p)))
+            keep, extra = group[0], group[1:]
+            for p in extra:
+                print(f"{p.relative_to(DL)} → bin (duplicate of {keep.relative_to(DL)})")
+                if dry or subprocess.run(["gio", "trash", "--", str(p)]).returncode == 0:
+                    binned += 1
+    return binned
+
+
 def main():
     dry = "--dry-run" in sys.argv
     force = "--force" in sys.argv
     today = datetime.date.today().isoformat()
+    if "--dupes" in sys.argv:
+        if DL.is_dir():
+            n = bin_dupes(dry, time.time())
+            if not dry:
+                subprocess.run(["notify-send", "-a", "Downloads", "-i", "folder-download-symbolic",
+                                "Duplicates binned" if n else "No duplicates",
+                                f"{n} duplicate{'s' if n != 1 else ''} → bin" if n else "Downloads has no duplicate files"],
+                               check=False)
+        return
     if not (dry or force) and STATE.exists() and STATE.read_text().strip() == today:
         return
     if not DL.is_dir():
@@ -105,6 +165,8 @@ def main():
                 elif dry:
                     binned.append(p.name)
 
+    dupes = bin_dupes(dry, now)
+
     if dry:
         return
     STATE.parent.mkdir(parents=True, exist_ok=True)
@@ -112,6 +174,8 @@ def main():
     parts = [f"{n} → {k}" for k, n in moved.items() if n]
     if binned:
         parts.append(f"{len(binned)} old installer{'s' if len(binned) > 1 else ''} → bin")
+    if dupes:
+        parts.append(f"{dupes} duplicate{'s' if dupes > 1 else ''} → bin")
     if parts:
         subprocess.run(["notify-send", "-a", "Downloads", "-i", "folder-download-symbolic",
                         "Downloads tidied", " · ".join(parts)], check=False)
