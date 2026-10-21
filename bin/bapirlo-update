@@ -3,15 +3,23 @@
 # Runs in its own terminal window: lists what will change, then `paru -Syu` (official repos
 # + AUR, as you). The pacman hook takes a Timeshift snapshot right before packages are
 # upgraded (once per run). paru shows AUR PKGBUILD changes for review before building.
+# Old stuff is deleted on every update: the previous "Before update" snapshot (presnap hook),
+# old package versions (zz-bapirlo-pkgcache.hook) and, here, paru's AUR build files.
 set -uo pipefail
 R=$'\e[38;2;255;70;85m'; D=$'\e[38;2;202;181;191m'; B=$'\e[1m'; N=$'\e[0m'
 printf '\n  %s%sBAPIRLO OS · UPDATE%s\n\n' "$B" "$R" "$N"
-printf '  %sA Timeshift snapshot is taken automatically before anything is upgraded.%s\n\n' "$D" "$N"
+printf '  %sA Timeshift snapshot is taken automatically before anything is upgraded.%s\n' "$D" "$N"
+printf '  %sOld versions and the previous update snapshot are deleted to save space.%s\n\n' "$D" "$N"
+avail() { df -B1 --output=avail / | tail -1; }
+before=$(avail)
 paru -Syu
 rc=$?
 echo
 if [ $rc -eq 0 ]; then
+  rm -rf "$HOME/.cache/paru/clone"   # AUR sources + built packages; paru re-downloads when needed
+  freed=$(( ($(avail) - before) / 1000000 ))
   printf '  %s%sDone.%s ' "$B" "$R" "$N"
+  [ "$freed" -gt 0 ] && printf 'Freed %s MB. ' "$freed"
   # new kernel installed but old one still running → suggest a reboot
   running=$(uname -r); if ! ls /usr/lib/modules | grep -qx "$running"; then
     printf 'A new kernel was installed — reboot when convenient.'

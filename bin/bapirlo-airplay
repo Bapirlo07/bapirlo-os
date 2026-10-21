@@ -9,6 +9,10 @@
 # iPhone: Control Centre → Screen Mirroring → "Bapirlo OS", type the 4-digit code once — the
 # phone is remembered after that (~/.uxplay.register + a fixed server key, so it stays the same
 # "Apple TV" to the phone across restarts).
+# Videos (YouTube app): tap the AirPlay/cast icon in the video → Bapirlo OS. The laptop fetches
+# and plays the video itself, so the phone is free — lock it, switch apps, it keeps playing;
+# the phone stays the remote (pause/seek/volume). Other apps' AirPlay video isn't supported by
+# UxPlay yet (Netflix/Disney+ are DRM-locked; Safari/Photos send audio only) → use mirroring.
 set -euo pipefail
 UNIT=bapirlo-airplay.service
 FW=bapirlo-port@airplay.service
@@ -22,6 +26,10 @@ HOTSPOT=iPhone          # NetworkManager connection of the iPhone's Personal Hot
 SIZE=2560x1600@60       # asked of the iPhone; it scales to its own aspect ratio
 FPS=60
 IDLE_MIN=15             # switch off after this long with nobody connected (0 = never)
+HLS=3                   # video casting from the YouTube app (GStreamer playbin 3; 2 if videos fail; "" = off)
+# local build with the iPhone pairing-code fix (920-airplay-pin-fix.sh), else the packaged one
+UXPLAY=$HOME/bapirlo-os/tools/uxplay/bin/uxplay
+[ -x "$UXPLAY" ] || UXPLAY=uxplay
 . "$CONF"
 
 note() { notify-send -a "AirPlay" -i bapirlo-airplay "$@" 2>/dev/null || true; }
@@ -50,7 +58,7 @@ net_check() {
 }
 
 on() {
-  command -v uxplay >/dev/null || { note "AirPlay isn't installed" "Run 800-round7-install.sh first."; exit 1; }
+  command -v "$UXPLAY" >/dev/null || { note "AirPlay isn't installed" "Run 800-round7-install.sh first."; exit 1; }
   net_check
   systemctl start "$FW" || { note "AirPlay: firewall didn't open" "See: journalctl -u $FW"; exit 1; }
   # iGPU (Intel VA-API) decode + display; nothing runs while off
@@ -67,9 +75,10 @@ run() {
   # -p: fixed ports (the firewall needs them) · -nh: no "@hostname" · -pin: code on first pairing
   # -reg + -key: remember paired iPhones and keep the same identity · -nohold: a reconnecting
   # phone replaces its stale session · -scrsv 1: screen stays awake while video is showing
-  coproc UX { exec stdbuf -oL -eL uxplay -n "$NAME" -nh -p -pin "$PIN" -reg -key "$KEY" -nohold \
-    -scrsv 1 -s "$SIZE" -fps "$FPS" 2>&1; }
-  local pid=$UX_PID fd line who="" conns=0 idle="" rc n
+  # -hls: the phone hands over the video and the laptop streams it straight from YouTube
+  coproc UX { exec stdbuf -oL -eL "$UXPLAY" -n "$NAME" -nh -p -pin "$PIN" -reg -key "$KEY" -nohold \
+    -scrsv 1 -s "$SIZE" -fps "$FPS" ${HLS:+-hls "$HLS"} 2>&1; }
+  local pid=$UX_PID fd line who="" conns=0 casting=0 idle="" rc n
   [ "$IDLE_MIN" -gt 0 ] && idle=$((IDLE_MIN * 60))
   exec {fd}<&"${UX[0]}"                       # bash drops UX[] when UxPlay exits; keep our own copy
   trap 'kill "$pid" 2>/dev/null; wait "$pid" 2>/dev/null; exit 0' TERM INT
@@ -88,11 +97,16 @@ run() {
           conns=$n
           ;;
         *"Client Authentication Failure"*) note "AirPlay: wrong code" "The code is $PIN." ;;
+        *"playlistInsert (start playback)"*|*"Requested media_playlist"*)
+          [ "$casting" -eq 1 ] || note "Playing on the laptop" "Your phone is free — it stays the remote. Stop from the video's AirPlay icon."
+          casting=1
+          ;;
+        *"client HTTP request POST stop"*|*"hls video has sent EOS"*) casting=0 ;;
       esac
     else
       rc=$?
       [ "$rc" -gt 128 ] || break                # UxPlay exited
-      [ "$conns" -eq 0 ] || continue            # still mirroring: keep going
+      [ "$conns" -eq 0 ] && [ "$casting" -eq 0 ] || continue   # still mirroring / playing a video
       note "AirPlay switched off" "Nobody connected for $IDLE_MIN minutes. Ports closed."
       kill "$pid" 2>/dev/null; break
     fi
@@ -114,5 +128,5 @@ case "${1:-}" in
   status) if active; then echo "on (code $PIN, firewall $(systemctl is-active $FW))"; else echo off; exit 1; fi ;;
   pin) echo "$PIN" ;;
   _run) run ;;
-  *) sed -n 2,11p "$0"; exit 1 ;;
+  *) sed -n 2,15p "$0"; exit 1 ;;
 esac

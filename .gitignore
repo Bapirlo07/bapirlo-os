@@ -49,3 +49,7 @@ config/local*
 # exported settings get checked by the exporter; raw dumps are not allowed
 *.dconf.raw
 dconf-dump*
+
+# upstream UxPlay clone + build (our changes: patches/uxplay-dbb8a8f-bapirlo.patch)
+tools/uxplay/
+tools/uxplay-src/

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Bapirlo OS — play a video from ANY app on the laptop, while the phone stays free.
+#   bapirlo-play URL      play it (YouTube, TikTok, Instagram, X, Reddit, Twitch, Vimeo, Facebook,
+#                         Dailymotion, SoundCloud… anything yt-dlp knows, plus direct .mp4/.m3u8)
+#   bapirlo-play          play the link on the clipboard (the iPhone's clipboard syncs over)
+#   bapirlo-play share URL  from GSConnect: video links play, other links open in the browser
+#   bapirlo-play stop
+# iPhone: in any app, Share → KDE Connect → Bapirlo OS. Or copy the link, then KDE Connect →
+#   Run command → "Play copied link". Play / Pause and Stop video are run commands too.
+# A new link replaces the one playing (one mpv window, controlled through $SOCK).
+# Apps with DRM (Netflix, Disney+, Prime, Apple TV+) can't be played this way — use mirroring.
+set -euo pipefail
+SOCK=${XDG_RUNTIME_DIR:-/tmp}/bapirlo-play.sock
+MAXH=1600               # matches the screen; yt-dlp picks the best stream up to this height
+
+note() { notify-send -a "Play on laptop" -i video-x-generic "$@" 2>/dev/null || true; }
+mpv_cmd() {
+  python3 -c 'import socket, sys
+s = socket.socket(socket.AF_UNIX); s.settimeout(2); s.connect(sys.argv[1])
+s.sendall(sys.argv[2].encode() + b"\n")' "$SOCK" "$1" 2>/dev/null
+}
+# phone apps share "Check this out https://…" — keep just the link
+link_in() { grep -oE 'https?://[^[:space:]<>"]+' <<<"$1" | head -1; }
+
+play() {
+  local url=$1 q
+  q=${url//\\/\\\\}; q=${q//\"/\\\"}
+  note "Loading video…" "$url"
+  # already open → replace what's playing, keep the window
+  if [ -S "$SOCK" ] && mpv_cmd "{\"command\": [\"loadfile\", \"$q\", \"replace\"]}"; then return 0; fi
+  rm -f "$SOCK"
+  # --idle=no: closing / the video ending quits; mpv-mpris lets "Play / Pause" (playerctl) drive it
+  setsid -f mpv --force-window=immediate --idle=no --keep-open=no --hwdec=auto-safe \
+    --input-ipc-server="$SOCK" --title='${media-title} — Bapirlo OS' \
+    --ytdl-format="bv*[height<=$MAXH]+ba/b[height<=$MAXH]/b" "$url" >/dev/null 2>&1
+}
+
+# a video yt-dlp can play (no generic fallback, or every web page would "be a video")
+is_video() {
+  case "$1" in *.mp4|*.m4v|*.mkv|*.webm|*.mov|*.m3u8|*.mpd|*.mp4\?*|*.m3u8\?*) return 0 ;; esac
+  timeout 20 yt-dlp -q --no-warnings --simulate --no-playlist --ies default,-generic "$1" >/dev/null 2>&1
+}
+
+case "${1:-}" in
+  stop)
+    mpv_cmd '{"command": ["quit"]}' || true ;;
+  share)
+    url=$(link_in "${2:-}")
+    [ -n "$url" ] || exit 1
+    if is_video "$url"; then play "$url"; else xdg-open "$url"; fi ;;
+  -h|--help|help)
+    sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//' ;;
+  *)
+    url=$(link_in "${1:-$(wl-paste -n 2>/dev/null || true)}")
+    [ -n "$url" ] || { note "No video link" "Copy a link on the phone first (KDE Connect app open)."; exit 1; }
+    play "$url" ;;
+esac

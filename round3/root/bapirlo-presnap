@@ -4,7 +4,7 @@
 #
 #   · one snapshot per update run: skipped if the last automatic one is < 60 min old
 #     (paru -Syu calls pacman twice — repo packages, then AUR — that is still one update)
-#   · keeps the newest 3 automatic "Before update" snapshots and deletes older ones
+#   · keeps ONLY the newest automatic "Before update" snapshot — each update deletes the previous one
 #     (your own snapshots — "Before round 3" etc. — and the weekly ones are never touched)
 #   · skipped when / has less than 15G free (BAPIRLO_SNAP_MIN_FREE_GB)
 #   · never blocks the update: if the snapshot fails you get a loud warning and pacman goes on
@@ -12,7 +12,7 @@
 #   · off for good: sudo rm /etc/pacman.d/hooks/00-bapirlo-timeshift.hook
 set -uo pipefail
 TAG="Before update"
-KEEP=${BAPIRLO_SNAP_KEEP:-3}
+KEEP=${BAPIRLO_SNAP_KEEP:-1}
 MIN_FREE_GB=${BAPIRLO_SNAP_MIN_FREE_GB:-15}
 STAMP=/var/lib/bapirlo/last-presnap
 mkdir -p /var/lib/bapirlo
