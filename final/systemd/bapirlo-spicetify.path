@@ -2,9 +2,11 @@
 Description=Watch Spotify (spotify-launcher) for updates
 
 [Path]
-# spotify-launcher unpacks every new Spotify version here
-PathChanged=%h/.local/share/spotify-launcher/install/usr/share/spotify
-PathChanged=%h/.local/share/spotify-launcher/install/usr/share/spotify/Apps
+# spotify-launcher unpacks every new Spotify version into a fresh install/ and swaps it in,
+# so watches inside install/ die with the old tree — watch the top folder (the swap and the
+# state.json rewrite both change it). Extra triggers are cheap: `auto` checks a fingerprint.
+PathChanged=%h/.local/share/spotify-launcher
+PathChanged=%h/.local/share/spotify-launcher/install
 Unit=bapirlo-spicetify.service
 TriggerLimitIntervalSec=5min
 TriggerLimitBurst=4
