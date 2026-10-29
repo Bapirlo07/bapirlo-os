@@ -56,6 +56,9 @@ tools/uxplay-src/
 
 # --- big generated output: rebuilt by the round scripts
 /build/**/*.mp4
-!/build/greeter/login-flow.mp4
+# login-flow.mp4 shows the fan-art wallpaper: local only
 !/build/island/island.mp4
 /build/round8/Bapirlo-Cursors/
+
+# bar-look previews are shot over the fan-art wallpaper: local only
+/bar-looks/previews/
