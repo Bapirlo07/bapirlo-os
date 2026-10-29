@@ -11,6 +11,11 @@
     <value nick="top-right" value="2"/>
     <value nick="bottom-right" value="3"/>
   </enum>
+  <enum id="org.gnome.shell.extensions.bapirlo-desk.session-restore">
+    <value nick="auto" value="0"/>
+    <value nick="ask" value="1"/>
+    <value nick="off" value="2"/>
+  </enum>
   <schema id="org.gnome.shell.extensions.bapirlo-desk" path="/org/gnome/shell/extensions/bapirlo-desk/">
     <key name="launchpad-toggle" type="as">
       <default><![CDATA[['<Super>g']]]></default>
@@ -19,6 +24,10 @@
     <key name="briefing-show" type="as">
       <default><![CDATA[['<Super><Alt>b']]]></default>
       <summary>Show the briefing card again</summary>
+    </key>
+    <key name="login-intro" type="b">
+      <default>true</default>
+      <summary>Login intro: greeting, the wallpaper fades up, the top bar, dock and desk widgets fly in (replay: os.bapirlo.Desk.Intro)</summary>
     </key>
     <key name="briefing-mode" enum="org.gnome.shell.extensions.bapirlo-desk.briefing-mode">
       <default>'first-login'</default>
@@ -35,15 +44,53 @@
     </key>
     <key name="widgets" type="b">
       <default>true</default>
-      <summary>Desktop widgets (calendar, deadlines, system) on the wallpaper</summary>
+      <summary>Desktop widgets (clock, calendar, deadlines, weather, system) on the wallpaper</summary>
     </key>
     <key name="widgets-corner" enum="org.gnome.shell.extensions.bapirlo-desk.corner">
       <default>'bottom-left'</default>
       <summary>Where the widget row sits on the primary screen</summary>
+      <description>Cards that were never dragged line up from this corner; dragged cards keep their own spot.</description>
+    </key>
+    <key name="widgets-dodge" type="b">
+      <default>true</default>
+      <summary>Cards step out of the way of the wallpaper's main subject</summary>
+      <description>The Wallpapers app finds where the character / subject is (~/.local/state/bapirlo/wallpaper/subject.json); a card that would cover it moves to the nearest free spot beside it. Edit mode shows the cards at their own spots.</description>
+    </key>
+    <key name="widgets-cards" type="as">
+      <default><![CDATA[['clock', 'calendar', 'upnext', 'weather', 'system']]]></default>
+      <summary>Which desktop widget cards show: clock, calendar, upnext, weather, system, nowplaying, todo, notes</summary>
+    </key>
+    <key name="widgets-edit" type="as">
+      <default><![CDATA[['<Super><Alt>e']]]></default>
+      <summary>Edit the desktop widgets (drag them, show / hide cards)</summary>
     </key>
     <key name="pip-on-top" type="b">
       <default>true</default>
       <summary>Keep picture-in-picture and Live Captions windows above everything</summary>
+    </key>
+    <key name="popout-toggle" type="as">
+      <default><![CDATA[['<Super><Alt>i']]]></default>
+      <summary>Pop the focused window out into a live picture-in-picture (press again to close it)</summary>
+    </key>
+    <key name="todo-add" type="as">
+      <default><![CDATA[['<Super><Alt>d']]]></default>
+      <summary>Add a to-do (opens the desk widgets in edit mode, cursor in the To-do card)</summary>
+    </key>
+    <key name="radial-toggle" type="as">
+      <default><![CDATA[['<Super><Alt>o']]]></default>
+      <summary>Open / close the radial launcher around the pointer</summary>
+    </key>
+    <key name="radial-apps" type="as">
+      <default>[]</default>
+      <summary>Apps in the radial launcher (desktop ids, up to 8; empty = the first 8 dock favourites)</summary>
+    </key>
+    <key name="session-restore" enum="org.gnome.shell.extensions.bapirlo-desk.session-restore">
+      <default>'auto'</default>
+      <summary>After login, reopen last session's apps: auto, ask (notification), off</summary>
+    </key>
+    <key name="session-skip" type="as">
+      <default>[]</default>
+      <summary>Apps (desktop ids) never saved or reopened by session restore</summary>
     </key>
     <key name="privacy-dots" type="b">
       <default>true</default>

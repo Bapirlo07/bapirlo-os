@@ -46,6 +46,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | **MangoHud** | FPS / temperature overlay in games | In Steam: launch option `mangohud %command%` · [[Right Shift+F12]] toggles it |
 | **Gaming / Quiet modes** | Gaming = Turbo + DND + replay. Quiet = Eco + silent fans + no sounds | Bapirlo Welcome switches, or `bapirlo-mode gaming toggle` |
 | **Discord** | Voice and chat | Start menu → Discord |
+| **Vesktop** | Discord with Vencord built in, in the Bapirlo Kuro theme (Vencord settings → Themes) | Start menu → Vesktop |
 | **Steam, OBS** | *Not installed yet.* The OBS Do-Not-Disturb script is ready in `~/bapirlo-os/game/obs` | Install with `paru -S steam obs-studio` |
 
 ### Media
@@ -68,7 +69,8 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | **Screenshot + annotate (Satty)** | Pick an area/window/screen, then draw, blur, add arrows or text | [[Print]] |
 | **GNOME screenshot / screencast UI** | The built-in one (also records a short clip) | [[Shift+Print]] · [[Ctrl+Print]] full screen · [[Alt+Print]] window |
 | **Colour picker** | Click anywhere and the hex colour is copied | [[Shift+Super+C]] |
-| **Theme Studio** | Re-themes all of Bapirlo OS from a wallpaper: preview, Apply, save it, switch back. "Original Bapirlo OS" is always one click away | Start menu → Theme Studio · [[Super+Alt+T]] · Control Centre → Theme Studio (right-click it for your saved themes) · drop pictures in `~/Pictures/Theme Studio` |
+| **Wallpapers** (one window with two tabs: *Wallpapers* and *Theme*) | Every wallpaper in one gallery, live ones too: click to use it, drop pictures or videos on the window to add them, ⋯ for time-of-day tags. Modes: Fixed · Time of day · Shuffle. The OS colours follow the wallpaper (switch it off for the original Bapirlo colours) | Start menu → Wallpapers · [[Super+Alt+P]] · [[Super+Alt+N]] next · Files → right-click → Scripts → *Set as wallpaper* · `bapirlo-wallpaper` |
+| **Theme Studio** (the *Theme* tab of Wallpapers) | Re-themes all of Bapirlo OS from a wallpaper: preview, Apply, save it, switch back. "Original Bapirlo OS" is always one click away | Start menu → Wallpapers → Theme tab · [[Super+Alt+T]] · Control Centre → Theme Studio (right-click it for your saved themes) · drop pictures in `~/Pictures/Theme Studio` |
 | **Camera** | Webcam photos and video | Start menu → Camera |
 | **Kvantum Manager, Qt6 Settings, Tweaks** | Theme controls (already set to Bapirlo — leave unless you know why) | Start menu → Tools folder |
 | *Editing apps* | None installed yet (GIMP, Kdenlive, Blender…) — `paru -S gimp kdenlive` | — |
@@ -92,17 +94,19 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 |---|---|---|
 | **Bapirlo Welcome** | Clock, weather, today's events, battery/CPU/storage, updates, quick launchers, mode switches. Opens on your first login of the day | Start menu → Bapirlo Welcome |
 | **Login briefing** | A short "today" card after login: events, weather, battery | Automatic · [[Super+Alt+B]] shows it again |
-| **Desktop widgets** | Calendar, Up next (your Google Calendar via GNOME Online Accounts), System | On the desktop; hidden when windows cover them |
+| **Desktop widgets** | Clock, Calendar, Up next (your Google Calendar via GNOME Online Accounts), Weather (3-day), System (CPU, memory, temperature, battery, disk). Colours follow the wallpaper. Edit mode: drag cards anywhere (they snap to edges and each other), click a name to show / hide a card, *Reset layout* | On the desktop; hidden when windows cover them · [[Super+Alt+E]] edit |
 | **Launchpad** | Mac-style full-screen app grid with search and folders | [[Super+G]] · dock icon |
 | **Start menu (ArcMenu)** | Apps, search, places | Tap [[Super]] |
 | **Run box** | Spotlight-style search / launcher | [[Super+Space]] |
 | **Clipboard history** | Everything you copied | [[Super+V]] |
 | **Emoji picker** | Search and paste emoji | [[Super+.]] |
+| **Focus timer** | 25 min focus blocks + 5 min breaks in the top bar, next to the clock. Notification pop-ups stay off during a block. Click = pause, right-click = stop. The Welcome app's FOCUS card shows today, this week and your streak | [[Super+Alt+F]] · Start menu → Focus Timer · `bapirlo-focus` (`start 50`, `stats`, `set 50 10`) |
 | **Vault** | An encrypted folder (`~/Vault`) for private files; locks itself after 15 min idle, on lock and on logout | [[Super+Alt+V]] · Control Centre → Vault |
 | **Bitwarden** | Password manager | Start menu → Bitwarden |
 | **Downloads tidy** | Once a day sorts loose files in Downloads into folders; old installers and duplicate files go to the Bin | Automatic · `bapirlo-tidy --dupes` to clear duplicates now |
 | **Google Drive** | Drive as a folder (`~/GoogleDrive`) | `bapirlo-gdrive setup` once |
 | **Picture-in-picture** | PiP windows from Chrome/Firefox stay on top and remember their place | Automatic |
+| **Pop-out (any window)** | A live mini copy of any window (video, call, game, build log) floats in a corner above everything, on every workspace — minimise the original or leave its workspace and it keeps playing. Drag = move (snaps to a corner), scroll = size, Ctrl+scroll = see-through, double-click = go to the window, middle-click / ✕ = close. Hidden in the overview and when locked | [[Super+Alt+I]] on the window (again closes it) · window menu ([[Alt+Space]] or right-click the title bar) → *Picture in Picture* |
 | **Caffeine** | Stop the screen from sleeping (e.g. during a lecture video) | Control Centre → Caffeine |
 | **Files** | File manager, with Windows bookmarks | [[Super+E]] · dock |
 
@@ -115,7 +119,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | **Bapirlo Control Centre** | Mac-style tiles: Wi-Fi, Bluetooth, power mode, DND, Night Light, Caffeine, Screen Rec, Dark Style, sound, brightness, AirPlay, Remote, Captions, Vault, battery, storage, now playing | Top-right capsule · [[Super+S]] |
 | **Bapirlo Dynamic Island** | The clock capsule grows to show volume/brightness, media, notifications, battery and screenshots | Top centre |
 | **Bapirlo Media** | Media button and dropdown (cover, seek, volume, players) | Top bar music note |
-| **Bapirlo Desk** | Desktop widgets, login briefing, Launchpad, PiP on top, privacy dots, AirPods chip | Desktop / top bar |
+| **Bapirlo Desk** | Desktop widgets, login briefing, Launchpad, PiP on top, pop-out PiP, privacy dots, AirPods chip | Desktop / top bar |
 | **Bapirlo Game Mode, AI, Sounds, Session** | Game detection; Super+A terminal; the Bapirlo sound theme; reopening your apps after login | — |
 | **Places Status Indicator** | Folder icon: Home, bookmarks, the **Windows** drive and its folders, Network, Trash | Folder icon in the top bar |
 | **Removable Drive Menu** | Eject icon when a USB stick is plugged in | Eject icon in the top bar |
@@ -136,7 +140,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | **Desktop Icons (DING)** | Home and Bin on the desktop | Desktop |
 | **GSConnect** | KDE Connect for the iPhone | — |
 | **AppIndicator** | Tray icons (Toolbox, LibrePods…) | Top bar extras capsule |
-| *Tiling Shell* | Snap layouts — **off**: no GNOME 51 version yet. Super+arrows still snap windows | — |
+| **Tiling Shell** | Snap layouts with 10 px gaps: drag a window to the top edge for the layout picker; Super+arrows move a window between tiles | [[Super+←]] [[Super+→]] [[Super+↑]] [[Super+↓]] |
 
 ### System tools
 
@@ -164,6 +168,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 |---|---|
 | [[Super]] (tap) | Start menu (ArcMenu) |
 | [[Super+Space]] | Run / search box |
+| [[Super+/]] | **Cheat sheet of every shortcut** (read live; type to filter) |
 | [[Super+G]] | Launchpad (all apps) |
 | [[Super+S]] | Control Centre |
 | [[Shift+Super+S]] | GNOME's original quick settings ("Classic") |
@@ -200,8 +205,14 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | [[Right Shift+F12]] | MangoHud overlay on / off (in games) |
 | [[Super+Alt+M]] | Media panel |
 | [[Super+Alt+B]] | Show today's briefing |
+| [[Super+Alt+E]] | Edit desktop widgets (Esc when done) |
+| [[Super+Alt+I]] | Pop the window out as a live picture-in-picture / close it |
+| [[Super+Alt+L]] | Next top-bar look |
 | [[Super+Alt+V]] | Vault lock / unlock |
-| [[Super+Alt+T]] | Theme Studio |
+| [[Super+Alt+F]] | Focus timer: start a 25 min block / stop |
+| [[Super+Alt+T]] | Wallpapers → Theme tab (Theme Studio) |
+| [[Super+Alt+P]] | Wallpapers → Wallpapers tab |
+| [[Super+Alt+N]] | Next wallpaper |
 | [[Super+Alt+C]] | Live Captions on / off (once installed) |
 | [[Shift+Super+H]] | Bapirlo Writer on the clipboard text |
 | [[Super+Alt+8]], [[Super+Alt+=]] / [[Super+Alt+-]] | Magnifier on, zoom in / out |
@@ -210,6 +221,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | [[Ctrl+Alt+Delete]] | Log out dialog |
 | [[Super+Escape]] | Give shortcuts back if an app grabbed the keyboard |
 | [[Ctrl+Alt+F3]] | Text console (TTY) for emergencies · [[Ctrl+Alt+F8]] goes back to the desktop ([[Ctrl+Alt+F7]] = login screen) |
+| *In fish:* [[Ctrl+R]] search past commands, [[Ctrl+T]] insert a file path, [[Alt+C]] jump into a sub-folder · `z part-of-name` jumps to a folder you've been in, `zi` picks from a list |
 | *In ddterm:* [[Ctrl+Shift+N]] new tab, [[Ctrl+Shift+Q]] close tab, [[Alt+1]]…[[Alt+0]] go to tab, [[Ctrl+Shift+F]] find, [[Ctrl+Plus]] / [[Ctrl+Minus]] font size |
 
 Touchpad: three fingers up = overview, three fingers left/right = switch workspace. In the top bar: scroll on the workspace numbers to switch,
@@ -230,9 +242,18 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
 - **Login and lock screen.** This is the web-greeter "Bapirlo" theme. Because GNOME's own lock needs GDM, locking goes through the same screen:
   `bapirlo-lockd` locks on [[Super+L]], after 10 minutes idle and before suspend. *Back to the plain login screen:* `sudo bapirlo-greeter-revert`.
 - **Theme everywhere.** GTK3, GTK4, Qt (Kvantum) and the shell all use one palette: ink black, crimson, ember, sakura and paper. *Undo:* `bash ~/bapirlo-os/410-toolkits.sh restore`, `bash ~/bapirlo-os/60-desktop-v2.sh restore`.
-- **Day/night wallpaper.** The wallpaper switches between a bright day grade and a dark night grade at sunrise and sunset, and Night Light follows the same times.
-  *Off:* `systemctl --user disable --now bapirlo-daycycle.timer`.
-- **Wallpaper accent.** The second accent colour (pink) follows the wallpaper, while black and crimson never change. *Off:* `systemctl --user disable --now bapirlo-autotheme.service`.
+- **Wallpapers.** One library: your files in `~/Pictures/wallpapers/bapirlo` (files in its `dawn/ day/ dusk/ night/`
+  folders are tagged with that time) plus the Bapirlo originals, 4 of them live. Pictures: jpg, png, webp. Live:
+  mp4, webm, mkv, mov, gif — played by Hanabi on the Intel GPU (the NVIDIA card stays asleep), paused on battery,
+  with a maximised or fullscreen window and in the overview; a still frame of the video is what the lock screen and
+  the overview show. *Modes:* **Fixed** (what you picked), **Time of day** (dawn · day · dusk · night from sunrise and
+  sunset, a different tagged one each day), **Shuffle** (every N hours). Picking one always switches to Fixed.
+  *Colours follow the wallpaper:* a Theme Studio theme is made from it (cached per wallpaper, the 12 newest kept,
+  named "Wallpaper · …") and applied with the usual cross-fade. Applying a theme yourself in Theme Studio wins — its
+  own wallpaper shows — until you pick a wallpaper again. Night Light still follows sunrise and sunset.
+  `bapirlo-wallpaper status` shows everything. *Undo:* `bash ~/bapirlo-os/1110-round11.sh restore`
+  (and `bash ~/bapirlo-os/1100-round11-install.sh restore` for the live engine).
+- **Wallpaper accent.** When the colours don't follow the wallpaper, the second accent colour (pink) still does, while black and crimson stay. *Off:* `systemctl --user disable --now bapirlo-autotheme.service`.
 - **Theme Studio.** Pick a wallpaper (or drop one into `~/Pictures/Theme Studio` and press *Preview* on the
   notification). It reads the colours with matugen (the same code as the wallpaper accent), builds a palette in the
   Kuro shape — same dark base, same contrast — and checks every text/background pair against WCAG AA before you
@@ -243,12 +264,26 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
   boot splash and rebuilds the boot images, with a backup and automatic roll-back.
   How it stays safe: the original themes are never edited; Studio writes recoloured copies (`Bapirlo-Studio-A/B`) and
   switches names. *Off:* apply Original, then `bash ~/bapirlo-os/studio/install.sh restore`.
+- **Cursor (Bapirlo-Cursors).** The WhiteSur shapes in ink and paper with a hard blood-red drop shadow, a crimson busy
+  spinner; the login screen uses it too. *Off:* `bash ~/bapirlo-os/820-round8.sh restore` (session) and
+  `bash ~/bapirlo-os/800-round8-install.sh restore` (login screen).
+- **Folder icons.** Crimson manga folders (ink line art, halftone corner, same drop shadow) with white glyphs for Home,
+  Desktop, Documents, Downloads, Music, Pictures, Videos and the rest. Rebuilt by `tools/build-folders.py`.
+- **Pop-ups (OSD).** Volume and brightness normally show in the Island; in fullscreen apps, and for Caps Lock or
+  display switching, GNOME's pop-up appears instead — styled as an ink pill with a crimson bar like the Island.
+- **Window animation (Bapirlo Panels).** Windows open like a manga panel slapped on the page — slide in with a tilt,
+  an ink frame and a comic "BAM!" burst — and flick away when closed. Dialogs, fullscreen windows and Settings →
+  Accessibility → Reduce animation keep GNOME's own. No burst: `gsettings --schemadir ~/.local/share/gnome-shell/extensions/bapirlo-panels@bapirlo-os/schemas set org.gnome.shell.extensions.bapirlo-panels sfx false`.
+  *Off:* `gnome-extensions disable bapirlo-panels@bapirlo-os` (then `gnome-extensions enable burn-my-windows@schneegans.github.com` for the old glide).
 - **Sounds.** The Bapirlo sound theme plays on log-in, notifications and so on. *Off:* Settings → Sound → Alert sound, or `gnome-extensions disable bapirlo-sounds@bapirlo-os`.
 
 ### Top bar, dock & menus
 
 - **Top bar (Bapirlo Bar).** Bapirlo Bar groups everything into capsules. Red appears only for states that need you: recording, low battery, Do Not Disturb, Caffeine.
   The bar hides over fullscreen apps; push the mouse to the top edge to bring it back. *Off:* `gnome-extensions disable bapirlo-bar@bapirlo-os`.
+- **Focus timer.** Part of Bapirlo Bar. [[Super+Alt+F]] starts a block; the chip next to the clock counts down in crimson and switches notification
+  pop-ups off (only if they were on). When the block ends, the Island says so with a sound, and a jade 5 min break starts on its own. The next block never starts by itself.
+  Every finished or stopped block (1 min or longer) is written to `~/.local/state/bapirlo/focus.tsv`. *Change lengths:* `bapirlo-focus set 50 10`.
 - **Logo menu.** Clicking the B logo opens the Mac-style menu. The Start menu (ArcMenu) still opens with [[Super]]. *Off:* disable `logomenu@aryan_k`,
   then `gsettings set org.gnome.shell.extensions.arcmenu menu-button-appearance Icon` to bring ArcMenu's logo back.
 - **Control Centre.** It replaces GNOME's quick settings menu. GNOME's original is one click away ("Classic", or [[Shift+Super+S]]).
@@ -256,10 +291,14 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
   The pencil button edits which tiles are shown. *Off:* `gnome-extensions disable bapirlo-control-centre@bapirlo-os`.
 - **Dynamic Island.** The clock capsule shows volume, brightness, media, notifications, battery and screenshots. With a fullscreen app on the main screen it steps aside,
   and normal banners appear top-right instead. *Off:* `gnome-extensions disable bapirlo-island@bapirlo-os`.
-- **Dock.** The dock hides when a window touches it and magnifies icons, and clicking an open app focuses it instead of opening a new window. *Off:* disable `dash2dock-lite@icedman.github.com`.
+- **Dock (Dash to Dock).** At the bottom, hides when a window touches it, crimson dots for open apps; clicking an open app
+  focuses it (or minimises it / shows its windows), middle-click opens a new window. It replaced dash2dock-lite on 23 Oct,
+  which crashed GNOME when apps closed. Settings: `config/dash-to-dock-kuro.dconf`. *Back to the old dock:* `bash ~/bapirlo-os/960-dock-swap.sh restore`.
+- **Shortcut cheat sheet (Bapirlo Keys).** [[Super+/]] lists every shortcut — your custom ones, every extension's and
+  GNOME's window/workspace keys — read fresh each time, so it is never out of date. *Off:* `gnome-extensions disable bapirlo-keys@bapirlo-os`.
 - **Launchpad.** [[Super+G]] opens it. It has search, A→Z sorting, folders, and [[Esc]] closes it. It lives in Bapirlo Desk:
   `gsettings set org.gnome.shell.extensions.bapirlo-desk launchpad-toggle "[]"` removes the shortcut.
-- **Desktop widgets and login briefing** (Bapirlo Desk). Calendar, Up next and System only show on an empty desktop. The briefing appears once after login.
+- **Desktop widgets and login briefing** (Bapirlo Desk). Clock, Calendar, Up next, Weather and System only show on an empty desktop ([[Super+Alt+E]] to move or hide them). The briefing appears once after login.
   *Off:* Bapirlo Desk settings, or `gnome-extensions disable bapirlo-desk@bapirlo-os` (this also turns off Launchpad, PiP and privacy dots).
 - **Privacy dots.** A red dot means the microphone is on, green means the camera, blue means screen sharing. They sit in the system capsule. Part of Bapirlo Desk.
 - **Session restore.** After login, the apps you had open come back on their workspaces. *Off:* disable `bapirlo-session@bapirlo-os` and `SmartAutoMoveNG@lauinger-clan.de`.
@@ -293,13 +332,20 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
 
 ### Keeping it healthy
 
-- **Snapshot before every update.** A pacman hook takes a Timeshift snapshot once per update run and keeps the newest **3**.
+- **Snapshot before every update.** A pacman hook takes a Timeshift snapshot once per update run and keeps only the newest one.
   It is skipped when less than 15 GB is free, so the update has room. Timeshift also keeps 2 weekly snapshots.
   *Skip once:* `sudo touch /run/bapirlo-nosnap`. *Off:* `sudo rm /etc/pacman.d/hooks/00-bapirlo-timeshift.hook`.
 - **Bapirlo Doctor.** Runs after every system update and 90 s after each login, and only notifies you when something is wrong. For example, a GNOME update an extension doesn't
   support yet gets switched off at your next login. *Off:* `systemctl --user disable --now bapirlo-doctor.path bapirlo-doctor.timer`.
+- **Health page.** The Welcome app's HEALTH card shows battery wear (capacity vs. new), the SSD's own health report
+  (write life left, spare blocks, media errors, temperature, hours on, data written) and free space. The Doctor checks
+  the same: battery below 60 % of new, or any SSD warning, is reported as a problem.
+- **Low-space warning.** Every 30 min `bapirlo-diskwatch.timer` checks `/`; below 15 GB you get one notification a day
+  (below that, updates skip their safety snapshot). *Off:* `systemctl --user disable --now bapirlo-diskwatch.timer`.
 - **Spotify theme auto-reapply.** When Spotify updates itself, `bapirlo-spicetify.path` puts the theme back. *Off:* `systemctl --user disable --now bapirlo-spicetify.path`,
   then `bapirlo-spicetify off` for the stock look.
+- **Every update cleans up after itself.** Old package versions and half-finished downloads go (pacman hook `zz-bapirlo-pkgcache.hook`),
+  along with paru's AUR build files and old Claude Code versions (the one you run and one fallback stay). *Now, without updating:* `bapirlo-update --cleanup`.
 - **Monthly cleanup.** Clears the package cache (keeps 2 versions), removes orphans and trims old logs, then tells you what it freed. *Off:* `sudo systemctl disable --now bapirlo-cleanup.timer`.
 - **Extension updates.** Extensions from extensions.gnome.org update through the Extension Manager app. Bapirlo's own extensions come from `~/bapirlo-os`.
 

@@ -29,7 +29,7 @@ const MODES = {
 const NEXT_MODE = {'first-login': 'every-login', 'every-login': 'off', 'off': 'first-login'};
 
 // WMO weather codes (Open-Meteo) → text + GNOME weather icon
-function weatherOf(code, isDay = true) {
+export function weatherOf(code, isDay = true) {
     const night = isDay ? '' : '-night';
     if (code === 0)
         return ['Clear', `weather-clear${night}-symbolic`];
@@ -48,7 +48,7 @@ function weatherOf(code, isDay = true) {
     return ['Thunderstorms', 'weather-storm-symbolic'];
 }
 
-function greeting(h) {
+export function greeting(h) {
     if (h < 5)
         return 'Up late';
     if (h < 12)

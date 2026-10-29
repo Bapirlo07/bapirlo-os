@@ -1,0 +1,13 @@
+vendored from jeffshee/gnome-ext-hanabi 033dc86 (last plain-JS commit); metadata +51 (Bapirlo OS)
+Bapirlo patches: autoPause.js PauseInOverviewModule (pause while the overview is open)
+  - roundedCornersEffect.js: no-op fallback when Shell.GLSLEffect is missing (removed in GNOME 51)
+
+2026-10-28: renderer/renderer.js pins the renderer to the Intel iGPU before Gtk/Gst load
+(__EGL_VENDOR_LIBRARY_FILENAMES=mesa, VK_DRIVER_FILES=intel, LIBVA_DRIVER_NAME=iHD, nv* decoder ranks 0).
+Without it the renderer loaded NVIDIA EGL/Vulkan/CUDA and kept the RTX 4060 awake 100%.
+Opt out: HANABI_ALLOW_DGPU=1. Each var is only set if not already in the env.
+Original: renderer/renderer.js.orig
+2026-10-28: renderer.js loads its GSettings schema from <-P path>/schemas when it isn't
+installed system-wide. Before, the user-local renderer ran on hard-coded defaults
+(content-fit CONTAIN → black bars, unmuted, enable-va off) and ignored the extension's settings.
+Bapirlo patches: renderer.js fullscreened=false (mutter 50 won't minimise a fullscreen renderer → it covered desk widgets + hid top bar) + self-minimise after map

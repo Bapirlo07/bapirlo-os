@@ -1,0 +1,27 @@
+/* Bapirlo Bar Looks — Kuro styling (same tokens as Wallpapers). The app runs this through the active
+   theme's colour transform (studio/engine.py), so the window wears the wallpaper's colours. */
+window.bapirlo-barlooks {
+  background-color: #0E0A0D;
+  background-image: radial-gradient(circle at 8% -10%, rgba(255,70,85,0.20), transparent 45%),
+                    radial-gradient(circle at 100% 110%, rgba(240,138,164,0.10), transparent 40%);
+  color: #F2E9EC;
+}
+window.bapirlo-barlooks headerbar { background: transparent; box-shadow: none; color: #F2E9EC; }
+.brand { font-family: Bangers; font-size: 16pt; letter-spacing: 2.5px; color: #FF4655; }
+.dim { color: #CAB5BF; }
+.faint { color: #8E7680; font-size: 9.5pt; }
+
+button.look-card {
+  background-color: rgba(22,16,21,0.94);
+  border: 2px solid rgba(242,233,236,0.08);
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: none;
+  transition: 160ms;
+}
+button.look-card:hover { border-color: rgba(242,233,236,0.28); background-color: rgba(34,24,31,0.96); }
+button.look-card.picked { border-color: #FF4655; box-shadow: 0 0 18px rgba(255,70,85,0.30); }
+button.look-card .shot { border-radius: 10px; }
+button.look-card .name { font-size: 13pt; font-weight: 800; color: #F2E9EC; }
+.badge { font-size: 7.5pt; font-weight: 800; letter-spacing: 1px; border-radius: 6px; padding: 2px 8px;
+         background-color: #E11D2E; color: #FFFFFF; }

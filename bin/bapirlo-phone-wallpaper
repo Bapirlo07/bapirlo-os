@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — the current wallpaper on your phone too (GSConnect / KDE Connect).
+  bapirlo-phone-wallpaper            crop the active theme's wallpaper to phone size and send it
+  bapirlo-phone-wallpaper --save     only make the picture (~/Pictures/Phone)
+  bapirlo-phone-wallpaper --notify   also tell the outcome in a notification (the app-grid launcher)
+  X=0.3 bapirlo-phone-wallpaper      crop centre across the width (0 = left edge, 1 = right, default 0.5)
+The phone gets it in its received files: on iPhone save it to Photos → set as wallpaper (iOS lets no
+app change the wallpaper for you). Size 1290x2796 fits every current iPhone.
+"""
+import json
+import os
+import subprocess
+import sys
+import urllib.parse
+
+HOME = os.path.expanduser("~")
+STATE = os.path.join(os.environ.get("XDG_STATE_HOME", HOME + "/.local/state"), "bapirlo")
+OUT = os.path.join(HOME, "Pictures", "Phone")
+SIZE = (1290, 2796)
+BUS = "org.gnome.Shell.Extensions.GSConnect"
+ROOT = "/org/gnome/Shell/Extensions/GSConnect"
+
+
+def current():
+    try:
+        with open(os.path.join(STATE, "studio", "active.json")) as f:
+            a = json.load(f)
+        return a["wallpaper"], a["preset"]
+    except (OSError, ValueError, KeyError):
+        uri = subprocess.run(["gsettings", "get", "org.gnome.desktop.background", "picture-uri-dark"],
+                             capture_output=True, text=True).stdout.strip().strip("'")
+        return urllib.parse.unquote(uri[7:]), "original"
+
+
+def crop(src, dst, fx):
+    from PIL import Image
+    im = Image.open(src).convert("RGB")
+    w, h = im.size
+    scale = max(SIZE[0] / w, SIZE[1] / h)
+    im = im.resize((round(w * scale), round(h * scale)), Image.LANCZOS)
+    x = round((im.width - SIZE[0]) * min(1, max(0, fx)))
+    y = (im.height - SIZE[1]) // 2
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    im.crop((x, y, x + SIZE[0], y + SIZE[1])).save(dst, "JPEG", quality=92)
+
+
+def gdbus(*args):
+    return subprocess.run(["gdbus", "call", "--session", "-d", BUS, *args], capture_output=True, text=True)
+
+
+def phones():
+    """[(object path, name)] of paired phones that are connected right now."""
+    tree = subprocess.run(["gdbus", "introspect", "--session", "-d", BUS, "-o", ROOT, "-r"],
+                          capture_output=True, text=True).stdout
+    out = []
+    for line in tree.splitlines():
+        line = line.strip()
+        if line.startswith(f"node {ROOT}/Device/") and line.count("/") == ROOT.count("/") + 2:
+            path = line.split()[1]
+            props = gdbus("-o", path, "-m", "org.freedesktop.DBus.Properties.GetAll", f"{BUS}.Device").stdout
+            if "'Connected': <true>" in props and "'Paired': <true>" in props:
+                name = props.split("'Name': <'", 1)[1].split("'>", 1)[0] if "'Name': <'" in props else path
+                out.append((path, name))
+    return out
+
+
+def say(argv, msg):
+    print(msg)
+    if "--notify" in argv:
+        subprocess.run(["notify-send", "-i", "smartphone-symbolic", "Phone wallpaper", msg])
+
+
+def main(argv):
+    src, preset = current()
+    if not src or not os.path.exists(src):
+        say(argv, "no wallpaper picture found")
+        return 1
+    dst = os.path.join(OUT, f"bapirlo-{preset}.jpg")
+    crop(src, dst, float(os.environ.get("X", "0.5")))
+    print(f"phone wallpaper: {dst}")
+    if "--save" in argv:
+        return 0
+    found = phones()
+    if not found:
+        say(argv, f"No phone connected (open KDE Connect on the phone, same Wi-Fi). Saved to {dst}")
+        return 2
+    uri = "file://" + urllib.parse.quote(dst)
+    for path, name in found:
+        r = gdbus("-o", path, "-m", "org.gtk.Actions.Activate", "shareFile", f"[<('{uri}', false)>]", "{}")
+        say(argv, f"Sent to {name}: save it to Photos, then set it as wallpaper" if r.returncode == 0
+            else f"{name}: {r.stderr.strip()}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

@@ -95,7 +95,7 @@ def notify_new():
 
 def app_open():
     r = subprocess.run(["gdbus", "call", "--session", "--dest", "org.freedesktop.DBus", "--object-path",
-                        "/org/freedesktop/DBus", "--method", "org.freedesktop.DBus.NameHasOwner", "os.bapirlo.ThemeStudio"],
+                        "/org/freedesktop/DBus", "--method", "org.freedesktop.DBus.NameHasOwner", "os.bapirlo.Wallpapers"],
                        capture_output=True, text=True)
     return "true" in r.stdout
 

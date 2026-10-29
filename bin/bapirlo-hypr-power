@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Bapirlo OS — power menu for the Hyprland session (Waybar ⏻ button, Super+Shift+E).
+choice=$(printf '%s\n' "Lock" "Log out" "Suspend" "Restart" "Shut down" "Switch to GNOME (log out)" |
+    fuzzel --dmenu --prompt "power › " --lines 6 --width 28) || exit 0
+case "$choice" in
+    "Lock") loginctl lock-session ;;
+    "Log out"|"Switch to GNOME (log out)") hyprctl dispatch exit ;;
+    "Suspend") systemctl suspend ;;
+    "Restart") systemctl reboot ;;
+    "Shut down") systemctl poweroff ;;
+esac

@@ -1,0 +1,8 @@
+[Unit]
+Description=Bapirlo OS — warn once a day when / drops below 15 GB free
+
+[Service]
+Type=oneshot
+ExecStart=%h/bapirlo-os/bin/bapirlo-doctor --disk
+Nice=19
+IOSchedulingClass=idle

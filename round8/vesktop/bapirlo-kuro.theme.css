@@ -1,0 +1,66 @@
+/**
+ * @name Bapirlo Kuro
+ * @description Bapirlo OS "Kuro" palette for Discord: ink surfaces with a violet undertone, crimson accent, Bangers headings.
+ * @author Bapirlo OS
+ * @version 1.0.0
+ */
+/* Palette (tools/palette.py): ink #0E0A0D · night #161015 · surface #231A1F · line #523B44 · muted #8E7680
+   mist #CAB5BF · paper #F2E9EC · crimson #E11D2E · ember #FF4655 · blood #7A0F1A · sakura #F08AA4
+   Discord renames its variables often, so both the classic and the 2025+ "visual refresh" names are set. */
+
+:root, .theme-dark, .theme-darker, .theme-midnight, .visual-refresh {
+  /* accent */
+  --brand-experiment: #E11D2E; --brand-500: #E11D2E; --brand-560: #C51624; --brand-600: #A8121F;
+  --brand-400: #FF4655; --brand-360: #FF4655; --brand-260: #F08AA4;
+  --control-brand-foreground: #FF4655; --control-brand-foreground-new: #FF4655;
+  --button-filled-brand-background: #E11D2E; --button-filled-brand-background-hover: #FF4655;
+  --button-filled-brand-background-active: #A8121F;
+  --text-link: #FF6B77; --mention-foreground: #FF8F99; --mention-background: rgba(225, 29, 46, 0.18);
+  --background-mentioned: rgba(225, 29, 46, 0.10); --background-mentioned-hover: rgba(225, 29, 46, 0.14);
+  --info-help-foreground: #F08AA4; --focus-primary: #E11D2E;
+
+  /* surfaces — classic names */
+  --background-primary: #161015; --background-secondary: #120D11; --background-secondary-alt: #0E0A0D;
+  --background-tertiary: #0E0A0D; --background-floating: #1B1419; --background-nested-floating: #1B1419;
+  --background-accent: #523B44; --background-message-hover: rgba(225, 29, 46, 0.05);
+  --background-modifier-hover: rgba(242, 233, 236, 0.05); --background-modifier-active: rgba(242, 233, 236, 0.08);
+  --background-modifier-selected: rgba(225, 29, 46, 0.18); --background-modifier-accent: rgba(82, 59, 68, 0.55);
+  --channeltextarea-background: #231A1F; --input-background: #0E0A0D; --modal-background: #161015;
+  --modal-footer-background: #120D11; --deprecated-card-bg: #120D11; --home-background: #161015;
+  --scrollbar-thin-thumb: #523B44; --scrollbar-auto-thumb: #523B44; --scrollbar-auto-track: transparent;
+
+  /* surfaces — visual refresh names */
+  --background-base-low: #161015; --background-base-lower: #120D11; --background-base-lowest: #0E0A0D;
+  --background-surface-high: #1B1419; --background-surface-higher: #231A1F; --background-surface-highest: #2C2027;
+  --bg-base-primary: #161015; --bg-base-secondary: #120D11; --bg-base-tertiary: #0E0A0D;
+  --bg-surface-overlay: #1B1419; --bg-surface-raised: #231A1F; --bg-mod-subtle: rgba(242, 233, 236, 0.05);
+  --bg-mod-strong: rgba(242, 233, 236, 0.09); --bg-brand: #E11D2E;
+  --chat-background-default: #161015; --chat-input-container-background: #231A1F;
+  --border-subtle: rgba(82, 59, 68, 0.6); --border-faint: rgba(82, 59, 68, 0.35); --border-normal: #523B44;
+  --border-strong: #8E7680;
+
+  /* text */
+  --text-normal: #F2E9EC; --text-default: #F2E9EC; --text-strong: #FFFFFF; --text-muted: #8E7680;
+  --text-subtle: #8E7680; --text-secondary: #CAB5BF;
+  --header-primary: #F2E9EC; --header-secondary: #CAB5BF;
+  --interactive-normal: #CAB5BF; --interactive-hover: #F2E9EC; --interactive-active: #FFFFFF;
+  --interactive-muted: #523B44; --channels-default: #8E7680; --icon-default: #CAB5BF;
+
+  /* status */
+  --status-danger: #FF4655; --status-positive: #3FC69A; --status-warning: #F2B45A;
+  --green-360: #3FC69A; --red-400: #FF4655; --yellow-300: #F2B45A;
+}
+
+/* manga headings: server name, channel-list categories, settings page titles */
+[class*="headerContent"] h2, [class*="name_"][class*="header"] h1,
+[class*="containerDefault"] [class*="name_"][class*="overflow"],
+[class*="sectionTitle"], [class*="title_"][class*="h1"] {
+  font-family: "Bangers", var(--font-display) !important;
+  letter-spacing: 1px;
+  color: #FF4655 !important;
+}
+/* selected channel / DM: crimson edge like the shell's active items */
+[class*="modeSelected"] [class*="link_"], [class*="selected_"][class*="interactive"] {
+  box-shadow: inset 3px 0 0 #E11D2E;
+}
+::selection { background: rgba(225, 29, 46, 0.45); }

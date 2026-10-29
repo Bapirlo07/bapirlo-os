@@ -9,5 +9,66 @@
       <default><![CDATA[['<Super><Shift>w', '<Control><Super>F4']]]></default>
       <summary>Remove the current workspace (its windows move to the previous one)</summary>
     </key>
+    <key name="focus-toggle" type="as">
+      <default><![CDATA[['<Super><Alt>f']]]></default>
+      <summary>Start or stop a focus session</summary>
+    </key>
+    <key name="bar-look" type="s">
+      <choices>
+        <choice value="classic"/>
+        <choice value="manga"/>
+        <choice value="glass"/>
+        <choice value="islands"/>
+        <choice value="flat"/>
+      </choices>
+      <default>'classic'</default>
+      <summary>Look of the top bar: classic, manga, glass, islands or flat (looks.js)</summary>
+    </key>
+    <key name="accent-pulse" type="b">
+      <default>true</default>
+      <summary>Breathe the accent on the active workspace and the focused window's border after a switch (accent.js)</summary>
+    </key>
+    <key name="next-look" type="as">
+      <default><![CDATA[['<Super><Alt>l']]]></default>
+      <summary>Switch the top bar to the next look</summary>
+    </key>
+    <key name="focus-minutes" type="i">
+      <range min="1" max="600"/>
+      <default>25</default>
+      <summary>Length of a focus block in minutes</summary>
+    </key>
+    <key name="break-minutes" type="i">
+      <range min="0" max="120"/>
+      <default>5</default>
+      <summary>Break after a focus block in minutes (0 = no break)</summary>
+    </key>
+    <key name="focus-phase" type="s">
+      <default>''</default>
+      <summary>Running phase: '' (idle), 'focus' or 'break' (written by the shell only)</summary>
+    </key>
+    <key name="focus-end" type="x">
+      <default>0</default>
+      <summary>Unix time the running phase ends (0 while paused)</summary>
+    </key>
+    <key name="focus-left" type="i">
+      <default>0</default>
+      <summary>Seconds left while paused (0 = not paused)</summary>
+    </key>
+    <key name="focus-total" type="i">
+      <default>0</default>
+      <summary>Length of the running phase in seconds</summary>
+    </key>
+    <key name="focus-started" type="x">
+      <default>0</default>
+      <summary>Unix time the current focus block began</summary>
+    </key>
+    <key name="focus-owns-dnd" type="b">
+      <default>false</default>
+      <summary>The focus timer switched notification banners off and will switch them back on</summary>
+    </key>
+    <key name="focus-request" type="s">
+      <default>''</default>
+      <summary>Command from bin/bapirlo-focus: "start [min] @nonce", "stop @nonce", "toggle @nonce", "pause @nonce"</summary>
+    </key>
   </schema>
 </schemalist>

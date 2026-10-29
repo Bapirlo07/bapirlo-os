@@ -1,59 +1,52 @@
-/* Bapirlo Theme Studio — Kuro styling. The app runs this through the active theme's colour
-   transform (studio/engine.py), so the window always wears the theme you applied last. */
-window.bapirlo-studio {
-  background-color: #0E0A0D;
-  background-image: radial-gradient(circle at 8% -10%, rgba(255,70,85,0.20), transparent 45%),
-                    radial-gradient(circle at 100% 110%, rgba(240,138,164,0.10), transparent 40%);
-  color: #F2E9EC;
-}
-window.bapirlo-studio headerbar { background: transparent; box-shadow: none; color: #F2E9EC; }
-.brand { font-family: Bangers; font-size: 16pt; letter-spacing: 2.5px; color: #FF4655; }
-.heading { font-family: Bangers; font-size: 13pt; letter-spacing: 1.3px; color: #FF4655; }
-.dim { color: #CAB5BF; }
-.faint { color: #8E7680; font-size: 9.5pt; }
-.hex { font-family: "JetBrainsMono Nerd Font Mono", monospace; font-size: 8.5pt; color: #CAB5BF; }
+/* Bapirlo Theme Studio — Kuro styling for the "Theme" tab of the Wallpapers window. The window itself
+   (background, header, brand) is styled by wallpaper/style.css. Everything here is scoped to
+   .page-studio so it can't leak into the Wallpapers tab. The app runs this through the active theme's
+   colour transform (studio/engine.py), so the window always wears the theme you applied last. */
+.page-studio .heading { font-family: Bangers; font-size: 13pt; letter-spacing: 1.3px; color: #FF4655; }
+.page-studio .dim { color: #CAB5BF; }
+.page-studio .faint { color: #8E7680; font-size: 9.5pt; }
+.page-studio .hex { font-family: "JetBrainsMono Nerd Font Mono", monospace; font-size: 8.5pt; color: #CAB5BF; }
 
-.card {
+.page-studio .card {
   background-color: rgba(22,16,21,0.94);
   border: 1px solid rgba(225,29,46,0.28);
   border-radius: 16px; padding: 14px 16px;
 }
-.preview { border-radius: 14px; }
-.sidebar { background-color: rgba(22,16,21,0.70); border-right: 1px solid rgba(225,29,46,0.18); }
+.page-studio .preview { border-radius: 14px; }
+.page-studio .sidebar { background-color: rgba(22,16,21,0.70); border-right: 1px solid rgba(225,29,46,0.18);
+                        border-top: 1px solid rgba(225,29,46,0.18); border-top-right-radius: 14px; }
 
-button.kuro {
+.page-studio button.kuro {
   border-radius: 10px; padding: 6px 14px; background-color: rgba(242,233,236,0.07);
   color: #F2E9EC; font-weight: 600; transition: 160ms; border: none; box-shadow: none;
 }
-button.kuro:hover { background-color: rgba(225,29,46,0.22); }
-button.kuro:disabled { color: rgba(242,233,236,0.35); background-color: rgba(242,233,236,0.04); }
-button.kuro.accent { background-color: #E11D2E; color: #FFFFFF; padding: 8px 22px; }
-button.kuro.accent:hover { background-color: #FF4655; }
-button.kuro.accent:disabled { background-color: rgba(225,29,46,0.35); color: rgba(255,255,255,0.6); }
-button.flat-kuro { border-radius: 8px; padding: 3px 10px; min-height: 0; color: #CAB5BF; background: transparent; }
-button.flat-kuro:hover { background-color: rgba(242,233,236,0.08); color: #F2E9EC; }
+.page-studio button.kuro:hover { background-color: rgba(225,29,46,0.22); }
+.page-studio button.kuro:disabled { color: rgba(242,233,236,0.35); background-color: rgba(242,233,236,0.04); }
+.page-studio button.kuro.accent { background-color: #E11D2E; color: #FFFFFF; padding: 8px 22px; }
+.page-studio button.kuro.accent:hover { background-color: #FF4655; }
+.page-studio button.kuro.accent:disabled { background-color: rgba(225,29,46,0.35); color: rgba(255,255,255,0.6); }
 
 /* wallpaper + preset tiles */
-flowboxchild, row.tile { padding: 0; border-radius: 12px; background: transparent; }
-.thumb { border-radius: 10px; border: 2px solid transparent; padding: 2px; transition: 160ms; }
-flowboxchild:hover .thumb, row.tile:hover .thumb { border-color: rgba(242,233,236,0.25); }
-.thumb.picked, row.tile:selected .thumb { border-color: #FF4655; }
-flowboxchild:selected, row.tile:selected { background: transparent; }
-list.presets { background: transparent; }
-row.tile { padding: 4px 6px; }
-row.tile:selected { background-color: rgba(225,29,46,0.12); }
-.active-badge { font-size: 8pt; font-weight: 800; letter-spacing: 1px; border-radius: 6px; padding: 1px 7px;
-                background-color: rgba(225,29,46,0.25); color: #FF9AA3; }
+.page-studio flowboxchild, .page-studio row.tile { padding: 0; border-radius: 12px; background: transparent; }
+.page-studio .thumb { border-radius: 10px; border: 2px solid transparent; padding: 2px; transition: 160ms; }
+.page-studio flowboxchild:hover .thumb, .page-studio row.tile:hover .thumb { border-color: rgba(242,233,236,0.25); }
+.page-studio .thumb.picked, .page-studio row.tile:selected .thumb { border-color: #FF4655; }
+.page-studio flowboxchild:selected, .page-studio row.tile:selected { background: transparent; }
+.page-studio list.presets { background: transparent; }
+.page-studio row.tile { padding: 4px 6px; }
+.page-studio row.tile:selected { background-color: rgba(225,29,46,0.12); }
+.page-studio .active-badge { font-size: 8pt; font-weight: 800; letter-spacing: 1px; border-radius: 6px; padding: 1px 7px;
+                             background-color: rgba(225,29,46,0.25); color: #FF9AA3; }
 
 /* palette */
-.swatch { border-radius: 10px; min-width: 52px; min-height: 34px; border: 1px solid rgba(242,233,236,0.12); }
-button.choice { border-radius: 15px; min-width: 26px; min-height: 26px; padding: 0; margin: 0;
-                border: 2px solid rgba(242,233,236,0.15); box-shadow: none; outline: none; }
-button.choice:checked { border-color: #F2E9EC; box-shadow: 0 0 0 2px rgba(242,233,236,0.25); }
-scale trough highlight { background-color: #E11D2E; }
-scale slider { background-color: #F2E9EC; }
-.pass { color: #3FC69A; font-weight: 700; }
-.fail { color: #F2B45A; font-weight: 700; }
-.status { color: #CAB5BF; }
-entry.kuro { border-radius: 10px; background-color: rgba(242,233,236,0.07); color: #F2E9EC; }
-.empty-title { font-family: Bangers; font-size: 16pt; letter-spacing: 1.5px; color: #523B44; }
+.page-studio .swatch { border-radius: 10px; min-width: 52px; min-height: 34px; border: 1px solid rgba(242,233,236,0.12); }
+.page-studio button.choice { border-radius: 15px; min-width: 26px; min-height: 26px; padding: 0; margin: 0;
+                             border: 2px solid rgba(242,233,236,0.15); box-shadow: none; outline: none; }
+.page-studio button.choice:checked { border-color: #F2E9EC; box-shadow: 0 0 0 2px rgba(242,233,236,0.25); }
+.page-studio scale trough highlight { background-color: #E11D2E; }
+.page-studio scale slider { background-color: #F2E9EC; }
+.page-studio .pass { color: #3FC69A; font-weight: 700; }
+.page-studio .fail { color: #F2B45A; font-weight: 700; }
+.page-studio .status { color: #CAB5BF; }
+.page-studio entry.kuro { border-radius: 10px; background-color: rgba(242,233,236,0.07); color: #F2E9EC; }
+.page-studio .empty-title { font-family: Bangers; font-size: 16pt; letter-spacing: 1.5px; color: #523B44; }

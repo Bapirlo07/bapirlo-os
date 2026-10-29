@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Bapirlo OS — battery charge limit + health.
+#   bapirlo-charge            show limit, health, cycles
+#   bapirlo-charge daily|80   stop charging at 80 %
+#   bapirlo-charge travel|100 charge to full
+# (same switch as Control Centre → Battery; no password, polkit os.bapirlo.charge-limit)
+set -eu
+B=/sys/class/power_supply/BAT1
+H=/usr/local/lib/bapirlo/bapirlo-charge
+case "${1:-}" in
+  daily|80) exec pkexec "$H" 80 ;;
+  travel|100) exec pkexec "$H" 100 ;;
+  "") ;;
+  *) sed -n 3,6p "$0"; exit 2 ;;
+esac
+full=$(cat $B/charge_full); design=$(cat $B/charge_full_design); cyc=$(cat $B/cycle_count)
+lim=$(cat $B/charge_control_end_threshold)
+echo "charge limit : $lim %  ($([ "$lim" = 100 ] && echo travel || echo daily))"
+echo "battery now  : $(cat $B/capacity) % · $(cat $B/status)"
+awk -v f="$full" -v d="$design" 'BEGIN{printf "health       : %d %%  (%.2f of %.2f Ah when new)\n", f/d*100+0.5, f/1e6, d/1e6}'
+[ "$cyc" -gt 0 ] && echo "cycles       : $cyc" || echo "cycles       : not reported by this battery"

@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — wallpapers (pictures + live videos); the OS colours follow the wallpaper.
+  bapirlo-wallpaper                    open the Wallpapers app            (= Super+Alt+P)
+  bapirlo-wallpaper set FILE           show this one (copied into your library first if it's elsewhere)
+  bapirlo-wallpaper add FILE… [--slot dawn|day|dusk|night]   copy into ~/Pictures/wallpapers/bapirlo
+  bapirlo-wallpaper next               the next one
+  bapirlo-wallpaper mode fixed|time|shuffle [HOURS]
+  bapirlo-wallpaper theme on|off       OS colours follow the wallpaper (off = original Bapirlo colours)
+  bapirlo-wallpaper live on|off|toggle|status   live (video) wallpapers; off = the still frame (Control Centre "Live Wallpaper" tile)
+  bapirlo-wallpaper battery lite|pause on battery: play a light 1280x800 copy, or freeze the video
+  bapirlo-wallpaper lockscreen on|off  the lock screen plays the live wallpaper too
+  bapirlo-wallpaper loop VIDEO START LENGTH [FADE]   cut a seamless loop (seconds) into your library
+  bapirlo-wallpaper subject [FILE]     where the wallpaper's subject is (the desk widgets dodge it)
+  bapirlo-wallpaper depth [FILE]       depth map for the 3D wallpaper (bapirlo-live); --setup installs the model
+  bapirlo-wallpaper prepare FILE       battery copy + lock-screen animation + subject (run after each change)
+  bapirlo-wallpaper watch              follow the charger (bapirlo-wallpaper-power.service)
+  bapirlo-wallpaper list | status
+  bapirlo-wallpaper tick [--no-theme]  what the timer runs every 10 minutes (and Theme Studio after a change)
+"""
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "lib"))
+import bapirlo_wallpaper as W  # noqa: E402
+
+APP = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "wallpaper", "bapirlo-wallpapers")
+
+
+def main(argv):
+    verb = argv[0] if argv else "app"
+    args = argv[1:]
+    if verb in ("-h", "--help", "help"):
+        print(__doc__.strip())
+    elif verb == "app":
+        os.execv(APP, [APP])
+    elif verb == "set" and args:
+        f = os.path.abspath(os.path.expanduser(args[0]))
+        known = {i["path"] for i in W.items(include_hidden=True)}
+        if f not in known:
+            new = W.add([f])
+            if not new:
+                print(f"not a picture or video I can use: {f}", file=sys.stderr)
+                return 1
+            f = new[0]
+        W.unhide(f)
+        W.choose(f)
+    elif verb == "add" and args:
+        slot = None
+        if "--slot" in args:
+            i = args.index("--slot")
+            slot = args[i + 1]
+            del args[i:i + 2]
+        for p in W.add(args, slot):
+            print(p)
+    elif verb == "next":
+        W.next_one()
+    elif verb == "mode" and args and args[0] in W.MODES:
+        W.set_mode(args[0], args[1] if len(args) > 1 else None)
+    elif verb == "theme" and args and args[0] in ("on", "off"):
+        W.set_theme(args[0] == "on")
+    elif verb == "live" and args and args[0] in ("on", "off", "toggle", "status"):
+        on = W.conf()["live"]
+        if args[0] == "status":
+            print("on" if on else "off")
+            return 0 if on else 1
+        W.set_live(not on if args[0] == "toggle" else args[0] == "on")
+    elif verb == "battery" and args and args[0] in W.BATTERY_MODES:
+        W.set_battery(args[0])
+    elif verb == "lockscreen" and args and args[0] in ("on", "off"):
+        W.set_lock_live(args[0] == "on")
+    elif verb == "loop" and len(args) >= 3:
+        import bapirlo_wallmedia as M
+        src = os.path.abspath(os.path.expanduser(args[0]))
+        out = M.loop_name(src, W.LIBRARY)
+        M.make_loop(src, float(args[1]), float(args[2]), float(args[3]) if len(args) > 3 else 1.0, out,
+                    progress=lambda f: print(f"\r{f * 100:5.1f} %", end="", flush=True))
+        print(f"\n{out}")
+    elif verb == "prepare" and args:
+        W.prepare(os.path.abspath(args[0]))
+    elif verb == "subject":
+        p = args[0] if args else W.state().get("path", "")
+        print(W.write_subject(os.path.abspath(p)))
+    elif verb == "depth":
+        if args == ["--setup"]:
+            import bapirlo_depth as D
+            D.setup()
+            return 0
+        p = args[0] if args else W.state().get("path", "")
+        out = W.write_depth(os.path.abspath(p))
+        if not out:
+            return 1
+        print(out)
+    elif verb == "watch":
+        W.watch()
+    elif verb == "list":
+        cur = W.state().get("path")
+        for i in W.items():
+            flag = "*" if i["path"] == cur else " "
+            print(f"{flag} {'live ' if i['live'] else 'still'} {','.join(i['tags']) or '-':10} {i['path']}")
+    elif verb == "status":
+        print(W.status())
+    elif verb == "tick":
+        W.tick(no_theme="--no-theme" in args)
+    else:
+        print(__doc__.strip(), file=sys.stderr)
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

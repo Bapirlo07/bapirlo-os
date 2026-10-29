@@ -56,6 +56,58 @@
 .bdw-fill { height: 6px; border-radius: 3px; background-color: #F2E9EC; }
 .bdw-fill.bdw-hot { background-color: #FF4655; }
 
+/* clock */
+.bdw-clock { spacing: 0; padding: 12px 18px 14px 18px; }
+.bdw-clock-time { font-family: Bangers, sans-serif; font-size: 44pt; letter-spacing: 2px; color: #FF4655; }
+.bdw-clock-date { font-size: 10.5pt; font-weight: 600; color: rgba(242, 233, 236, 0.62); }
+
+/* weather */
+.bdw-wx-now { spacing: 12px; margin-top: 2px; }
+.bdw-wx-icon { icon-size: 44px; color: #F2E9EC; }
+.bdw-wx-temp { font-size: 24pt; font-weight: 800; }
+.bdw-wx-sub { font-size: 8.5pt; color: rgba(242, 233, 236, 0.62); }
+.bdw-wx-days { margin-top: 10px; spacing: 4px; }
+.bdw-wx-day { spacing: 3px; }
+.bdw-wx-day-name { font-size: 8pt; font-weight: 700; color: rgba(242, 233, 236, 0.6); }
+.bdw-wx-day-icon { icon-size: 22px; color: #F2E9EC; }
+.bdw-wx-day-temp { font-size: 8.5pt; font-weight: 600; font-feature-settings: "tnum"; }
+
+/* edit mode (Super+Alt+E): the dimmed layer, the toolbar, a card being dragged */
+.bdw-layer.bdw-editing { background-color: rgba(0, 0, 0, 0.38); }
+.bdw-card:dragging { border-color: #FF4655; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6); }
+.bdw-edit-bar {
+  padding: 12px 14px 10px 14px;
+  spacing: 8px;
+  border-radius: 16px;
+  background-color: rgba(22, 16, 21, 0.96);
+  border: 1px solid rgba(225, 29, 46, 0.45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  color: #F2E9EC;
+  font-family: "Inter", sans-serif;
+}
+.bdw-edit-row { spacing: 8px; }
+.bdw-edit-title { font-family: Bangers, sans-serif; font-size: 16pt; letter-spacing: 1px; color: #FF4655; margin-right: 6px; }
+.bdw-edit-chip {
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(242, 233, 236, 0.14);
+  font-size: 9.5pt; font-weight: 700;
+  color: rgba(242, 233, 236, 0.75);
+  background-color: rgba(242, 233, 236, 0.07);
+}
+.bdw-edit-chip:hover { background-color: rgba(242, 233, 236, 0.14); }
+.bdw-edit-chip:checked { color: #ffffff; background-color: rgba(225, 29, 46, 0.85); border-color: #E11D2E; }
+.bdw-edit-reset { margin-left: 8px; }
+.bdw-edit-done {
+  padding: 5px 16px;
+  border-radius: 8px;
+  font-size: 9.5pt; font-weight: 800;
+  color: #ffffff;
+  background-color: #E11D2E;
+}
+.bdw-edit-done:hover { background-color: #FF4655; }
+.bdw-edit-hint { font-size: 8.5pt; color: rgba(242, 233, 236, 0.6); }
+
 /* ================================================================ login briefing */
 .bdb-card {
   padding: 20px 20px 14px 20px;
@@ -170,3 +222,69 @@
 .bap-fill { height: 6px; border-radius: 3px; background-color: #F2E9EC; }
 .bap-fill.bap-low { background-color: #FF4655; }
 .bap-row-pct { min-width: 44px; text-align: right; font-feature-settings: "tnum"; }
+
+/* ================================================================ pop-out picture-in-picture (popout.js)
+   border + glow colours are set inline from the Theme Studio palette */
+.bapirlo-popout {
+  border-radius: 12px;
+  border: 2px solid rgba(225, 29, 46, 0.55);
+  background-color: #0E0A0D;
+}
+.bapirlo-popout-bar {
+  padding: 6px 6px 18px 6px;
+  spacing: 6px;
+  background-gradient-direction: vertical;
+  background-gradient-start: rgba(14, 10, 13, 0.82);
+  background-gradient-end: rgba(14, 10, 13, 0);
+}
+.bapirlo-popout-title { color: #F2E9EC; font-family: "Inter", sans-serif; font-size: 9pt; font-weight: 600; }
+.bapirlo-popout-button {
+  padding: 5px;
+  border-radius: 8px;
+  color: #F2E9EC;
+  background-color: rgba(242, 233, 236, 0.10);
+}
+.bapirlo-popout-button:hover { background-color: #E11D2E; color: #ffffff; }
+.bapirlo-popout-button StIcon { icon-size: 14px; }
+
+/* ================================================================ round 14 cards (cards.js)
+   colours come from widgets.css (palette); these are sizes + Kuro fallbacks */
+.bdw-nowplaying, .bdw-todo, .bdw-notes { width: 268px; }
+.bdw-np-row { spacing: 12px; margin-top: 2px; }
+.bdw-np-art { border-radius: 10px; color: rgba(242, 233, 236, 0.5); background-color: rgba(242, 233, 236, 0.06); }
+.bdw-np-title { font-size: 11pt; font-weight: 700; }
+.bdw-np-artist { font-size: 9.5pt; color: rgba(242, 233, 236, 0.6); }
+.bdw-np-app { font-size: 8.5pt; color: rgba(242, 233, 236, 0.6); margin-top: 2px; }
+.bdw-viz { spacing: 3px; margin-top: 10px; }
+.bdw-viz-bar { border-radius: 2px 2px 0 0; background-color: rgba(255, 70, 85, 0.9); }
+
+.bdw-todo-list { spacing: 6px; }
+.bdw-todo-item { spacing: 10px; }
+.bdw-check { width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid rgba(242, 233, 236, 0.45); color: #ffffff; }
+.bdw-check:checked { background-color: #E11D2E; border-color: #E11D2E; }
+.bdw-todo-text { font-size: 10pt; font-weight: 500; }
+.bdw-todo-text.bdw-done { color: rgba(242, 233, 236, 0.45); text-decoration: line-through; }
+.bdw-todo-del { padding: 2px; border-radius: 6px; color: rgba(242, 233, 236, 0.5); }
+.bdw-todo-del:hover { color: #FF4655; }
+
+.bdw-notes-text { font-size: 10pt; }
+.bdw-entry {
+  margin-top: 6px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(225, 29, 46, 0.4);
+  background-color: rgba(242, 233, 236, 0.07);
+  color: #F2E9EC;
+  font-size: 10pt;
+  caret-color: #FF4655;
+  selection-background-color: rgba(225, 29, 46, 0.6);
+}
+.bdw-entry:focus { border-color: #FF4655; }
+.bdw-notes-entry { min-height: 110px; }
+
+/* login intro (intro.js) */
+.bapirlo-intro-cover { background-color: #000; }
+.bapirlo-intro-hello { spacing: 6px; }
+.bapirlo-intro-title { font-size: 64px; font-weight: 300; color: #fff; text-shadow: 0 2px 22px rgba(0, 0, 0, 0.7); }
+.bapirlo-intro-date { font-size: 17px; font-weight: 500; letter-spacing: 3px; color: rgba(255, 255, 255, 0.72);
+                      text-shadow: 0 1px 10px rgba(0, 0, 0, 0.7); }

@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — picks the EasyEffects preset for whatever you are listening on.
+  laptop speakers           → "Bapirlo Speakers"
+  headphones / earbuds / BT → "Bapirlo Headphones"
+  anything else (HDMI…)     → "Bapirlo Flat"
+
+  bapirlo-sound-profile                 show the output and the preset in use
+  bapirlo-sound-profile auto            follow the output again (default)
+  bapirlo-sound-profile speakers|headphones|flat   pin one preset, whatever the output
+  bapirlo-sound-profile watch           the user service (bapirlo-sound-profile.service)
+
+Event driven: `pactl subscribe` wakes it only when a sink / the server changes; the preset is
+loaded only when it actually has to change. Choice: ~/.config/bapirlo/sound-profile.json
+Presets come from sounds/easyeffects/make-presets.py — edit them in EasyEffects and save over them."""
+import json
+import os
+import subprocess
+import sys
+import time
+
+CONF = os.path.expanduser("~/.config/bapirlo/sound-profile.json")
+STATE = os.path.join(os.environ.get("XDG_STATE_HOME", os.path.expanduser("~/.local/state")),
+                     "bapirlo", "sound-profile.json")
+PRESETS = {"speakers": "Bapirlo Speakers", "headphones": "Bapirlo Headphones", "flat": "Bapirlo Flat"}
+OWN_SINKS = ("easyeffects_sink",)
+
+
+def read(path, default):
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return default
+
+
+def write(path, data):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + ".new"
+    with open(tmp, "w") as f:
+        json.dump(data, f)
+    os.replace(tmp, path)
+
+
+def sinks():
+    out = subprocess.run(["pactl", "-f", "json", "list", "sinks"], capture_output=True, text=True, timeout=10)
+    return json.loads(out.stdout or "[]")
+
+
+def default_sink():
+    return subprocess.run(["pactl", "get-default-sink"], capture_output=True, text=True, timeout=10).stdout.strip()
+
+
+def classify(sink):
+    name = sink.get("name", "")
+    port = (sink.get("active_port") or "").lower()
+    props = sink.get("properties", {})
+    form = props.get("device.form_factor", "")
+    if "Speaker" in name or port.endswith("speaker"):
+        return "speakers"
+    if (form in ("headset", "headphone", "hands-free", "earbuds") or props.get("device.bus") == "bluetooth"
+            or "headphone" in port or "headset" in port or "Headphones" in name):
+        return "headphones"
+    return "flat"
+
+
+def current_output():
+    name = default_sink()
+    if name in OWN_SINKS:
+        return None, None
+    for s in sinks():
+        if s.get("name") == name:
+            return s, classify(s)
+    return None, None
+
+
+def wanted():
+    mode = read(CONF, {}).get("mode", "auto")
+    sink, kind = current_output()
+    if mode in PRESETS:
+        return sink, mode
+    return sink, kind
+
+
+def load(kind, sink, force=False):
+    state = read(STATE, {})
+    if not force and state.get("preset") == PRESETS[kind]:
+        return False
+    r = subprocess.run(["easyeffects", "-l", PRESETS[kind]], capture_output=True, text=True, timeout=30)
+    if r.returncode != 0:
+        print(f"easyeffects -l failed: {r.stderr.strip()}", file=sys.stderr)
+        return False
+    write(STATE, {"preset": PRESETS[kind], "sink": sink.get("name") if sink else None, "at": int(time.time())})
+    print(f"{PRESETS[kind]}  ←  {sink.get('description') if sink else '?'}", flush=True)
+    return True
+
+
+def sync(force=False):
+    sink, kind = wanted()
+    if kind:
+        load(kind, sink, force)
+
+
+def watch():
+    time.sleep(3)            # let the EasyEffects service come up first
+    sync(force=True)
+    while True:
+        p = subprocess.Popen(["pactl", "subscribe"], stdout=subprocess.PIPE, text=True)
+        last = 0.0
+        for line in p.stdout:
+            if "on sink" in line or "on server" in line or "on card" in line:
+                # bursts of events → act once they settle
+                now = time.monotonic()
+                if now - last > 0.5:
+                    time.sleep(0.6)
+                    sync()
+                last = time.monotonic()
+        p.wait()
+        time.sleep(2)        # pipewire-pulse restarted — subscribe again
+
+
+def main():
+    arg = sys.argv[1] if len(sys.argv) > 1 else "status"
+    if arg == "watch":
+        watch()
+    elif arg in ("auto", *PRESETS):
+        conf = read(CONF, {})
+        conf["mode"] = arg
+        write(CONF, conf)
+        sync(force=True)
+    elif arg == "status":
+        sink, kind = current_output()
+        mode = read(CONF, {}).get("mode", "auto")
+        print(f"output : {sink.get('description') if sink else '?'}  ({kind or '?'})")
+        print(f"mode   : {mode}")
+        print(f"preset : {read(STATE, {}).get('preset', '(none yet)')}")
+    else:
+        print(__doc__)
+        sys.exit(2)
+
+
+if __name__ == "__main__":
+    main()

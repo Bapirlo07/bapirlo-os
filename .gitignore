@@ -53,3 +53,9 @@ dconf-dump*
 # upstream UxPlay clone + build (our changes: patches/uxplay-dbb8a8f-bapirlo.patch)
 tools/uxplay/
 tools/uxplay-src/
+
+# --- big generated output: rebuilt by the round scripts
+/build/**/*.mp4
+!/build/greeter/login-flow.mp4
+!/build/island/island.mp4
+/build/round8/Bapirlo-Cursors/

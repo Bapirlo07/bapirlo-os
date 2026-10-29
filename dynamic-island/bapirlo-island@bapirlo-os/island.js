@@ -139,7 +139,11 @@ export class Island {
         }
         this.actor.add_child(view);
         spec.view = view;
-        const w = spec.width, h = spec.height;
+        const w = spec.width;
+        let h = spec.height;
+        // fit: spec.height is only the ceiling — a one-line notification is shorter than a two-line one
+        if (spec.fit)
+            h = Math.min(h, Math.ceil(view.get_preferred_height(w - 2)[1]) + 2);   // + the 1px border
         this.actor.ease({
             x: Math.round(r.x + r.w / 2 - w / 2), y: r.y + r.m, width: w, height: h,
             duration: GROW_MS, mode: Clutter.AnimationMode.EASE_OUT_BACK,

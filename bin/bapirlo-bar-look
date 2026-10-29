@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Bapirlo OS — switch the look of the top bar (bapirlo-bar, looks.js).
+#   bapirlo-bar-look              show the current look and the choices
+#   bapirlo-bar-look NAME         classic | manga | glass | islands | flat
+#   bapirlo-bar-look next         the next one (= Super+Alt+L)
+# Also: right-click an empty spot on the bar. Applies live, no logout.
+set -euo pipefail
+LOOKS=(classic manga glass islands flat)
+SCHEMAS=~/.local/share/gnome-shell/extensions/bapirlo-bar@bapirlo-os/schemas
+g() { gsettings --schemadir "$SCHEMAS" "$@" org.gnome.shell.extensions.bapirlo-bar bar-look ${VAL:+"$VAL"}; }
+cur=$(g get | tr -d "'")
+case "${1:-}" in
+  "")
+    for l in "${LOOKS[@]}"; do [ "$l" = "$cur" ] && echo "* $l" || echo "  $l"; done ;;
+  next)
+    for i in "${!LOOKS[@]}"; do [ "${LOOKS[$i]}" = "$cur" ] && n=$(( (i + 1) % ${#LOOKS[@]} )); done
+    VAL=${LOOKS[${n:-0}]} g set; echo "bar look: ${LOOKS[${n:-0}]}" ;;
+  -h|--help) sed -n '2,6p' "$0" | sed 's/^# \{0,1\}//' ;;
+  *)
+    [[ " ${LOOKS[*]} " == *" $1 "* ]] || { echo "unknown look '$1' — one of: ${LOOKS[*]}" >&2; exit 2; }
+    VAL=$1 g set; echo "bar look: $1" ;;
+esac

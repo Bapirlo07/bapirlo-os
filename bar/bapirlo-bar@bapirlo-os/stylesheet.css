@@ -120,6 +120,43 @@
 .bapirlo-power-chip.turbo .bapirlo-power-label { color: #FF4655; }
 #panel .bapirlo-power-chip.turbo .bapirlo-power-icon { color: #FF4655; }
 
+/* ---------------------------------------------------------------- focus timer (next to the clock) */
+.bapirlo-focus-btn {
+  border-radius: 8px;
+  padding: 0 9px;
+  min-height: 26px;
+  border: 1px solid rgba(225, 29, 46, 0.45);
+  background-color: rgba(225, 29, 46, 0.14);
+  transition-duration: 180ms;
+}
+.bapirlo-focus-btn:hover { background-color: rgba(225, 29, 46, 0.24); }
+.bapirlo-focus-btn:active { background-color: rgba(225, 29, 46, 0.34); }
+.bapirlo-focus-btn.break { border-color: rgba(63, 198, 154, 0.45); background-color: rgba(63, 198, 154, 0.12); }
+.bapirlo-focus-btn.break:hover { background-color: rgba(63, 198, 154, 0.22); }
+.bapirlo-focus-btn.paused { border-color: rgba(242, 233, 236, 0.22); background-color: rgba(242, 233, 236, 0.08); }
+.bapirlo-focus-box { spacing: 6px; }
+#panel .bapirlo-focus-btn .bapirlo-focus-icon { icon-size: 14px; color: #FF4655; }
+#panel .bapirlo-focus-btn.break .bapirlo-focus-icon { color: #3FC69A; }
+#panel .bapirlo-focus-btn.paused .bapirlo-focus-icon { color: #CAB5BF; }
+.bapirlo-focus-phase {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 9pt;
+  letter-spacing: 0.6px;
+  color: #FF4655;
+}
+.bapirlo-focus-btn.break .bapirlo-focus-phase { color: #3FC69A; }
+.bapirlo-focus-btn.paused .bapirlo-focus-phase { color: #CAB5BF; }
+.bapirlo-focus-time {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 10.5pt;
+  font-feature-settings: "tnum";
+  color: #F2E9EC;
+  min-width: 38px;
+}
+.bapirlo-focus-btn.paused .bapirlo-focus-time { color: #CAB5BF; }
+
 /* ---------------------------------------------------------------- replay dot */
 .bapirlo-replay-btn {
   border-radius: 8px;
@@ -130,6 +167,34 @@
 .bapirlo-replay-btn:hover { background-color: rgba(242, 233, 236, 0.12); }
 .bapirlo-replay-btn:active { background-color: rgba(242, 233, 236, 0.22); }
 .bapirlo-replay-box { spacing: 6px; }
+.bapirlo-fullscreen-btn {
+  border-radius: 8px;
+  padding: 0 6px;
+  min-height: 26px;
+  transition-duration: 180ms;
+}
+.bapirlo-fullscreen-btn:hover { background-color: rgba(242, 233, 236, 0.12); }
+.bapirlo-fullscreen-btn:active { background-color: rgba(242, 233, 236, 0.22); }
+.bapirlo-livewall-btn {
+  border-radius: 8px;
+  padding: 0 6px;
+  min-height: 26px;
+  transition-duration: 180ms;
+}
+.bapirlo-livewall-btn:hover { background-color: rgba(242, 233, 236, 0.12); }
+.bapirlo-livewall-btn:active { background-color: rgba(242, 233, 236, 0.22); }
+#panel .bapirlo-livewall-btn .bapirlo-livewall-icon { color: rgba(242, 233, 236, 0.55); }
+#panel .bapirlo-livewall-btn.on .bapirlo-livewall-icon { color: #FF4655; }
+.bapirlo-depth-btn {
+  border-radius: 8px;
+  padding: 0 6px;
+  min-height: 26px;
+  transition-duration: 180ms;
+}
+.bapirlo-depth-btn:hover { background-color: rgba(242, 233, 236, 0.12); }
+.bapirlo-depth-btn:active { background-color: rgba(242, 233, 236, 0.22); }
+#panel .bapirlo-depth-btn .bapirlo-depth-label { font-weight: 800; font-size: 12px; color: rgba(242, 233, 236, 0.55); }
+#panel .bapirlo-depth-btn.on .bapirlo-depth-label { color: #FF4655; }
 .bapirlo-replay-dot {
   width: 9px;
   height: 9px;
@@ -181,7 +246,10 @@
 #panel .bapirlo-capsule .bapirlo-group-outer { spacing: 0; }
 #panel .bapirlo-capsule .bapirlo-launcher { min-height: 28px; border-radius: 9px; }
 #panel .bapirlo-capsule .bapirlo-power-chip,
-#panel .bapirlo-capsule .bapirlo-replay-btn { min-height: 24px; }
+#panel .bapirlo-capsule .bapirlo-replay-btn,
+#panel .bapirlo-capsule .bapirlo-fullscreen-btn,
+#panel .bapirlo-capsule .bapirlo-livewall-btn,
+#panel .bapirlo-capsule .bapirlo-depth-btn { min-height: 24px; }
 
 /* focused app name — bold, last on the left so nothing after it moves */
 #panel .panel-button.bapirlo-appname { -natural-hpadding: 10px; }

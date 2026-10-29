@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<!-- Bapirlo OS: battery charge limit (Daily 80 % / Travel 100 %) — no password for the person at the laptop.
+     The helper only accepts 80, 100 or status. -->
+<policyconfig>
+  <vendor>Bapirlo OS</vendor>
+  <action id="os.bapirlo.charge-limit">
+    <description>Change the battery charge limit</description>
+    <message>Change the battery charge limit</message>
+    <icon_name>battery-good-charging-symbolic</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/lib/bapirlo/bapirlo-charge</annotate>
+  </action>
+</policyconfig>

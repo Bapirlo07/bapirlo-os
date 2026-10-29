@@ -1,0 +1,53 @@
+/* Bapirlo Keys — Kuro palette (tools/palette.py) + shell polish tokens (surface 16 / item 10 / chip 8) */
+.bk-overlay { background-color: rgba(10, 7, 9, 0.80); }
+.bk-page {
+  background-color: rgba(14, 10, 13, 0.97);
+  border: 1px solid rgba(225, 29, 46, 0.30);
+  border-radius: 20px;
+  box-shadow: 6px 6px 0 rgba(122, 15, 26, 0.95), 0 14px 40px rgba(0, 0, 0, 0.6);
+  padding: 22px 26px 18px 26px;
+  spacing: 14px;
+  color: #F2E9EC;
+  font-family: Inter, sans-serif;
+}
+.bk-head { spacing: 18px; }
+.bk-title {
+  font-family: Bangers, Inter, sans-serif; font-size: 34pt; color: #FF4655;
+  text-shadow: 3px 3px 0 #7A0F1A;
+}
+.bk-sub { font-size: 10pt; color: #8E7680; }
+.bk-search {
+  width: 280px; min-height: 36px; border-radius: 10px; padding: 4px 12px;
+  background-color: rgba(242, 233, 236, 0.07); border: 1px solid rgba(242, 233, 236, 0.10);
+  color: #F2E9EC; caret-color: #FF4655; selection-background-color: #E11D2E;
+}
+.bk-search:focus { border-color: #E11D2E; }
+.bk-search-icon { icon-size: 16px; color: #8E7680; padding-right: 6px; }
+.bk-cols { spacing: 14px; }
+.bk-col { spacing: 14px; }
+.bk-card {
+  background-color: rgba(22, 16, 21, 0.94);
+  border: 1px solid rgba(225, 29, 46, 0.22);
+  border-radius: 16px;
+  padding: 12px 14px 10px 14px;
+  spacing: 4px;
+}
+.bk-card-title {
+  font-family: Bangers, Inter, sans-serif; font-size: 14pt; color: #FF4655;
+  padding-bottom: 4px;
+}
+.bk-row { spacing: 4px; padding: 3px 4px; border-radius: 8px; }
+.bk-caps { spacing: 4px; padding-top: 3px; }
+.bk-row:hover { background-color: rgba(225, 29, 46, 0.12); }
+.bk-label { font-size: 10pt; color: #F2E9EC; padding-right: 8px; }
+.bk-or { font-size: 8.5pt; color: #8E7680; padding: 0 2px; }
+.bk-key {
+  font-family: "JetBrains Mono", monospace; font-size: 8.5pt; font-weight: 700; color: #F2E9EC;
+  background-color: rgba(242, 233, 236, 0.08);
+  border: 1px solid rgba(242, 233, 236, 0.18);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 1px 7px;
+  min-width: 12px;
+  text-align: center;
+}

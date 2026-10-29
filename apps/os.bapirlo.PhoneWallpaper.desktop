@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Send Wallpaper to Phone
+Comment=The current Bapirlo wallpaper, cropped for your phone, sent over GSConnect
+Exec=@HOME@/bapirlo-os/bin/bapirlo-phone-wallpaper --notify
+Icon=smartphone-symbolic
+Categories=Utility;
+Keywords=phone;iphone;wallpaper;gsconnect;kdeconnect;

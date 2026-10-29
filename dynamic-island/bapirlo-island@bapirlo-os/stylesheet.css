@@ -59,6 +59,15 @@
   background-color: rgba(242, 233, 236, 0.08);
 }
 .island-action:hover { background-color: rgba(225, 29, 46, 0.30); }
+.island-action.primary { background-color: #E11D2E; color: #ffffff; }
+.island-action.primary:hover { background-color: #FF4655; }
+/* round 10: a notification carries a faint crimson light from the top edge (same radius as the island) */
+.island-notif {
+  border-radius: 23px;
+  background-gradient-direction: vertical;
+  background-gradient-start: rgba(225, 29, 46, 0.16);
+  background-gradient-end: rgba(225, 29, 46, 0);
+}
 
 .island-power.good .island-level-icon { color: #3FC69A; }
 .island-power.warn .island-level-icon, .island-power.warn .island-pct { color: #FF4655; }

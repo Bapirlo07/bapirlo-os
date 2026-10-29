@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Visualizer
+Comment=cava audio visualiser in the wallpaper's colours
+Exec=alacritty --class os.bapirlo.Visualizer --title Visualizer -o window.opacity=0.0 -e cava
+Icon=multimedia-audio-player
+Categories=AudioVideo;Audio;
+Keywords=cava;audio;spectrum;music;
+StartupWMClass=os.bapirlo.Visualizer

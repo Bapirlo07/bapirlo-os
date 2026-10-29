@@ -670,6 +670,36 @@ class BapirloRecordTile extends Tile {
 });
 
 // ------------------------------------------------------------------ battery
+// health and the charge limit come straight from sysfs (msi-ec); the limit is changed through
+// pkexec bapirlo-charge 80|100 (polkit os.bapirlo.charge-limit: no password at the laptop)
+const BAT_SYS = '/sys/class/power_supply/BAT1';
+const CHARGE_HELPER = '/usr/local/lib/bapirlo/bapirlo-charge';
+const LIMITS = [
+    ['80', 'Daily · stop at 80%', 'battery-good-symbolic', 'Kinder to the battery — the everyday choice'],
+    ['100', 'Travel · charge to 100%', 'battery-full-charging-symbolic', 'Full range for a day away from a plug'],
+];
+
+function readSys(name) {
+    try {
+        const [ok, b] = GLib.file_get_contents(`${BAT_SYS}/${name}`);
+        return ok ? new TextDecoder().decode(b).trim() : '';
+    } catch {
+        return '';
+    }
+}
+
+export function batteryHealth() {
+    const full = Number(readSys('charge_full') || readSys('energy_full'));
+    const design = Number(readSys('charge_full_design') || readSys('energy_full_design'));
+    const unit = readSys('charge_full') ? 'Ah' : 'Wh';
+    return {
+        pct: full > 0 && design > 0 ? Math.round(full / design * 100) : null,
+        full: full / 1e6, design: design / 1e6, unit,
+        cycles: Number(readSys('cycle_count')) || 0,   // this EC reports 0 = unknown
+        limit: readSys('charge_control_end_threshold'),
+    };
+}
+
 export const BatteryTile = GObject.registerClass(
 class BapirloBatteryTile extends Tile {
     _init(id, cc) {
@@ -721,7 +751,9 @@ class BapirloBatteryTile extends Tile {
             return;
         const st = it._proxy?.State;
         this.face.title.text = `${Math.round(this._pct)}%`;
-        this.face.sub.text = st === 1 ? 'Charging' : st === 4 ? 'Full' : st === 5 ? 'Plugged in' : 'On battery';
+        const limit = readSys('charge_control_end_threshold');
+        this.face.sub.text = (st === 1 ? 'Charging' : st === 4 ? 'Full' : st === 5 ? 'Plugged in' : 'On battery') +
+            (limit === '100' ? ' · Travel' : limit ? ` · limit ${limit}%` : '');
         if (it.gicon)
             this.face.icon.gicon = it.gicon;
         this.setActive(this.charging);
@@ -778,8 +810,12 @@ class BapirloBatteryTile extends Tile {
         const rows = [
             ['Level', `${Math.round(this._pct)}%`],
             [this.charging ? 'Time to full' : 'Time left', fmt(this.charging ? p?.TimeToFull : p?.TimeToEmpty)],
-            ['Charge limit', '80% (bapirlo-perfd)'],
         ];
+        const h = batteryHealth();
+        if (h.pct !== null)
+            rows.push(['Health', `${h.pct}%  (${h.full.toFixed(2)} of ${h.design.toFixed(2)} ${h.unit})`]);
+        if (h.cycles > 0)
+            rows.push(['Charge cycles', `${h.cycles}`]);
         for (const [k, v] of rows) {
             const r = new St.BoxLayout({style_class: 'bcc-kv'});
             r.add_child(label(k, 'bcc-kv-key'));
@@ -787,6 +823,36 @@ class BapirloBatteryTile extends Tile {
             r.add_child(label(v, 'bcc-kv-val', false));
             box.add_child(r);
         }
+        box.add_child(label('CHARGE LIMIT', 'bcc-kv-key'));
+        box.get_last_child().style = 'padding: 8px 10px 2px 10px; font-weight: 700;';
+        const limitRows = LIMITS.map(([value, name, icon]) => {
+            const row = new St.Button({style_class: 'bcc-row', can_focus: true, x_expand: true});
+            const inner = new St.BoxLayout({x_expand: true});
+            inner.add_child(new St.Icon({icon_name: icon, style_class: 'bcc-row-icon'}));
+            inner.add_child(label(name, 'bcc-row-label'));
+            inner.add_child(new St.Widget({x_expand: true}));
+            const tick = new St.Icon({icon_name: 'object-select-symbolic', style_class: 'bcc-row-tick'});
+            inner.add_child(tick);
+            row.child = inner;
+            row.connect('clicked', () => this.setLimit(value));
+            box.add_child(row);
+            return [value, row, tick];
+        });
+        const note = new St.Label({style_class: 'bcc-note', text: ''});
+        note.clutter_text.line_wrap = true;
+        box.add_child(note);
+        this._limitSync = () => {
+            const now = readSys('charge_control_end_threshold');
+            for (const [value, row, tick] of limitRows) {
+                tick.opacity = value === now ? 255 : 0;
+                if (value === now)
+                    row.add_style_pseudo_class('checked');
+                else
+                    row.remove_style_pseudo_class('checked');
+            }
+            note.text = LIMITS.find(l => l[0] === now)?.[3] ?? (now ? `Limit ${now}% (set elsewhere)` : 'No charge limit control (msi-ec not loaded?)');
+        };
+        this._limitSync();
         const btn = new St.Button({style_class: 'bcc-row', can_focus: true, x_expand: true,
             child: label('Power settings…', 'bcc-row-label')});
         btn.connect('clicked', () => {
@@ -794,7 +860,29 @@ class BapirloBatteryTile extends Tile {
             this._cc.close();
         });
         box.add_child(btn);
-        return {title: 'Battery', gicon: it.gicon, actor: box};
+        return {title: 'Battery', gicon: it.gicon, actor: box, onClose: () => (this._limitSync = null)};
+    }
+
+    setLimit(value) {
+        if (!GLib.file_test(CHARGE_HELPER, GLib.FileTest.IS_EXECUTABLE)) {
+            Main.notify('Charge limit', 'The helper is not installed yet — run 1400-round14-install.sh');
+            return;
+        }
+        try {
+            const proc = Gio.Subprocess.new(['pkexec', CHARGE_HELPER, value],
+                Gio.SubprocessFlags.STDOUT_SILENCE | Gio.SubprocessFlags.STDERR_SILENCE);
+            proc.wait_check_async(null, (p, r) => {
+                try {
+                    p.wait_check_finish(r);
+                } catch (e) {
+                    logError(e, 'bapirlo-cc: charge limit');
+                }
+                this._limitSync?.();
+                this._sync();
+            });
+        } catch (e) {
+            logError(e, 'bapirlo-cc: charge limit');
+        }
     }
 
     destroy() {
@@ -978,17 +1066,17 @@ class BapirloMediaTile extends Tile {
 });
 
 // ------------------------------------------------------------------ script-backed switches (round 7)
-// AirPlay, Remote access, Live Captions, Vault: a bin/ script answers `status` (exit 0 = on) and
-// does `toggle`. The state is read only when the panel opens and shortly after a click — nothing
+// AirPlay, Remote access, Live Captions, Vault, Live Wallpaper: a bin/ script (+ `args`) answers
+// `status` (exit 0 = on) and does `toggle`. The state is read only when the panel opens and shortly after a click — nothing
 // runs while the Control Centre is closed.
 export const CommandTile = GObject.registerClass(
 class BapirloCommandTile extends Tile {
-    _init(id, cc, {title, onTitle = title, icon, script}) {
+    _init(id, cc, {title, onTitle = title, icon, script, args = []}) {
         super._init(id, 'small', cc);
         this.face = buildFace(this);
         this._title = title;
         this._onTitle = onTitle;
-        this._script = `${BIN}/${script}`;
+        this._cmd = [`${BIN}/${script}`, ...args];
         this.face.icon.icon_name = icon;
         this.face.title.text = title;
         this._on = false;
@@ -1006,7 +1094,7 @@ class BapirloCommandTile extends Tile {
         this._cancel = new Gio.Cancellable();
         let proc;
         try {
-            proc = Gio.Subprocess.new([this._script, 'status'],
+            proc = Gio.Subprocess.new([...this._cmd, 'status'],
                 Gio.SubprocessFlags.STDOUT_SILENCE | Gio.SubprocessFlags.STDERR_SILENCE);
         } catch {
             this.reactive = false;
@@ -1025,7 +1113,7 @@ class BapirloCommandTile extends Tile {
 
     activate() {
         this._set(!this._on);   // answer the click at once; the re-checks below correct it
-        spawn([this._script, 'toggle']);
+        spawn([...this._cmd, 'toggle']);
         for (const ms of [1500, 4000]) {
             const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {
                 this._timers.delete(id);

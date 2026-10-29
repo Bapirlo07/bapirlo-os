@@ -1,0 +1,69 @@
+/* Bapirlo OS "Kuro" for Firefox — tabs, toolbars, address bar and menus.
+   Palette (tools/palette.py): ink #0E0A0D · night #161015 · surface #231A1F · line #523B44 · muted #8E7680
+   mist #CAB5BF · paper #F2E9EC · crimson #E11D2E · ember #FF4655 · blood #7A0F1A · sakura #F08AA4
+   Theme Studio recolours this file in place to follow the wallpaper. Loaded because user.js sets
+   toolkit.legacyUserProfileCustomizations.stylesheets; delete chrome/ to go back to stock. */
+:root {
+  --lwt-accent-color: #0E0A0D !important;
+  --lwt-accent-color-inactive: #0E0A0D !important;
+  --lwt-text-color: #F2E9EC !important;
+  --toolbar-bgcolor: #161015 !important;
+  --toolbar-color: #F2E9EC !important;
+  --toolbar-field-background-color: #0E0A0D !important;
+  --toolbar-field-focus-background-color: #0E0A0D !important;
+  --toolbar-field-color: #F2E9EC !important;
+  --toolbar-field-focus-color: #F2E9EC !important;
+  --toolbar-field-border-color: #523B44 !important;
+  --toolbar-field-focus-border-color: #E11D2E !important;
+  --toolbarbutton-hover-background: rgba(240, 138, 164, 0.12) !important;
+  --toolbarbutton-active-background: rgba(225, 29, 46, 0.25) !important;
+  --toolbarbutton-icon-fill-attention: #FF4655 !important;
+  --tab-selected-bgcolor: #231A1F !important;
+  --tab-selected-textcolor: #F2E9EC !important;
+  --tab-loading-fill: #E11D2E !important;
+  --tab-attention-icon-color: #FF4655 !important;
+  --tabpanel-background-color: #0E0A0D !important;
+  --chrome-content-separator-color: #523B44 !important;
+  --arrowpanel-background: #161015 !important;
+  --arrowpanel-color: #F2E9EC !important;
+  --arrowpanel-border-color: #523B44 !important;
+  --panel-separator-color: #523B44 !important;
+  --urlbarView-highlight-background: #E11D2E !important;
+  --urlbarView-highlight-color: #F2E9EC !important;
+  --urlbarView-separator-color: #523B44 !important;
+  --sidebar-background-color: #0E0A0D !important;
+  --sidebar-text-color: #CAB5BF !important;
+  --focus-outline-color: #E11D2E !important;
+  --button-primary-bgcolor: #E11D2E !important;
+  --button-primary-hover-bgcolor: #FF4655 !important;
+  --button-primary-active-bgcolor: #7A0F1A !important;
+  --button-primary-color: #F2E9EC !important;
+  --color-accent-primary: #E11D2E !important;
+  --color-accent-primary-hover: #FF4655 !important;
+  --color-accent-primary-active: #7A0F1A !important;
+}
+
+#navigator-toolbox { background-color: #0E0A0D !important; border-bottom: 1px solid #523B44 !important; }
+#TabsToolbar, #titlebar { background-color: #0E0A0D !important; }
+
+/* selected tab: a crimson underline, manga ink on the rest */
+.tab-background[selected] {
+  background: #231A1F !important;
+  box-shadow: inset 0 -2px 0 #E11D2E !important;
+}
+.tabbrowser-tab:hover > .tab-stack > .tab-background:not([selected]) { background: #161015 !important; }
+.tab-label { color: #CAB5BF !important; }
+.tabbrowser-tab[selected] .tab-label { color: #F2E9EC !important; }
+.tab-throbber[busy]::before { fill: #E11D2E !important; }
+
+#urlbar-background { border-radius: 10px !important; }
+#urlbar[focused] > #urlbar-background { box-shadow: 0 0 0 1px #E11D2E !important; }
+#urlbar ::selection, #searchbar ::selection { background-color: #E11D2E !important; color: #F2E9EC !important; }
+
+menupopup, panel { --panel-background: #161015 !important; --panel-color: #F2E9EC !important;
+                   --panel-border-color: #523B44 !important; }
+menu:hover, menuitem:hover, menu[_moz-menuactive], menuitem[_moz-menuactive] {
+  background-color: #231A1F !important; color: #F2E9EC !important;
+}
+
+#statuspanel-label { background: #161015 !important; color: #CAB5BF !important; border-color: #523B44 !important; }

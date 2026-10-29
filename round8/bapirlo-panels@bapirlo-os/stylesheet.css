@@ -1,0 +1,13 @@
+/* Bapirlo Panels — Kuro palette: ink #0E0A0D, crimson #E11D2E, blood #7A0F1A, paper #F2E9EC */
+.bapirlo-panel-frame {
+  border: 3px solid #0E0A0D;
+  border-radius: 12px;
+}
+.bapirlo-panel-edge { background-color: #E11D2E; }
+
+.bapirlo-sfx-word {
+  font-family: Bangers, Inter, sans-serif;
+  font-size: 22pt;
+  color: #F2E9EC;
+  text-shadow: 2px 2px 0 #0E0A0D;
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.bapirlo-keys" path="/org/gnome/shell/extensions/bapirlo-keys/">
+    <key name="keys-toggle" type="as">
+      <default><![CDATA[['<Super>slash']]]></default>
+      <summary>Show / hide the shortcut cheat sheet</summary>
+    </key>
+  </schema>
+</schemalist>

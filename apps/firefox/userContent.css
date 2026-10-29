@@ -1,0 +1,33 @@
+/* Bapirlo OS "Kuro" for Firefox's own pages (new tab, settings, about:*). Theme Studio recolours it. */
+@-moz-document url-prefix("about:newtab"), url-prefix("about:home"), url-prefix("about:privatebrowsing") {
+  :root, body {
+    --newtab-background-color: #0E0A0D !important;
+    --newtab-background-color-secondary: #161015 !important;
+    --newtab-text-primary-color: #F2E9EC !important;
+    --newtab-primary-action-background: #E11D2E !important;
+    --newtab-element-hover-color: #231A1F !important;
+    background-color: #0E0A0D !important;
+  }
+}
+@-moz-document url-prefix("about:") {
+  :root {
+    --in-content-page-background: #0E0A0D !important;
+    --in-content-box-background: #161015 !important;
+    --in-content-box-border-color: #523B44 !important;
+    --in-content-page-color: #F2E9EC !important;
+    --in-content-deemphasized-text: #8E7680 !important;
+    --in-content-primary-button-background: #E11D2E !important;
+    --in-content-primary-button-background-hover: #FF4655 !important;
+    --in-content-primary-button-background-active: #7A0F1A !important;
+    --in-content-link-color: #FF4655 !important;
+    --in-content-link-color-hover: #F08AA4 !important;
+    --color-accent-primary: #E11D2E !important;
+    --color-accent-primary-hover: #FF4655 !important;
+    --color-accent-primary-active: #7A0F1A !important;
+    --background-color-canvas: #0E0A0D !important;
+    --background-color-box: #161015 !important;
+    --border-color: #523B44 !important;
+    --text-color: #F2E9EC !important;
+  }
+}
+::selection { background-color: rgba(225, 29, 46, 0.45); }

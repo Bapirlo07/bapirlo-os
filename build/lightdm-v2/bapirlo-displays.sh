@@ -31,4 +31,9 @@ if [ -n "$panel" ]; then
   done
 fi
 xrandr
+# round 8: the login screen uses the Bapirlo cursor too (web-greeter's Qt and the Xgreeter wrapper's
+# xsetroot read these X resources). Skipped when the theme is not installed system-wide.
+if [ -d /usr/share/icons/Bapirlo-Cursors/cursors ]; then
+  printf 'Xcursor.theme: Bapirlo-Cursors\nXcursor.size: 32\n' | xrdb -merge && echo "cursor: Bapirlo-Cursors"
+fi
 exit 0

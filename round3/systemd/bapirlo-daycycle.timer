@@ -1,6 +1,6 @@
 [Unit]
 Description=Bapirlo day/night check every 10 minutes
-PartOf=graphical-session.target
+# not PartOf graphical-session.target: when that target cycles mid-session the timer stopped for good (2026-10-29)
 
 [Timer]
 OnStartupSec=15

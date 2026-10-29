@@ -1,0 +1,101 @@
+/* >>> bapirlo round 10: app grid, folders, search, workspace thumbnails, notification banners
+   Same tokens as the rest of the theme: ink surface rgba(22,16,21,·) · hairline crimson 0.28 ·
+   hover crimson 0.18 · selected crimson 0.30 + inset ring · accent text #FF4655 · radius 16/12/10. */
+
+/* ---- app grid: folders read as ink glass tiles, not grey squares */
+.app-folder {
+  background-color: rgba(22, 16, 21, 0.62) !important;
+  border: 1px solid rgba(242, 233, 236, 0.10);
+  border-radius: 22px !important;
+}
+.app-folder:hover { background-color: rgba(225, 29, 46, 0.20) !important; border-color: rgba(225, 29, 46, 0.45); }
+.app-folder:focus, .app-folder:selected, .app-folder:highlighted, .app-folder:checked {
+  background-color: rgba(225, 29, 46, 0.30) !important;
+  border-color: #E11D2E;
+  box-shadow: none !important;
+}
+.app-folder:drop, .overview-tile:drop { background-color: rgba(225, 29, 46, 0.25) !important; box-shadow: inset 0 0 0 2px #FF4655 !important; }
+.overview-tile:focus, .grid-search-result:focus { box-shadow: inset 0 0 0 2px rgba(255, 70, 85, 0.85) !important; }
+.app-grid-running-dot { background-color: #FF4655; width: 6px; height: 6px; border-radius: 3px; }
+
+/* opened folder: a manga panel — ink card, crimson hairline, heavier title */
+.app-folder-dialog {
+  border-radius: 28px !important;
+  background-color: rgba(16, 11, 15, 0.96) !important;
+  border: 1px solid rgba(225, 29, 46, 0.35);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+}
+.app-folder-dialog .folder-name-label, .app-folder-dialog .folder-name-entry {
+  font-weight: 800;
+  color: #F2E9EC;
+}
+.app-folder-dialog .folder-name-entry { border-radius: 10px; border: 1px solid rgba(225, 29, 46, 0.45); }
+.app-folder-dialog .edit-folder-button {
+  background-color: rgba(242, 233, 236, 0.08) !important;
+  border: 0 !important;
+  color: #F2E9EC;
+}
+.app-folder-dialog .edit-folder-button:hover { background-color: rgba(225, 29, 46, 0.35) !important; }
+.app-folder-dialog .edit-folder-button:checked { background-color: #E11D2E !important; color: #ffffff; }
+
+/* page dots: crimson — GNOME fades the other pages' dots itself (opacity), so the current one stands out */
+.page-indicator .page-indicator-icon {
+  width: 9px !important; height: 9px !important;
+  background-color: #E11D2E !important;
+}
+.page-indicator:hover .page-indicator-icon { background-color: #FF4655 !important; }
+.page-navigation-arrow {
+  background-color: rgba(22, 16, 21, 0.80) !important;
+  border: 1px solid rgba(225, 29, 46, 0.28);
+}
+.page-navigation-arrow:hover { background-color: rgba(225, 29, 46, 0.40) !important; }
+.page-navigation-hint.next:ltr, .page-navigation-hint.previous:rtl { background-gradient-start: rgba(225, 29, 46, 0.10); }
+.page-navigation-hint.previous:ltr, .page-navigation-hint.next:rtl { background-gradient-end: rgba(225, 29, 46, 0.10); }
+.page-navigation-hint.dnd { background: rgba(225, 29, 46, 0.12); }
+
+/* ---- workspace thumbnails (overview strip + app grid) */
+.workspace-thumbnails .workspace-thumbnail {
+  border-radius: 10px;
+  border: 1px solid rgba(242, 233, 236, 0.12);
+  background-color: #160f14;
+}
+.workspace-thumbnail-indicator { border: 3px solid #E11D2E; border-radius: 12px; }
+
+/* ---- search: list results sit on the same ink card as every other surface */
+.search-section-content {
+  background-color: rgba(18, 12, 16, 0.88) !important;
+  border: 1px solid rgba(225, 29, 46, 0.28) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.40);
+}
+.list-search-result:hover, .search-provider-icon:hover { background-color: rgba(225, 29, 46, 0.18) !important; }
+.list-search-result:focus, .search-provider-icon:focus,
+.list-search-result:selected, .search-provider-icon:selected {
+  background-color: rgba(225, 29, 46, 0.30) !important;
+  box-shadow: inset 0 0 0 2px rgba(255, 70, 85, 0.85) !important;
+}
+.list-search-result .list-search-result-title { font-weight: 600; color: #ffffff; }
+.list-search-result .list-search-result-description { color: rgba(242, 233, 236, 0.62); }
+.search-provider-icon .list-search-provider-content .list-search-provider-details { color: #FF4655 !important; font-weight: 600; }
+.search-statustext { color: rgba(242, 233, 236, 0.70); font-weight: 600; }
+
+/* ---- notification banners: clear of the floating bar, no dead space, crimson top light,
+   the first action is the primary (filled) one */
+.notification-banner {
+  margin: 52px 4px 4px 4px;
+  min-height: 0;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+.message.notification-banner {
+  background-color: #2c0c14 !important;
+  background-gradient-direction: vertical;
+  background-gradient-end: rgba(20, 14, 18, 0.97);
+  border: 1px solid rgba(225, 29, 46, 0.50) !important;
+  padding: 10px 12px 10px 12px !important;
+}
+.notification-banner .notification-buttons-bin { spacing: 8px; padding-top: 4px; }
+.notification-banner .notification-button { padding: 7px 14px; }
+.notification-banner .notification-button:first-child { background-color: #E11D2E !important; color: #ffffff; }
+.notification-banner .notification-button:first-child:hover { background-color: #FF4655 !important; }
+/* <<< bapirlo round 10 */

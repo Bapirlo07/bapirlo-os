@@ -10,7 +10,8 @@
      performance → shift_mode turbo   + fan auto
      balanced    → shift_mode comfort + fan auto
      power-saver → shift_mode eco     + fan silent
-3. Battery charge limit (default 80 %) is (re)applied at start and after resume.
+3. Battery charge limit (default 80 %, or /var/lib/bapirlo/charge-limit = 80|100 from the
+   Control Centre) is (re)applied at start and after resume.
 
 Event driven (D-Bus signals only). Config: /etc/bapirlo/perfd.conf (KEY=value lines).
 Off: sudo systemctl disable --now bapirlo-perfd
@@ -126,11 +127,22 @@ class Daemon:
             write(f"{EC}/fan_mode", fan)
 
     # --- 3. charge limit
+    # Daily 80 % / Travel 100 % picked in the Control Centre (pkexec bapirlo-charge) beats the conf
+    @staticmethod
+    def wanted_limit():
+        try:
+            v = open("/var/lib/bapirlo/charge-limit").read().strip()
+            if v in ("80", "100"):
+                return v
+        except OSError:
+            pass
+        return CONF["CHARGE_LIMIT"]
+
     def charge_limit(self):
         path = f"{BAT}/charge_control_end_threshold"
         for _ in range(20):            # msi-ec attaches its battery hook a moment after boot
             if os.path.exists(path):
-                write(path, CONF["CHARGE_LIMIT"])
+                write(path, self.wanted_limit())
                 return
             time.sleep(0.5)
         log("no charge_control_end_threshold (msi-ec not loaded?)")

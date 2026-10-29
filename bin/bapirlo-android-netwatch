@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Bapirlo OS — keep Android (Waydroid) online.
+# Run every minute by bapirlo-android-netwatch.timer, and straight away by
+# bapirlo-android-netwatch.path when Android's display stack crashes (user units, no sudo needed).
+#
+# Why (2026-10-25): Waydroid's composer drops its Wayland connection to GNOME
+# ("socket error: Try again" in /data/waydroid_hwc_wayland_error.txt) → composer aborts →
+# SurfaceFlinger aborts → zygote/system_server restart. After that Android often stops
+# answering on its address and has no internet until the session is restarted.
+# Android's own sleep → Waydroid freeze also cut the network; that is switched off with
+# persist.waydroid.suspend=false + stay_on_while_plugged_in=7, and handled here as a fallback.
+set -uo pipefail
+
+STATE="${XDG_RUNTIME_DIR:-/tmp}/bapirlo-android-netwatch.last"
+COOLDOWN=180   # never restart more than once per 3 min
+SETTLE=45      # seconds Android gets after (re)starting before we judge it
+
+status=$(waydroid status 2>/dev/null)
+grep -q 'Session:.*RUNNING' <<<"$status" || exit 0
+
+age() { local pid; pid=$(pgrep -of "$1") || return 1; ps -o etimes= -p "$pid" | tr -d ' '; }
+
+# servicemanager lives as long as the container; surfaceflinger is restarted when the display stack crashes.
+base=$(age '^/system/bin/servicemanager') || exit 0
+[ "$base" -ge "$SETTLE" ] || exit 0
+
+problem=
+if grep -q 'Container:.*FROZEN' <<<"$status"; then
+  problem="Android was frozen"
+elif ! sf=$(age '^/system/bin/surfaceflinger') || [ $((base - sf)) -gt 20 ]; then
+  problem="Android's display crashed"
+elif ! pgrep -f '^/system/bin/netd' >/dev/null; then
+  problem="Android's network daemon stopped"
+else
+  ip=$(awk -F'\t' '/IP address/ {print $2}' <<<"$status")
+  if [ -n "$ip" ] && [ "$ip" != UNKNOWN ] && ! ping -c3 -W2 "$ip" >/dev/null 2>&1; then
+    ss=$(age '^system_server') || ss=0
+    [ "$ss" -ge "$SETTLE" ] || exit 0
+    problem="Android stopped answering on $ip"
+  fi
+fi
+[ -n "$problem" ] || exit 0
+
+now=$(date +%s)
+last=$(cat "$STATE" 2>/dev/null || echo 0)
+if [ $((now - last)) -lt $COOLDOWN ]; then
+  echo "$problem, but it was restarted $((now - last))s ago — waiting for cooldown"
+  exit 0
+fi
+echo "$now" > "$STATE"
+
+echo "$problem — restarting the Android session"
+notify-send -a Android -i waydroid "Android" "$problem — reconnecting…" || true
+
+waydroid session stop || true
+sleep 3
+# Detach from this oneshot unit, otherwise systemd kills the session when the check exits.
+systemd-run --user --collect --quiet waydroid session start
+for _ in $(seq 60); do
+  waydroid status 2>/dev/null | grep -q 'Session:.*RUNNING' && break
+  sleep 1
+done
+# In multi-window mode apps open in their own windows, so don't pop up the full Android screen.
+if [ "$(waydroid prop get persist.waydroid.multi_windows 2>/dev/null)" != true ]; then
+  systemd-run --user --collect --quiet waydroid show-full-ui
+fi

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Bapirlo OS — session restore (Bapirlo Desk, desk/…/session.js).
+#   bapirlo-session                show the mode and what would come back
+#   bapirlo-session auto|ask|off   after login: reopen by itself / ask first / never
+#   bapirlo-session now            reopen the saved apps right now
+#   bapirlo-session skip <app.desktop>    never save / reopen that app (again: unskip)
+set -eu
+EXT=~/.local/share/gnome-shell/extensions/bapirlo-desk@bapirlo-os
+gs() { gsettings --schemadir "$EXT/schemas" "$@" org.gnome.shell.extensions.bapirlo-desk; }
+FILE=${XDG_STATE_HOME:-$HOME/.local/state}/bapirlo/session/last.json
+case "${1:-}" in
+  auto|ask|off) gs set session-restore "$1" ;;
+  now) gdbus call --session --dest org.gnome.Shell --object-path /os/bapirlo/Desk --method os.bapirlo.Desk.RestoreSession >/dev/null ;;
+  skip|unskip)
+    [ -n "${2:-}" ] || { echo "which app? e.g. org.gnome.Nautilus.desktop"; exit 2; }
+    python3 - "$1" "$2" "$(gs get session-skip)" <<'PY' | { read -r v; gs set session-skip "$v"; }
+import ast, sys
+op, app, cur = sys.argv[1], sys.argv[2], sys.argv[3].replace("@as ", "")
+lst = [x for x in ast.literal_eval(cur) if x != app]
+if op == "skip": lst.append(app)
+print(repr(lst))
+PY
+    ;;
+  "") ;;
+  *) sed -n 3,7p "$0"; exit 2 ;;
+esac
+echo "mode : $(gs get session-restore)"
+echo "skip : $(gs get session-skip)"
+if [ -f "$FILE" ]; then
+  python3 - "$FILE" <<'PY'
+import json, sys, time, collections
+d = json.load(open(sys.argv[1]))
+age = int(time.time() - d.get("saved", 0))
+print(f"saved: {age // 60} min ago — {len(d['windows'])} windows")
+for app, n in collections.Counter(w["app"] for w in d["windows"]).items():
+    wss = sorted({w["ws"] + 1 for w in d["windows"] if w["app"] == app})
+    print(f"   {app:<45} ×{n}  workspace {', '.join(map(str, wss))}")
+PY
+else
+  echo "saved: nothing yet (it saves every 30 s once the desk extension is running)"
+fi

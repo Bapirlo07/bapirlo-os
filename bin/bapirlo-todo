@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — the desk To-do card from the terminal (same file, the card updates by itself).
+  bapirlo-todo                 list (numbers for done / rm)
+  bapirlo-todo add buy milk    add one
+  bapirlo-todo done 2          tick / untick number 2
+  bapirlo-todo rm 2            remove number 2
+  bapirlo-todo clear           remove every ticked one"""
+import json
+import os
+import sys
+import time
+
+FILE = os.path.join(os.environ.get("XDG_STATE_HOME", os.path.expanduser("~/.local/state")),
+                    "bapirlo", "desk", "todo.json")
+KEEP = 24 * 3600
+
+
+def load():
+    try:
+        items = json.load(open(FILE)).get("items", [])
+    except (OSError, ValueError):
+        items = []
+    now = time.time()
+    return [i for i in items if not i.get("done") or now - i.get("doneAt", now) < KEEP]
+
+
+def save(items):
+    os.makedirs(os.path.dirname(FILE), exist_ok=True)
+    with open(FILE + ".new", "w") as f:
+        json.dump({"items": items}, f)
+    os.replace(FILE + ".new", FILE)
+
+
+def ordered(items):
+    return [i for i in items if not i.get("done")] + [i for i in items if i.get("done")]
+
+
+def main(argv):
+    items = load()
+    cmd = argv[0] if argv else "list"
+    if cmd == "add" and len(argv) > 1:
+        items.append({"id": str(int(time.time() * 1e6)), "text": " ".join(argv[1:]), "done": False, "at": int(time.time())})
+        save(items)
+    elif cmd in ("done", "rm") and len(argv) == 2 and argv[1].isdigit():
+        view = ordered(items)
+        n = int(argv[1]) - 1
+        if not 0 <= n < len(view):
+            sys.exit(f"no item {argv[1]}")
+        it = view[n]
+        if cmd == "rm":
+            items.remove(it)
+        else:
+            it["done"] = not it.get("done")
+            it["doneAt"] = int(time.time()) if it["done"] else None
+        save(items)
+    elif cmd == "clear":
+        save([i for i in items if not i.get("done")])
+    elif cmd != "list":
+        print(__doc__)
+        sys.exit(2)
+    for n, it in enumerate(ordered(load()), 1):
+        print(f"{n:2}. [{'x' if it.get('done') else ' '}] {it['text']}")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

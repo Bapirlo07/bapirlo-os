@@ -1,0 +1,16 @@
+/* Bapirlo AI title strip — sizes only; colours are set inline from the Theme Studio palette */
+.bai-strip {
+    border: 1px solid transparent;
+    border-bottom-width: 0;
+    border-radius: 12px 12px 0 0;
+    padding: 0 6px 0 14px;
+    spacing: 2px;
+}
+.bai-title { font-size: 9.5pt; font-weight: 600; }
+.bai-button {
+    border-radius: 8px;
+    padding: 4px 7px;
+    margin: 0 1px;
+}
+.bai-button:hover { background-color: rgba(255, 255, 255, 0.12); }
+.bai-button:active { background-color: rgba(255, 255, 255, 0.22); }

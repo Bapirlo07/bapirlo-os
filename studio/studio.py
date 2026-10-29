@@ -56,6 +56,24 @@ DCONF = {
 }
 DCONF_SKIP = {"/org/gnome/shell/extensions/dash2dock-lite/running-indicator-color",
               "/org/gnome/shell/extensions/dash2dock-lite/drawing-secondary-color"}
+
+
+def firefox_profile():
+    """The profile Firefox opens by default: installs.ini's Default, else profiles.ini's Default=1."""
+    import configparser
+    for base in (os.path.join(CONFIG, "mozilla/firefox"), os.path.join(HOME, ".mozilla/firefox")):
+        inst, prof = configparser.ConfigParser(), configparser.ConfigParser()
+        inst.read(os.path.join(base, "installs.ini"))
+        prof.read(os.path.join(base, "profiles.ini"))
+        paths = [inst[s].get("Default") for s in inst.sections()]
+        paths += [prof[s].get("Path") for s in prof.sections() if prof[s].get("Default") == "1"]
+        for path in paths:
+            if path and os.path.isdir(os.path.join(base, path)):
+                return os.path.join(base, path)
+    return None
+
+
+FIREFOX = firefox_profile()
 # in-place files: path → kind; Alacritty's / ddterm's red slots stay red (it means "error")
 INPLACE = {
     os.path.join(CONFIG, "alacritty/alacritty.toml"): "toml",
@@ -64,7 +82,13 @@ INPLACE = {
     os.path.join(CONFIG, "spicetify/Themes/Bapirlo/color.ini"): "ini",
     os.path.join(CONFIG, "spicetify/Themes/Bapirlo/user.css"): "css",
     os.path.join(CONFIG, "vesktop/themes/bapirlo.theme.css"): "css",
+    os.path.join(CONFIG, "vesktop/themes/bapirlo-kuro.theme.css"): "css",
+    os.path.join(CONFIG, "cava/config"): "css",
+    os.path.join(CONFIG, "starship.toml"): "css",
 }
+if FIREFOX:
+    INPLACE[os.path.join(FIREFOX, "chrome/userChrome.css")] = "css"
+    INPLACE[os.path.join(FIREFOX, "chrome/userContent.css")] = "css"
 VSCODE_EXT = os.path.join(HOME, ".vscode/extensions/bapirlo.bapirlo-kuro-theme-1.0.0")
 CHROME = os.path.join(HOME, ".local/share/bapirlo/chrome-theme")
 NAMED_ACCENTS = {"blue": "#3584E4", "teal": "#2190A4", "green": "#3A944A", "yellow": "#C88800",
@@ -431,6 +455,46 @@ def chrome_theme(T):
     return True
 
 
+# ============================================================================ per-wallpaper look
+# Each preset remembers the bar look (the dock follows it), which desk cards are shown, their corner
+# and where they were dragged. Switching theme saves the outgoing preset's look and brings back the
+# incoming one's; a preset with nothing saved yet keeps whatever is on screen.
+LOOK_KEYS = (("bapirlo-bar", "bar-look"), ("bapirlo-desk", "widgets-cards"), ("bapirlo-desk", "widgets-corner"))
+DESK_LAYOUT = os.path.join(os.path.dirname(STATE), "desk", "widgets.json")
+
+
+def _look_file(pid):
+    return os.path.join(DATA, "original-look.json") if pid == "original" else os.path.join(PRESETS, pid, "look.json")
+
+
+def _ext_schemas(ext):
+    return os.path.join(EXT_DIR, f"{ext}@bapirlo-os", "schemas")
+
+
+def look_save(pid):
+    if pid != "original" and not os.path.isdir(os.path.join(PRESETS, pid or "")):
+        return
+    keys = {}
+    for ext, key in LOOK_KEYS:
+        r = sh("gsettings", "--schemadir", _ext_schemas(ext), "get", f"org.gnome.shell.extensions.{ext}", key)
+        if r.returncode == 0:
+            keys[f"{ext}/{key}"] = r.stdout.strip()
+    write_atomic(_look_file(pid), json.dumps({"keys": keys, "layout": load_json(DESK_LAYOUT, {})}, indent=1))
+
+
+def look_restore(pid):
+    """Before the palette is written: the desk extension re-reads its layout when active.json changes."""
+    lk = load_json(_look_file(pid))
+    if not lk:
+        return False
+    for k, v in lk.get("keys", {}).items():
+        ext, key = k.split("/", 1)
+        _gs(f"org.gnome.shell.extensions.{ext}", key, v, _ext_schemas(ext))
+    if lk.get("layout") is not None:
+        write_atomic(DESK_LAYOUT, json.dumps(lk["layout"]))
+    return True
+
+
 # ============================================================================ the switch
 def _gs(schema, key, val, schemadir=None):
     cmd = ["gsettings"] + (["--schemadir", schemadir] if schemadir else []) + ["set", schema, key, val]
@@ -497,6 +561,8 @@ def apply_preset(pid, fade=True, quiet=False):
     written = a.get("written", {})
     if not a:                                   # first preset: remember the original dconf values
         dconf_baseline(refresh=True)
+    look_save(a.get("preset", "original"))
+    look_restore(pid)
     base = dconf_baseline()
     slot = other_slot()
     t0 = time.time()
@@ -534,6 +600,8 @@ def apply_original(fade=True):
     """Everything back exactly as Bapirlo OS was before Theme Studio."""
     a = active() or {}
     written = a.get("written", {})
+    look_save(a.get("preset", "original"))
+    look_restore("original")
     if os.path.exists(ACTIVE):
         os.remove(ACTIVE)
     _switch(dict(ORIGINAL), "", fade=fade)
@@ -558,10 +626,13 @@ def apply_original(fade=True):
 def _after(roles, preset=None):
     """Accents (autotheme), wallpaper (daycycle), Spotify, lock screen."""
     b = os.path.join(OS_DIR, "bin")
-    sh(os.path.join(b, "bapirlo-daycycle"), timeout=30)          # wallpaper first …
+    sh(os.path.join(b, "bapirlo-daycycle"), "--no-theme", timeout=30)   # wallpaper first …
     sh(os.path.join(b, "bapirlo-autotheme"), "apply", timeout=90)  # … then the accents read it
     if shutil.which("spicetify"):
         sh("spicetify", "-q", "refresh", timeout=60)
+    sh("pkill", "-USR2", "-x", "cava")                             # running cava re-reads its colours
+    sh(os.path.join(OS_DIR, "sounds", "mood", "bapirlo-sound-mood"), timeout=30)   # login / unlock sounds
+    sh(os.path.join(OS_DIR, "tools", "hypr-theme.py"), timeout=20)              # Hyprland session colours
     greeter_apply(roles, preset)
 
 
@@ -609,6 +680,8 @@ def current_wallpaper():
 # after the theme's own stylesheet. Empty studio.css = the original look. Nothing else is writable.
 GREETER = "/usr/share/web-greeter/themes/bapirlo"
 GREETER_STUDIO = os.path.join(GREETER, "studio")
+# live.css = the live wallpaper's lock-screen animation, written by lib/bapirlo_wallpaper.py (@import must come first)
+LIVE_IMPORT = '@import url("live.css");'
 
 
 def greeter_ready():
@@ -622,7 +695,7 @@ def greeter_apply(roles, preset=None):
     css, bg = os.path.join(GREETER_STUDIO, "studio.css"), os.path.join(GREETER_STUDIO, "bg.jpg")
     logo = os.path.join(GREETER_STUDIO, "logo.svg")
     if not preset:
-        write_atomic(css, "/* Theme Studio: Original Bapirlo OS */\n")
+        write_atomic(css, LIVE_IMPORT + "\n/* Theme Studio: Original Bapirlo OS */\n")
         for f in (bg, logo):
             if os.path.exists(f):
                 os.remove(f)
@@ -640,7 +713,7 @@ def greeter_apply(roles, preset=None):
     with open(os.path.join(GREETER, "img", "logo.svg")) as f:
         write_atomic(logo, E.remap_text(f.read(), T))
     # the logo is an <img>: Chromium lets CSS swap a replaced element's picture with content: url()
-    write_atomic(css, f'/* Theme Studio: {preset["name"]} (generated) */\n' + E.remap_text(src, T)
+    write_atomic(css, LIVE_IMPORT + f'\n/* Theme Studio: {preset["name"]} (generated) */\n' + E.remap_text(src, T)
                  + '\n#logo { content: url("logo.svg"); }\n')
     for f in (css, bg, logo):
         os.chmod(f, 0o644)

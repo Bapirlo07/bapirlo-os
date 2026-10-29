@@ -5,12 +5,16 @@
   bapirlo-doctor --notify     quiet; a notification only when something needs you
                               (run after every system update and 1 min after each login)
   bapirlo-doctor --json       machine-readable report
+  bapirlo-doctor --disk       quiet free-space check only; one notification a day while / is below
+                              15 GB (bapirlo-diskwatch.timer runs it every 30 min)
 
 Checks
   · every enabled extension supports the GNOME version on disk (an update to GNOME that an
     extension does not list = it gets switched off at your next login) and is ACTIVE in the
     running shell (not ERROR / OUT OF DATE)
   · Bapirlo services and timers (failed units), the pacman snapshot hook, Timeshift age
+  · battery wear (below 60 % of design capacity) and the SSD's SMART health (critical warnings,
+    media errors, write life, spare blocks) — read through UDisks, no root
   · Spicetify still applied to Spotify, free disk space, the Windows drive's safety flags
     (only if it is mounted), JS errors from Bapirlo extensions in this login's shell log
 Never changes anything. Exit code 0 = all good, 1 = something needs a look.
@@ -31,9 +35,12 @@ EXT_DIRS = [os.path.join(os.environ.get("XDG_DATA_HOME", HOME + "/.local/share")
 # extensions that are expected to be off (no build for this GNOME yet) — reported as info only
 KNOWN_OFF = {"tilingshell@ferrarodomenico.com"}
 USER_UNITS = ["bapirlo-lockd.service", "bapirlo-autotheme.service", "bapirlo-vault-guard.service",
-              "bapirlo-daycycle.timer", "bapirlo-tidy.timer", "bapirlo-doctor.path", "bapirlo-spicetify.path"]
+              "bapirlo-daycycle.timer", "bapirlo-tidy.timer", "bapirlo-doctor.path", "bapirlo-spicetify.path",
+              "bapirlo-diskwatch.timer"]
 SYSTEM_UNITS = ["bapirlo-perfd.service", "bapirlo-cleanup.timer", "cronie.service"]
-MIN_FREE_GB = 15
+sys.path.insert(0, os.path.join(OS_DIR, "lib"))
+import bapirlo_health as health  # noqa: E402
+MIN_FREE_GB = health.MIN_FREE_GB
 
 
 def run(*cmd, timeout=10):
@@ -95,7 +102,7 @@ def check_extensions(major, rep):
         else:
             rep.ok("Extensions", name)
     for uuid in KNOWN_OFF:
-        if os.path.isdir(os.path.join(EXT_DIRS[0], uuid)):
+        if uuid not in enabled and os.path.isdir(os.path.join(EXT_DIRS[0], uuid)):
             meta, _ = ext_meta(uuid)
             versions = [str(v).split(".")[0] for v in (meta or {}).get("shell-version", [])]
             if major in versions:
@@ -151,6 +158,52 @@ def check_disk(rep):
                     "(Control Centre → Storage, or bapirlo-cleanup-now)")
     else:
         rep.ok("Disk", f"{free:.1f} GB free")
+
+
+def check_battery(rep):
+    b = health.battery()
+    if not b or b["health"] is None:
+        return
+    msg = f"holds {b['health']:.0f}% of its design capacity ({b['full']:.2f}/{b['design']:.2f} {b['unit']})"
+    if b["health"] < health.BATTERY_WORN:
+        rep.problem("Battery", msg + " — worn; expect much shorter battery life (a replacement fixes it)")
+    else:
+        rep.ok("Battery", msg)
+
+
+def check_ssd(rep):
+    for d in health.drives():
+        probs = health.drive_problems(d)
+        if probs:
+            rep.problem("SSD", f"{d['model']}: " + "; ".join(probs) + " — back up now (Timeshift + your files)")
+        else:
+            life = f"{100 - d['used_pct']}% write life left" if d["used_pct"] is not None else "SMART OK"
+            rep.ok("SSD", f"{d['model']}: {life}" + (f", {d['temp_c']} °C" if d["temp_c"] is not None else ""))
+
+
+def disk_watch():
+    """--disk: one notification per day while / is below MIN_FREE_GB."""
+    free = shutil.disk_usage("/").free / 1024 ** 3
+    stamp = os.path.join(STATE, "diskwatch-last")
+    if free >= MIN_FREE_GB:
+        try:
+            os.remove(stamp)        # back above → warn again straight away next time
+        except FileNotFoundError:
+            pass
+        return 0
+    today = time.strftime("%Y-%m-%d")
+    try:
+        if open(stamp).read().strip() == today:
+            return 0                # already warned today; low space is not a failure of this unit
+    except OSError:
+        pass
+    os.makedirs(STATE, exist_ok=True)
+    open(stamp, "w").write(today)
+    subprocess.run(["notify-send", "-a", "Bapirlo Doctor", "-i", "drive-harddisk-symbolic", "-u", "critical",
+                    f"Only {free:.1f} GB free",
+                    f"Below {MIN_FREE_GB} GB, system updates skip their safety snapshot.\n"
+                    "Free space: Control Centre → Storage, or run bapirlo-cleanup-now."], check=False)
+    return 0
 
 
 def check_spicetify(rep):
@@ -219,11 +272,13 @@ class Report:
 
 def main():
     args = sys.argv[1:]
+    if "--disk" in args:
+        return disk_watch()
     major = shell_major()
     rep = Report()
     rep.ok("GNOME", f"GNOME Shell {major} on disk")
     for check in (lambda r: check_extensions(major, r), check_units, check_snapshots, check_disk,
-                  check_spicetify, check_windows, check_shell_log):
+                  check_battery, check_ssd, check_spicetify, check_windows, check_shell_log):
         try:
             check(rep)
         except Exception as e:  # a broken check must not hide the others

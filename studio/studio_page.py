@@ -1,4 +1,4 @@
-"""Bapirlo Theme Studio — the window (GTK4 / libadwaita).
+"""Bapirlo Theme Studio — the "Theme" tab of the Wallpapers window (wallpaper/app.py, GTK4 / libadwaita).
 
 Left: pictures in ~/Pictures/Theme Studio and your saved themes. Right: a preview of the top bar,
 dock, Control Centre, a window and a notification in the new colours, the palette, the colour
@@ -24,7 +24,6 @@ import engine as E  # noqa: E402
 import mockup  # noqa: E402
 import studio as S  # noqa: E402
 
-APP_ID = "os.bapirlo.ThemeStudio"
 KURO_WALL = os.path.expanduser("~/.local/share/backgrounds/bapirlo/kuro-2560x1600.png")
 THUMBS = os.path.join(os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache")), "bapirlo", "studio-thumbs")
 SWATCHES = [("crimson", "Accent"), ("ember", "Accent text"), ("accent2", "Second"), ("accent3", "Third"),
@@ -95,10 +94,10 @@ def pretty(path):
     return (s[:28].rsplit(" ", 1)[0] if len(s) > 28 else s).title() or "My theme"
 
 
-class Window(Adw.ApplicationWindow):
-    def __init__(self, app):
-        super().__init__(application=app, title="Theme Studio", default_width=1240, default_height=800)
-        self.add_css_class("bapirlo-studio")
+class StudioPage(Gtk.Box):
+    def __init__(self, win):
+        super().__init__(css_classes=["page-studio"])
+        self.win = win
         self.css = Gtk.CssProvider()
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), self.css,
                                                   Gtk.STYLE_PROVIDER_PRIORITY_USER + 1)
@@ -112,27 +111,32 @@ class Window(Adw.ApplicationWindow):
         self._render_timer = 0
         self._wall_timer = 0
 
-        tv = Adw.ToolbarView()
-        hb = Adw.HeaderBar()
-        hb.set_title_widget(lbl("THEME STUDIO", ("brand",)))
-        hb.pack_start(btn("Add picture", ("flat-kuro",), self.pick_file, icon="list-add-symbolic",
-                          tip="Copy a picture into Pictures → Theme Studio"))
-        hb.pack_start(btn(None, ("flat-kuro",), self.open_folder, icon="folder-pictures-symbolic",
-                          tip="Open the Theme Studio folder — drop wallpapers in here"))
-        tv.add_top_bar(hb)
-        self.toasts = Adw.ToastOverlay()
-        tv.set_content(self.toasts)
-        self.set_content(tv)
+        # header buttons — the window shows them while this tab is open
+        self.head_start = Gtk.Box(spacing=6)
+        self.head_start.append(btn("Add picture", ("flat-kuro",), self.pick_file, icon="list-add-symbolic",
+                                   tip="Copy a picture into Pictures → Theme Studio"))
+        self.head_start.append(btn(None, ("flat-kuro",), self.open_folder, icon="folder-pictures-symbolic",
+                                   tip="Open the Theme Studio folder — drop wallpapers in here"))
+        self.head_end = Gtk.Box()
+        self.toasts = win.toasts
 
-        root = Gtk.Box()
-        self.toasts.set_child(root)
-        root.append(self.build_sidebar())
-        root.append(self.build_main())
+        self.append(self.build_sidebar())
+        self.append(self.build_main())
+        self.seen_active = (S.active() or {}).get("preset", "original")
 
         self.monitor = Gio.File.new_for_path(S.DROP).monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, None)
         self.monitor.connect("changed", lambda *_: self.queue_walls())
         self.load_walls()
-        self.load_presets(select=(S.active() or {}).get("preset", "original"))
+        self.load_presets(select=self.seen_active)
+
+    def refresh(self):
+        """The theme changed elsewhere (Wallpapers tab, timer, Control Centre): show the new active one."""
+        act = (S.active() or {}).get("preset", "original")
+        if act != self.seen_active and not self.busy:
+            self.seen_active = act
+            self.mark_wall(None)
+            self.load_presets(select=act)
+        self.update_buttons()
 
     # ------------------------------------------------------------------ styling
     def reload_css(self):
@@ -488,9 +492,10 @@ class Window(Adw.ApplicationWindow):
 
         def done(pid):
             self.busy = False
-            self.reload_css()
+            self.seen_active = pid
             self.mark_wall(None)
             self.load_presets(select=pid)
+            self.win.theme_changed()
             self.set_status("")
             nm = "Original Bapirlo OS" if pid == "original" else S.get_preset(pid)["name"]
             self.toasts.add_toast(Adw.Toast(title=f"“{nm}” applied", timeout=4))
@@ -564,7 +569,7 @@ class Window(Adw.ApplicationWindow):
             except GLib.Error:
                 return
             self.add_picture(gf.get_path())
-        dlg.open(self, None, done)
+        dlg.open(self.win, None, done)
 
     def add_picture(self, path):
         """Pictures from elsewhere are copied into the Theme Studio folder, so they stay available."""
@@ -582,33 +587,5 @@ class Window(Adw.ApplicationWindow):
 
     def open_folder(self):
         os.makedirs(S.DROP, exist_ok=True)
-        Gtk.FileLauncher(file=Gio.File.new_for_path(S.DROP)).launch(self, None, None)
+        Gtk.FileLauncher(file=Gio.File.new_for_path(S.DROP)).launch(self.win, None, None)
 
-
-class App(Adw.Application):
-    def __init__(self):
-        super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_OPEN)
-        self.win = None
-
-    def do_startup(self):
-        Adw.Application.do_startup(self)
-        Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK)
-        for keys, fn in ((["<Ctrl>q", "<Ctrl>w"], lambda *_: self.quit()),):
-            a = Gio.SimpleAction.new("quit", None)
-            a.connect("activate", fn)
-            self.add_action(a)
-            self.set_accels_for_action("app.quit", keys)
-
-    def do_activate(self):
-        if not self.win:
-            self.win = Window(self)
-        self.win.present()
-
-    def do_open(self, files, _n, _hint):
-        self.do_activate()
-        if files:
-            self.win.add_picture(files[0].get_path())
-
-
-def main():
-    return App().run(sys.argv)

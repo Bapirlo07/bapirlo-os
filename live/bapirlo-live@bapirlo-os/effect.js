@@ -5,10 +5,15 @@
 //   · petals   3 depth layers falling diagonally, tumbling (width follows the flip)
 //   · glow     the crimson parts of the art breathe ±10 % brightness
 //   · parallax art zoomed 2 % and shifted up to 0.8 % against the pointer
+//   · depth    3D: a depth map of the picture (layer 1, white = near; see lib/bapirlo_depth.py) moves
+//              near things further than far things. Per pixel it marches the eye ray from the nearest
+//              layer back (20 steps, then refined between the last two), so the first surface hit wins
+//              and foreground edges occlude properly instead of ghosting
 // Particles live one per grid cell (most cells empty), drawn only inside their own cell, so a
 // pixel costs 6 cheap evaluations — no loops over neighbours.
 import Clutter from 'gi://Clutter';
 import Cogl from 'gi://Cogl';
+import GdkPixbuf from 'gi://GdkPixbuf';
 import GObject from 'gi://GObject';
 
 const DECLARATIONS = `
@@ -24,6 +29,15 @@ uniform float zoom;
 uniform vec2 shift;
 uniform vec3 ember_col;
 uniform vec3 petal_col;
+uniform sampler2D depth_tex;
+uniform float depth_on;
+uniform vec2 dscale;
+uniform vec2 dshift;
+uniform float focal;
+
+float depthAt(vec2 p) {
+    return texture2D(depth_tex, (p - 0.5) * dscale + 0.5).r;
+}
 
 float hash12(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -85,6 +99,28 @@ vec2 petalLayer(vec2 uv, float scale, float speed, float seed) {
 const SOURCE = `
 vec2 uv = cogl_tex_coord_in[0].xy;
 vec2 suv = (uv - 0.5) / zoom + 0.5 + shift;
+if (depth_on > 0.0) {
+    vec2 ds = dshift * depth_on;
+    float hPrev = 1.0;
+    float dPrev = depthAt(suv + ds * (1.0 - focal));
+    vec2 q = suv + ds * (1.0 - focal);
+    if (dPrev < 1.0) {
+        q = suv - ds * focal;
+        for (int i = 1; i <= 20; i++) {
+            float h = 1.0 - float(i) / 20.0;
+            float d = depthAt(suv + ds * (h - focal));
+            if (d >= h) {
+                float a = hPrev - dPrev;
+                float hh = mix(hPrev, h, a / max(a + d - h, 1e-4));
+                q = suv + ds * (hh - focal);
+                break;
+            }
+            hPrev = h;
+            dPrev = d;
+        }
+    }
+    suv = q;
+}
 vec4 col = texture2D(tex, suv);
 
 if (glow > 0.5) {
@@ -114,13 +150,50 @@ cogl_color_out = vec4(clamp(col.rgb, 0.0, 1.0), col.a) * cogl_color_in.a;
 
 export const LiveEffect = GObject.registerClass(
 class BapirloLiveEffect extends Clutter.ShaderEffect {
+    // depth map (PNG path or null): uploaded once, attached as layer 1 of whatever pipeline the
+    // offscreen effect currently paints with (create_pipeline isn't reachable from JS)
+    setDepth(path) {
+        this._depth = null;
+        this._pipeline = null;
+        this.depthAspect = 0;
+        if (path) {
+            try {
+                const pb = GdkPixbuf.Pixbuf.new_from_file(path);
+                const ctx = global.stage.context.get_backend().get_cogl_context();
+                this._depth = Cogl.Texture2D.new_from_data(ctx, pb.width, pb.height,
+                    pb.has_alpha ? Cogl.PixelFormat.RGBA_8888 : Cogl.PixelFormat.RGB_888, pb.rowstride, pb.get_pixels());
+                this.depthAspect = pb.width / pb.height;
+            } catch (e) {
+                console.warn(`bapirlo-live: depth map ${path}: ${e.message}`);
+            }
+        }
+        this.queue_repaint();
+        return !!this._depth;
+    }
+
+    vfunc_paint_target(node, paintContext) {
+        const p = this.get_pipeline();
+        if (p && this._depth && p !== this._pipeline) {
+            this._pipeline = p;
+            p.set_layer_texture(1, this._depth);
+            p.set_layer_combine(1, 'RGBA = REPLACE(PREVIOUS)');
+        }
+        super.vfunc_paint_target(node, paintContext);
+    }
+
     vfunc_get_static_snippet() {
         return Cogl.Snippet.new(Cogl.SnippetHook.FRAGMENT, DECLARATIONS, SOURCE);
     }
 
-    // u: {t, aspect, amount, density, embers, petals, glow, zoom, shift:[x,y], emberCol:[r,g,b], petalCol:[r,g,b]}
+    // u: {t, aspect, amount, density, embers, petals, glow, zoom, shift:[x,y], emberCol:[r,g,b], petalCol:[r,g,b],
+    //     depthOn, dscale:[x,y], dshift:[x,y], focal}
     update(u) {
         this.set_uniform_value('tex', 0);
+        this.set_uniform_value('depth_tex', 1);
+        this.set_uniform_float('depth_on', 1, [this._depth ? u.depthOn : 0]);
+        this.set_uniform_float('focal', 1, [u.focal]);
+        this.set_uniform_float('dscale', 2, u.dscale);
+        this.set_uniform_float('dshift', 2, u.dshift);
         for (const k of ['t', 'aspect', 'amount', 'density', 'embers', 'petals', 'glow', 'zoom'])
             this.set_uniform_float(k, 1, [u[k]]);
         this.set_uniform_float('shift', 2, u.shift);

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Bar Looks
+GenericName=Top bar style
+Comment=Switch the look of the top bar: Classic, Manga, Glass, Islands or Flat
+Exec=@HOME@/bapirlo-os/bar-looks/bapirlo-bar-looks
+Icon=preferences-desktop-theme
+Terminal=false
+Categories=Settings;DesktopSettings;GTK;
+Keywords=bar;panel;top bar;look;style;theme;manga;glass;islands;flat;bapirlo;
+StartupWMClass=os.bapirlo.BarLooks
+StartupNotify=true

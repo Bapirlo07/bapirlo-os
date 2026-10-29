@@ -1,0 +1,12 @@
+[Unit]
+Description=Bapirlo live wallpaper follows the charger (light copy on battery)
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/bapirlo-os/bin/bapirlo-wallpaper watch
+Restart=on-failure
+RestartSec=10
+Nice=10
+
+[Install]
+WantedBy=default.target

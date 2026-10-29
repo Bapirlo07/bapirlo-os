@@ -8,7 +8,9 @@
 Shows: clock + greeting · weather (Open-Meteo, location taken from the SimpleWeather top-bar
 extension or ~/.config/bapirlo/location.json) · today's events from every calendar GNOME knows
 (Evolution Data Server: Online Accounts → Google, local calendars, birthdays) · battery, CPU
-temperature, power mode, storage, pending updates · your dock favourites as quick launchers ·
+temperature, power mode, storage, pending updates · HEALTH: battery wear, SSD SMART (wear, spare,
+errors, hours, data written) and free space vs the 15 GB snapshot floor · FOCUS: today / this week /
+streak from the top-bar focus timer's log, with a start/stop button · your dock favourites as quick launchers ·
 Gaming / Quiet / Do Not Disturb switches (bapirlo-mode).
 
 Cheap by design: nothing runs when the window is closed; network and calendar work happens in
@@ -43,6 +45,9 @@ CONF = os.path.join(GLib.get_user_config_dir(), "bapirlo")
 DAY_FILE = os.path.join(STATE, "welcome-last-day")
 OFF_FILE = os.path.join(CONF, "welcome-no-autostart")
 BAT = "/sys/class/power_supply/BAT1"
+sys.path.insert(0, os.path.join(ROOT, "lib"))
+import bapirlo_health as health  # noqa: E402
+import bapirlo_focus as focuslog  # noqa: E402
 
 CSS = """
 window.bapirlo-welcome { background-color: #0E0A0D; color: #F2E9EC; }
@@ -70,6 +75,13 @@ window.bapirlo-welcome { background-color: #0E0A0D; color: #F2E9EC; }
 progressbar trough { background-color: rgba(242,233,236,0.08); border-radius: 4px; min-height: 6px; }
 progressbar progress { background-color: #E11D2E; border-radius: 4px; min-height: 6px; }
 progressbar.low progress { background-color: #FFB020; }
+progressbar.bad progress { background-color: #FF4655; }
+.health-col { background-color: rgba(242,233,236,0.035); border-radius: 12px; padding: 12px 14px; }
+.health-name { font-weight: 700; color: #CAB5BF; font-size: 10pt; }
+.health-big { font-family: Bangers; font-size: 26pt; letter-spacing: 1px; color: #FFFFFF; }
+.health-big.bad { color: #FF4655; }
+.health-verdict { font-weight: 700; color: #3FC69A; }
+.health-verdict.bad { color: #FF4655; }
 button.kuro { border-radius: 10px; padding: 7px 14px; background-color: rgba(242,233,236,0.07);
               color: #F2E9EC; font-weight: 600; transition: 180ms; }
 button.kuro:hover { background-color: rgba(225,29,46,0.22); }
@@ -300,6 +312,8 @@ class Welcome(Adw.Application):
         row.append(self.build_today())
         row.append(self.build_system())
         page.append(row)
+        page.append(self.build_health())
+        page.append(self.build_focus())
         page.append(self.build_modes())
         page.append(self.build_apps())
         page.append(self.build_footer())
@@ -316,10 +330,14 @@ class Welcome(Adw.Application):
 
         self.tick()
         self.refresh_system()
+        self.load_health()
         self.refresh_modes()
+        self.refresh_focus()
         self.timers = [GLib.timeout_add_seconds(1, self.tick),
                        GLib.timeout_add_seconds(5, self.refresh_system),
                        GLib.timeout_add_seconds(5, self.refresh_modes),
+                       GLib.timeout_add_seconds(5, self.refresh_focus),
+                       GLib.timeout_add_seconds(60, self.load_health),
                        GLib.timeout_add_seconds(1800, self.load_weather)]
         self.win.connect("close-request", self.on_close)
         self.load_weather()
@@ -500,6 +518,135 @@ class Welcome(Adw.Application):
     def run_update(self):
         launch(["alacritty", "--class", "bapirlo-update", "-T", "Bapirlo update",
                 "-e", os.path.join(BIN, "bapirlo-update")])
+
+    # --- health: battery wear · SSD SMART · free space
+    def build_health(self):
+        c = card("HEALTH")
+        row = Gtk.Box(spacing=12, homogeneous=True)
+        self.health = {}
+        for key, name in (("bat", "Battery"), ("ssd", "SSD"), ("disk", "Storage")):
+            col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+            col.add_css_class("health-col")
+            top = Gtk.Box(spacing=8)
+            top.append(label(name, ("health-name",), hexpand=True))
+            verdict = label("", ("health-verdict",))
+            top.append(verdict)
+            col.append(top)
+            big = label("…", ("health-big",))
+            col.append(big)
+            bar = Gtk.ProgressBar()
+            col.append(bar)
+            detail = label("", ("faint",), wrap=True)
+            col.append(detail)
+            row.append(col)
+            self.health[key] = (big, bar, detail, verdict)
+        c.append(row)
+        return c
+
+    def load_health(self):
+        in_thread(lambda: (health.battery(), health.drives(), health.disk()), self.show_health)
+        return True
+
+    def _health_set(self, key, big, frac, detail, verdict, bad=False, warn=False):
+        b, bar, d, v = self.health[key]
+        b.set_label(big)
+        bar.set_fraction(max(0.0, min(1.0, frac)))
+        d.set_label(detail)
+        v.set_label(verdict)
+        for w in (b, v):
+            (w.add_css_class if bad else w.remove_css_class)("bad")
+        for cls, on in (("bad", bad), ("low", warn and not bad)):
+            (bar.add_css_class if on else bar.remove_css_class)(cls)
+
+    def show_health(self, res):
+        if isinstance(res, Exception):
+            bat, drv, dsk = health.battery(), [], health.disk()
+        else:
+            bat, drv, dsk = res
+        if bat and bat["health"] is not None:
+            worn = bat["health"] < health.BATTERY_WORN
+            lines = [f"Holds {bat['full']:.2f} of {bat['design']:.2f} {bat['unit']} when new"]
+            lines.append(f"{bat['cycles']} charge cycles" if bat["cycles"] else "Cycle count not reported by this battery")
+            if bat["limit"] and bat["limit"] != "100":
+                lines.append(f"Charging stops at {bat['limit']}% (protects the cells)")
+            self._health_set("bat", f"{bat['health']:.0f}% health", bat["health"] / 100, "\n".join(lines),
+                             "WORN" if worn else "GOOD", bad=worn, warn=bat["health"] < 75)
+        else:
+            self._health_set("bat", "—", 0, "No battery information", "")
+        if drv:
+            d = drv[0]
+            probs = health.drive_problems(d)
+            life = 100 - (d["used_pct"] or 0)
+            lines = [d["model"]]
+            if probs:
+                lines += probs
+            facts = []
+            if d["temp_c"] is not None:
+                facts.append(f"{d['temp_c']} °C")
+            if d["hours"] is not None:
+                facts.append(f"{d['hours']:,} h on")
+            if d["written_tb"] is not None:
+                facts.append(f"{d['written_tb']:.1f} TB written")
+            if facts:
+                lines.append(" · ".join(facts))
+            if d.get("spare_pct") is not None:
+                lines.append(f"Spare blocks {d['spare_pct']}% · media errors {d['media_errors'] or 0}"
+                             + (f" · {d['unsafe_shutdowns']} unclean power-offs" if d.get("unsafe_shutdowns") else ""))
+            self._health_set("ssd", f"{life}% life" if d["used_pct"] is not None else d["kind"] or "OK",
+                             life / 100, "\n".join(lines), "CHECK" if probs else "HEALTHY", bad=bool(probs))
+        else:
+            self._health_set("ssd", "—", 0, "SMART data unavailable (UDisks not running?)", "")
+        self._health_set("disk", f"{dsk['free_gb']:.0f} GB free", dsk["used_gb"] / dsk["total_gb"],
+                         f"{dsk['used_gb']:.0f} of {dsk['total_gb']:.0f} GB used on /\n"
+                         + (f"Below {health.MIN_FREE_GB} GB: updates skip their safety snapshot — free some space"
+                            if dsk["low"] else f"Safety snapshots need {health.MIN_FREE_GB} GB free"),
+                         "LOW" if dsk["low"] else "OK", bad=dsk["low"], warn=dsk["free_gb"] < 2 * health.MIN_FREE_GB)
+
+    # --- focus: the top-bar timer's log (lib/bapirlo_focus.py) + a start/stop button
+    def build_focus(self):
+        c = card()
+        head = Gtk.Box(spacing=12)
+        head.append(label("FOCUS", ("heading",), hexpand=True))
+        self.focus_btn = kuro_button("Start a focus block", accent=True, icon="timer-symbolic")
+        self.focus_btn.connect("clicked", lambda *_: (launch([os.path.join(BIN, "bapirlo-focus")]),
+                                                       GLib.timeout_add(800, lambda: self.refresh_focus() and False)))
+        head.append(self.focus_btn)
+        c.append(head)
+        row = Gtk.Box(spacing=12, homogeneous=True)
+        self.focus = {}
+        for key, name in (("today", "Today"), ("week", "This week"), ("streak", "Streak")):
+            col = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+            col.add_css_class("health-col")
+            col.append(label(name, ("health-name",)))
+            big = label("…", ("health-big",))
+            col.append(big)
+            detail = label("", ("faint",), wrap=True)
+            col.append(detail)
+            row.append(col)
+            self.focus[key] = (big, detail)
+        c.append(row)
+        return c
+
+    def refresh_focus(self):
+        s = focuslog.summary()
+        n = lambda k: f"{s[k]} block" + ("" if s[k] == 1 else "s")  # noqa: E731
+        self.focus["today"][0].set_label(focuslog.hm(s["today_min"]))
+        self.focus["today"][1].set_label(n("today_blocks") if s["today_blocks"] else "Super+Alt+F starts a 25 min block")
+        self.focus["week"][0].set_label(focuslog.hm(s["week_min"]))
+        days = [s["days"].get(datetime.date.today() - datetime.timedelta(days=i), 0) for i in range(6, -1, -1)]
+        self.focus["week"][1].set_label(n("week_blocks") + (f" · best day {focuslog.hm(max(days))}" if any(days) else ""))
+        self.focus["streak"][0].set_label(f"{s['streak']} day" + ("" if s["streak"] == 1 else "s"))
+        self.focus["streak"][1].set_label("Days in a row with a finished block" if s["streak"] else
+                                          "Finish a block today to start one")
+        st = focuslog.state()
+        if st and st["phase"]:
+            what = "focus" if st["phase"] == "focus" else "break"
+            left = f"{st['left'] // 60}:{st['left'] % 60:02d}"
+            self.focus_btn.get_child().set_label(f"Stop {what} · {left} left" + (" (paused)" if st["paused"] else ""))
+        else:
+            self.focus_btn.get_child().set_label("Start a focus block")
+        self.focus_btn.set_sensitive(st is not None)
+        return True
 
     # --- modes
     def build_modes(self):

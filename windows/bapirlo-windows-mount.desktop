@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Windows drive
+Comment=Mount the Windows partition (read-only) at login
+Exec=sh -c "sleep 3 && bapirlo-windows mount"
+Icon=bapirlo-windows-drive
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

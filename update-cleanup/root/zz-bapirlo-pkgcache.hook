@@ -1,5 +1,7 @@
-# Bapirlo OS — after every install/upgrade, delete old package versions from the cache.
-# Keeps only the version that is installed now (-rk1) and nothing of removed packages (-ruk0).
+# Bapirlo OS — after every install/upgrade, empty the package cache.
+# Round 10: keeps nothing (-rk0; was -rk1 = the installed version, ~3 GB) — every package can be
+# downloaded again —
+# and deletes download-* folders an interrupted update left behind (older than an hour).
 # Rolling back = the "Before update" Timeshift snapshot. Off: sudo rm this file.
 [Trigger]
 Operation = Upgrade
@@ -11,4 +13,4 @@ Target = *
 [Action]
 Description = Bapirlo: removing old package versions from the cache...
 When = PostTransaction
-Exec = /bin/sh -c '/usr/bin/paccache -qrk1; /usr/bin/paccache -qruk0'
+Exec = /bin/sh -c '/usr/bin/paccache -qrk0; /usr/bin/find /var/cache/pacman/pkg -mindepth 1 -maxdepth 1 -type d -name "download-*" -mmin +60 -exec rm -rf {} +'

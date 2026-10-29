@@ -21,6 +21,8 @@ ln -s ~/.local/share/fonts "$T/data/fonts"
 dconf dump /org/gnome/shell/extensions/ > "$T/ext.dconf"
 dconf dump /org/gnome/desktop/interface/ > "$T/iface.dconf"
 EXTS=$(gsettings get org.gnome.shell enabled-extensions | sed -e "s/, 'bapirlo-bar@bapirlo-os'//" -e "s/]$/, 'bapirlo-bar@bapirlo-os', 'testhelper@bapirlo-os']/" | tr "'" '"')
+# EXCLUDE="uuid1 uuid2" leaves those extensions out of the test shell (e.g. Hanabi / DING paint over the wallpaper)
+for u in ${EXCLUDE:-}; do EXTS=$(echo "$EXTS" | sed -e "s/\"$u\", //" -e "s/, \"$u\"//"); done
 REAL_BG=$(gsettings get org.gnome.desktop.background picture-uri-dark)
 EXTS_OLD='["user-theme@gnome-shell-extensions.gcampax.github.com", "arcmenu@arcmenu.com", "appindicatorsupport@rgcjonas.gmail.com", "Vitals@CoreCoding.com", "simple-weather@romanlefler.com", "clipboard-indicator@tudmotu.com", "caffeine@patapon.info", "bapirlo-bar@bapirlo-os", "testhelper@bapirlo-os"]'
 export XDG_CONFIG_HOME=$T/config XDG_DATA_HOME=$T/data XDG_CACHE_HOME=$T/cache XDG_STATE_HOME=$T/state

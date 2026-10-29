@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""Bapirlo OS — focus timer (it runs in the top bar, next to the clock).
+  bapirlo-focus                 start a block (25 min) or stop the running one   (= Super+Alt+F)
+  bapirlo-focus start [MIN]     start a block of MIN minutes (default 25)
+  bapirlo-focus stop | pause    stop / pause-or-resume
+  bapirlo-focus status          what's running (exit 0 = a block or break is running)
+  bapirlo-focus stats           today, this week and your streak, from ~/.local/state/bapirlo/focus.tsv
+  bapirlo-focus set MIN [BREAK] change the default block (and break) length
+A block switches notification banners off until it ends; a 5 min break follows by itself.
+"""
+import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "lib"))
+import bapirlo_focus as focus  # noqa: E402
+
+
+def blocks(n):
+    return f"{n} block" + ("" if n == 1 else "s")
+
+
+def mmss(s):
+    return f"{s // 60}:{s % 60:02d}"
+
+
+def main(argv):
+    verb = argv[0] if argv else "toggle"
+    if verb in ("-h", "--help", "help"):
+        print(__doc__.strip())
+        return 0
+    if verb == "stats":
+        s = focus.summary()
+        print(f"Today      {focus.hm(s['today_min'])}  ({blocks(s['today_blocks'])})")
+        print(f"This week  {focus.hm(s['week_min'])}  ({blocks(s['week_blocks'])})")
+        print(f"Streak     {s['streak']} day{'s' if s['streak'] != 1 else ''}")
+        return 0
+    st = focus.state()
+    if st is None:
+        print("The Bapirlo bar isn't installed — the focus timer lives in it.", file=sys.stderr)
+        return 1
+    if verb == "status":
+        if not st["phase"]:
+            print("No focus block running.")
+            return 1
+        what = "Focus" if st["phase"] == "focus" else "Break"
+        print(f"{what}: {mmss(st['left'])} left" + (" (paused)" if st["paused"] else ""))
+        return 0
+    if verb == "set":
+        try:
+            mins = [int(a) for a in argv[1:3]]
+        except ValueError:
+            mins = []
+        if not mins or not 1 <= mins[0] <= 600 or (len(mins) > 1 and not 0 <= mins[1] <= 120):
+            print("usage: bapirlo-focus set MIN [BREAK]   (1-600, break 0-120)", file=sys.stderr)
+            return 64
+        focus._gs("set", focus.SCHEMA, "focus-minutes", str(mins[0]))
+        if len(mins) > 1:
+            focus._gs("set", focus.SCHEMA, "break-minutes", str(mins[1]))
+        print(f"Blocks are {mins[0]} min" + (f", breaks {mins[1]} min." if len(mins) > 1 else "."))
+        return 0
+    if verb == "start":
+        minutes = None
+        if len(argv) > 1:
+            try:
+                minutes = int(argv[1])
+            except ValueError:
+                minutes = 0
+            if not 1 <= minutes <= 600:
+                print("Minutes must be 1-600.", file=sys.stderr)
+                return 64
+        if st["phase"]:
+            print("A block is already running — `bapirlo-focus stop` first.", file=sys.stderr)
+            return 1
+        return 0 if focus.request("start", minutes) else 1
+    if verb in ("stop", "toggle", "pause"):
+        return 0 if focus.request(verb) else 1
+    print(__doc__.strip(), file=sys.stderr)
+    return 64
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

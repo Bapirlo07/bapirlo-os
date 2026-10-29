@@ -66,6 +66,18 @@ def lock():
     return subprocess.call(["dm-tool", "lock"]) == 0
 
 
+def play_unlock():
+    """The palette-mood unlock chime (bapirlo-sound-mood); silent if it was never generated."""
+    data = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
+    if not os.path.exists(os.path.join(data, "sounds/bapirlo/stereo/desktop-screen-unlock.oga")):
+        return
+    try:
+        subprocess.Popen(["canberra-gtk-play", "-i", "desktop-screen-unlock", "-d", "Unlock"],
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except OSError as e:
+        log(f"unlock sound: {e}")
+
+
 class Daemon:
     def __init__(self):
         self.inhibit_fd = None
@@ -79,6 +91,10 @@ class Daemon:
         if sid:
             SYSTEM.signal_subscribe("org.freedesktop.login1", "org.freedesktop.login1.Session", "Lock",
                                     sid, None, Gio.DBusSignalFlags.NONE, lambda *a: lock())
+            # back from the LightDM lock screen = this session turns Active again → the unlock chime
+            SYSTEM.signal_subscribe("org.freedesktop.login1", "org.freedesktop.DBus.Properties",
+                                    "PropertiesChanged", sid, None, Gio.DBusSignalFlags.NONE, self.on_session)
+        self.active = True
         SESSION.signal_subscribe("org.gnome.SessionManager", "org.gnome.SessionManager.Presence",
                                  "StatusChanged", "/org/gnome/SessionManager/Presence", None,
                                  Gio.DBusSignalFlags.NONE, self.on_presence)
@@ -107,6 +123,16 @@ class Daemon:
             except GLib.Error as e:
                 log(f"no logind session: {e.message}")
                 return None
+
+    def on_session(self, conn, sender, path, iface, signal, params):
+        changed = params.unpack()[1]
+        if "Active" not in changed:
+            return
+        active = bool(changed["Active"])
+        if active and not self.active:
+            # a moment for the VT switch and the audio route to settle
+            GLib.timeout_add(450, lambda: (play_unlock(), False)[1])
+        self.active = active
 
     # -- suspend: lock first, then let the system sleep
     def take_inhibitor(self):

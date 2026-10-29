@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Bapirlo OS — starts the Hyprland login session (Exec of bapirlo-hyprland.desktop).
+# Pins rendering to the Intel iGPU (it drives the laptop panel) so the RTX 4060 can stay asleep;
+# the card number can swap between boots, so resolve it from the PCI path every time.
+intel=$(readlink -f /dev/dri/by-path/pci-0000:00:02.0-card 2>/dev/null)
+nvidia=$(readlink -f /dev/dri/by-path/pci-0000:01:00.0-card 2>/dev/null)
+if [ -n "$intel" ]; then
+    # nvidia listed second: external screens wired to the dGPU still light up
+    export AQ_DRM_DEVICES="$intel${nvidia:+:$nvidia}"
+fi
+export XDG_CURRENT_DESKTOP=Hyprland XDG_SESSION_DESKTOP=Hyprland XDG_SESSION_TYPE=wayland
+"$HOME/bapirlo-os/tools/hypr-theme.py" >/dev/null 2>&1
+if command -v start-hyprland >/dev/null; then
+    exec start-hyprland
+fi
+exec Hyprland

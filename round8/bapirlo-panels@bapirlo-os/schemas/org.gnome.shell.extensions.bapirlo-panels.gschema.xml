@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.bapirlo-panels" path="/org/gnome/shell/extensions/bapirlo-panels/">
+    <key name="sfx" type="b">
+      <default>true</default>
+      <summary>Comic SFX burst when a window opens</summary>
+    </key>
+    <key name="sfx-on-close" type="b">
+      <default>false</default>
+      <summary>Comic SFX burst when a window closes</summary>
+    </key>
+    <key name="open-time" type="i">
+      <range min="120" max="1200"/>
+      <default>380</default>
+      <summary>Open animation length (ms)</summary>
+    </key>
+    <key name="close-time" type="i">
+      <range min="80" max="800"/>
+      <default>220</default>
+      <summary>Close animation length (ms)</summary>
+    </key>
+  </schema>
+</schemalist>

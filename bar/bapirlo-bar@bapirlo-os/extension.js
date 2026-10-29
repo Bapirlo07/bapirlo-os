@@ -1,9 +1,11 @@
 // Bapirlo Bar — the Bapirlo OS top bar layout and its own pieces (GNOME Shell 50/51).
 //   left:   [ArcMenu logo] [workspace numbers] (quick launch · power chip) [focused app name]
-//   centre: clock + date (the Dynamic Island capsule; Do Not Disturb moon when on)
-//   right:  (media · weather · Vitals)  (updates · replay dot · tray icons)  (Control Centre)
+//   centre: clock + date (the Dynamic Island capsule; Do Not Disturb moon when on) · focus timer while one runs
+//   right:  (media · weather · Vitals)  (updates · replay dot · fullscreen · live wallpaper · tray icons)  (Control Centre)
 // Capsules: layout.js · red states + tooltips: states.js · bar over fullscreen apps: reveal.js
 // Keys: Super+Shift+N / Ctrl+Super+D add a workspace · Super+Shift+W / Ctrl+Super+F4 remove the current one
+//       Super+Alt+F start / stop a focus session (focus.js)
+//       Super+Alt+L next bar look · right-click an empty spot on the bar picks one (looks.js)
 // Also loads the wallpaper accent stylesheet written by bapirlo-autotheme
 // (~/.local/state/bapirlo/accent/shell.css) and reloads it when it changes.
 // Off switch: gnome-extensions disable bapirlo-bar@bapirlo-os
@@ -20,10 +22,16 @@ import {WorkspaceDots} from './workspaces.js';
 import {QuickLaunch} from './launchers.js';
 import {PowerChip} from './power.js';
 import {ReplayDot} from './replay.js';
+import {FullscreenButton} from './fullscreen.js';
+import {LiveWallButton} from './livewall.js';
+import {DepthButton} from './depth.js';
+import {FocusTimer} from './focus.js';
 import {AppName} from './appname.js';
 import {CapsuleLayout} from './layout.js';
 import {BarStates} from './states.js';
 import {FullscreenReveal} from './reveal.js';
+import {BarLooks} from './looks.js';
+import {AccentPulse} from './accent.js';
 import {destroyTooltip} from './util.js';
 
 const ACCENT_CSS = GLib.build_filenamev([GLib.get_user_state_dir(), 'bapirlo', 'accent', 'shell.css']);
@@ -52,6 +60,13 @@ export default class BapirloBarExtension extends Extension {
         add('power', new PowerChip(), -1, 'left');
         add('appname', new AppName(), -1, 'left');
         add('replay', new ReplayDot(), 0, 'right');
+        add('fullscreen', new FullscreenButton(), 0, 'right');
+        add('livewall', new LiveWallButton(), 0, 'right');
+        add('depth', new DepthButton(), 0, 'right');
+        this._focus = new FocusTimer(this._settings);
+        add('focus', this._focus, -1, 'center');
+        Main.wm.addKeybinding('focus-toggle', this._settings, Meta.KeyBindingFlags.IGNORE_AUTOREPEAT,
+            keyModes, () => this._focus.toggle());
 
         // panel-box placement of everyone (ours and other extensions') lives in layout.js
         this._layout = new CapsuleLayout();
@@ -59,6 +74,10 @@ export default class BapirloBarExtension extends Extension {
         for (const box of [Main.panel._leftBox, Main.panel._centerBox, Main.panel._rightBox])
             box.connectObject('child-added', () => this._queueRefresh(), this);
         this._reveal = new FullscreenReveal();
+        this._looks = new BarLooks(this._settings);
+        Main.wm.addKeybinding('next-look', this._settings, Meta.KeyBindingFlags.IGNORE_AUTOREPEAT,
+            keyModes, () => this._looks.next());
+        this._pulse = new AccentPulse(this._settings, this._ws);
 
         this._watchAccent();
     }
@@ -116,6 +135,13 @@ export default class BapirloBarExtension extends Extension {
     disable() {
         Main.wm.removeKeybinding('add-workspace');
         Main.wm.removeKeybinding('remove-workspace');
+        Main.wm.removeKeybinding('focus-toggle');
+        Main.wm.removeKeybinding('next-look');
+        this._pulse?.destroy();
+        this._pulse = null;
+        this._looks?.destroy();
+        this._looks = null;
+        this._focus = null;
         this._settings = null;
         this._ws = null;
         if (this._accentId)

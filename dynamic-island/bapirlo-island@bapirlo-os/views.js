@@ -73,7 +73,7 @@ export function notificationView(n, {onClick, onDismiss}) {
     const h = (hasBody ? 84 : 62) + (actions.length ? 40 : 0);
     return {
         kind: 'notification', key: `n-${n.source?.title}-${n.title}`,
-        width: Math.round(460 * s), height: Math.round(h * s), timeout: 5000,
+        width: Math.round(460 * s), height: Math.round(h * s), timeout: 5000, fit: true,
         onClick, onDismiss,
         build() {
             const outer = new St.BoxLayout({style_class: 'island-notif', orientation: Clutter.Orientation.VERTICAL});
@@ -98,9 +98,10 @@ export function notificationView(n, {onClick, onDismiss}) {
             outer.add_child(row);
             if (actions.length) {
                 const bar = new St.BoxLayout({style_class: 'island-actions', x_expand: true});
-                for (const a of actions) {
-                    const b = new St.Button({label: a.label, style_class: 'island-action', x_expand: true,
-                        can_focus: true});
+                for (const [i, a] of actions.entries()) {
+                    // the first action is the one the app wants you to take: filled crimson
+                    const b = new St.Button({label: a.label, style_class: i === 0 ? 'island-action primary' : 'island-action',
+                        x_expand: true, can_focus: true});
                     b.connect('clicked', () => {
                         a.activate();
                         // the island closes from its own release handler

@@ -120,14 +120,15 @@ install -Dm644 /dev/stdin "$DESKTOP" <<EOF
 Type=Application
 Name=Theme Studio
 GenericName=Wallpaper theming
-Comment=Re-theme Bapirlo OS from a wallpaper: preview, apply, and switch between saved themes
+Comment=Re-theme Bapirlo OS from a wallpaper — the Theme tab of Wallpapers
 Exec=$HERE/bapirlo-theme-studio %f
+NoDisplay=true
 Icon=bapirlo-studio
 Terminal=false
 Categories=Settings;DesktopSettings;GTK;
 MimeType=image/jpeg;image/png;image/webp;
 Keywords=theme;colour;color;accent;wallpaper;palette;matugen;bapirlo;
-StartupWMClass=os.bapirlo.ThemeStudio
+StartupWMClass=os.bapirlo.Wallpapers
 StartupNotify=true
 EOF
 update-desktop-database -q "$DATA/applications" 2>/dev/null || true

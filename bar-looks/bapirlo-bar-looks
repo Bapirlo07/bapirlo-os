@@ -1,0 +1,6 @@
+#!/bin/sh
+# Bapirlo Bar Looks — the window: pick how the top bar looks (bapirlo-bar looks.js).
+# Intel-only Vulkan: enumerating the NVIDIA driver would wake the sleeping dGPU (~1.7 s stall).
+HERE=$(dirname "$(readlink -f "$0")")
+[ -f /usr/share/vulkan/icd.d/intel_icd.json ] && export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/intel_icd.json
+exec python3 -c 'import sys; sys.path.insert(0, sys.argv[1]); sys.argv = ["bapirlo-bar-looks"] + sys.argv[2:]; import app; sys.exit(app.main())' "$HERE" "$@"

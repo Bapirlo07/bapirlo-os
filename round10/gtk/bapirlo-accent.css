@@ -1,0 +1,16 @@
+/* Bapirlo OS round 10 — the "do this" colour is crimson, not WhiteSur's macOS blue (#2E7CF7).
+   WhiteSur hard-codes that blue for primary buttons (Save, Connect, Calculator's "="), Nautilus search
+   tags and question bars; libadwaita's own accent is already crimson. Loaded last by gtk.css
+   (GTK 4 and GTK 3), so the same selectors win. Weather "low" and rating lozenges keep their blue. */
+button.suggested-action {
+  background-color: #E11D2E;
+  color: #ffffff;
+}
+button.suggested-action:hover { background-color: #FF4655; color: #ffffff; }
+button.suggested-action:active, button.suggested-action:checked { background-color: #B5121F; color: #ffffff; }
+button.suggested-action.flat { background-color: transparent; color: #FF4655; }
+button.suggested-action.flat:hover { background-color: alpha(#E11D2E, 0.15); }
+menubutton.suggested-action, splitbutton.suggested-action { background-color: #E11D2E; color: #ffffff; }
+.entry-tag, .nautilus-query-editor-tag { background-color: #E11D2E; color: #ffffff; }
+infobar.question > revealer > box, infobar.question:backdrop > revealer > box { background-color: #7A0F1A; }
+infobar.question > revealer > box selection, infobar.question:backdrop > revealer > box selection { color: #7A0F1A; }

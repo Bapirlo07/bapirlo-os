@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Focus Timer
+GenericName=Pomodoro
+Comment=Start or stop a 25 minute focus block (Super+Alt+F) — it runs in the top bar
+Exec=@HOME@/bapirlo-os/bin/bapirlo-focus
+Icon=preferences-system-time
+Terminal=false
+Categories=Utility;
+Keywords=pomodoro;focus;timer;study;
+NoDisplay=false

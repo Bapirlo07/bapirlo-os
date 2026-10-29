@@ -4,19 +4,43 @@
 # + AUR, as you). The pacman hook takes a Timeshift snapshot right before packages are
 # upgraded (once per run). paru shows AUR PKGBUILD changes for review before building.
 # Old stuff is deleted on every update: the previous "Before update" snapshot (presnap hook),
-# old package versions (zz-bapirlo-pkgcache.hook) and, here, paru's AUR build files.
+# old package versions + half-finished pacman downloads (zz-bapirlo-pkgcache.hook) and, here,
+# paru's AUR build files and old Claude Code versions (it keeps every release it self-updates to;
+# the running one + the newest older one stay as a fallback).
+# `bapirlo-update --cleanup` runs only the user-side cleanup (no update).
 set -uo pipefail
 R=$'\e[38;2;255;70;85m'; D=$'\e[38;2;202;181;191m'; B=$'\e[1m'; N=$'\e[0m'
+avail() { df -B1 --output=avail / | tail -1; }
+# keep the version ~/.local/bin/claude points at + the newest other one, delete the rest
+prune_claude() {
+  local dir=$HOME/.local/share/claude/versions cur v kept=0
+  [ -d "$dir" ] || return 0
+  cur=$(basename "$(readlink -f "$HOME/.local/bin/claude" 2>/dev/null)")
+  [ -n "$cur" ] && [ -e "$dir/$cur" ] || return 0   # can't tell which one runs → touch nothing
+  for v in $(ls -1 "$dir" | sort -rV); do
+    [ "$v" = "$cur" ] && continue
+    if [ $kept -lt 1 ]; then kept=1; continue; fi
+    rm -f "$dir/$v" && printf '  %sremoved old Claude Code %s%s\n' "$D" "$v" "$N"
+  done
+}
+cleanup_user() {
+  rm -rf "$HOME/.cache/paru/clone"   # AUR sources + built packages; paru re-downloads when needed
+  prune_claude
+}
+if [ "${1:-}" = --cleanup ]; then
+  before=$(avail); cleanup_user
+  printf '  Freed %s MB.\n' $(( ($(avail) - before) / 1000000 ))
+  exit 0
+fi
 printf '\n  %s%sBAPIRLO OS · UPDATE%s\n\n' "$B" "$R" "$N"
 printf '  %sA Timeshift snapshot is taken automatically before anything is upgraded.%s\n' "$D" "$N"
 printf '  %sOld versions and the previous update snapshot are deleted to save space.%s\n\n' "$D" "$N"
-avail() { df -B1 --output=avail / | tail -1; }
 before=$(avail)
 paru -Syu
 rc=$?
 echo
 if [ $rc -eq 0 ]; then
-  rm -rf "$HOME/.cache/paru/clone"   # AUR sources + built packages; paru re-downloads when needed
+  cleanup_user
   freed=$(( ($(avail) - before) / 1000000 ))
   printf '  %s%sDone.%s ' "$B" "$R" "$N"
   [ "$freed" -gt 0 ] && printf 'Freed %s MB. ' "$freed"

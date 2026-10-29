@@ -1,7 +1,7 @@
 // Bapirlo Bar — capsule layout of the whole top bar (GNOME Shell 51).
 //   left:   [Bapirlo logo menu] [workspace numbers] (quick launch · power chip) [focused app name]
-//   centre: clock + date — the Dynamic Island's resting capsule
-//   right:  (media · AirPods · weather · Vitals)  (updates · replay · places · drives · lock keys ·
+//   centre: clock + date — the Dynamic Island's resting capsule — and the focus timer while it runs
+//   right:  (media · AirPods · weather · Vitals)  (updates · replay · fullscreen · live wallpaper · places · drives · lock keys ·
 //           tray icons · the rest)  (Control Centre)
 // ( ) = a soft capsule: a St.BoxLayout the item containers are moved into, so related things sit
 // together. Other extensions keep adding their buttons to the panel boxes; every child-added
@@ -17,7 +17,7 @@ const LEFT = ['LogoMenu', 'ArcMenu', 'bapirlo-ws'];   // ArcMenu's button is hid
 const LAUNCH = ['bapirlo-launch', 'bapirlo-power'];
 const AFTER_LAUNCH = ['bapirlo-appname'];   // last on the left: its width changes, nothing after it moves
 const STATUS = ['bapirlo-media', 'bapirlo-airpods', 'simple-weather@romanlefler.com', 'vitalsMenu'];
-const EXTRAS_FIRST = ['ArchUpdateIndicator', 'bapirlo-replay', 'places-menu', 'drive-menu', 'lockkeys'];
+const EXTRAS_FIRST = ['ArchUpdateIndicator', 'bapirlo-replay', 'bapirlo-fullscreen', 'bapirlo-livewall', 'bapirlo-depth', 'places-menu', 'drive-menu', 'lockkeys'];
 const SYSTEM = ['bapirlo-privacy', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings'];
 export const HIDDEN = ['clipboardIndicator'];   // Super+V still opens its menu (see states.js)
 
@@ -80,7 +80,7 @@ export class CapsuleLayout {
         const [left, centre, right] = this._boxes;
         const caps = this._caps;
         const known = new Set([...LEFT, ...LAUNCH, ...AFTER_LAUNCH, ...STATUS, ...EXTRAS_FIRST,
-            ...SYSTEM, ...HIDDEN, 'dateMenu'].map(c).filter(Boolean));
+            ...SYSTEM, ...HIDDEN, 'dateMenu', 'bapirlo-focus'].map(c).filter(Boolean));
 
         // left
         let i = 0;
@@ -93,8 +93,9 @@ export class CapsuleLayout {
         for (const role of LAUNCH)
             j = c(role) ? this._put(c(role), caps.launch, j) : j;
 
-        // centre: only the clock (+ date) stays in the island capsule
-        this._put(c('dateMenu'), centre, 0);
+        // centre: only the clock (+ date) and the focus timer stay in the island capsule
+        let k = this._put(c('dateMenu'), centre, 0);
+        this._put(c('bapirlo-focus'), centre, k);
 
         // right: three capsules, in this order
         this._put(caps.status, right, 0);

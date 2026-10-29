@@ -426,3 +426,36 @@ StWidget.custom-tile-preview, .tile-preview {
   background-color: rgba(225, 29, 46, 0.16);
   border: 2px solid rgba(255, 70, 85, 0.70);
 }
+
+/* >>> bapirlo round 8: OSD (volume / brightness / caps lock / display) — matches the Island level view.
+   Shown when the Island does not take the OSD (fullscreen apps, keyboard/display OSDs).
+   Ink pill · 6px crimson bar · Bangers label · hard blood shadow (cursor + folder motif). */
+.osd-window {
+  background-color: rgba(10, 7, 9, 0.97) !important;
+  border: 1px solid rgba(225, 29, 46, 0.30) !important;
+  border-radius: 24px !important;
+  box-shadow: 4px 4px 0 rgba(122, 15, 26, 0.95), 0 8px 26px rgba(0, 0, 0, 0.55) !important;
+  padding: 12px 22px !important;
+  margin-bottom: 128px;   /* clears the 56px dock */
+  spacing: 14px;
+  min-width: 300px;
+}
+.osd-window StIcon { icon-size: 20px; color: #F2E9EC; }
+.osd-window StBoxLayout { spacing: 6px; }
+.osd-window StLabel {
+  font-family: Bangers, Inter, sans-serif;
+  font-size: 14pt;
+  color: #FF4655;
+  text-shadow: 2px 2px 0 #7A0F1A;
+}
+.osd-window .level {
+  height: 6px;
+  min-width: 220px;
+  -barlevel-height: 6px;
+  -barlevel-background-color: rgba(242, 233, 236, 0.14);
+  -barlevel-active-background-color: #E11D2E;
+  -barlevel-overdrive-color: #FF4655;
+  -barlevel-overdrive-separator-width: 2px;
+  border-radius: 3px;
+}
+/* <<< bapirlo round 8: OSD */

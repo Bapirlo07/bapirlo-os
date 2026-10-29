@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Bapirlo OS — battery charge limit (root helper, run through pkexec by the Control Centre / bapirlo-charge).
+#   bapirlo-charge 80      daily: stop charging at 80 % (kinder to the battery)
+#   bapirlo-charge 100     travel: charge to full
+#   bapirlo-charge status  print the limit now in force
+# The choice is kept in /var/lib/bapirlo/charge-limit; bapirlo-perfd re-applies it after boot / resume.
+set -eu
+PATH=/usr/bin
+BAT=/sys/class/power_supply/BAT1
+STATE=/var/lib/bapirlo/charge-limit
+case "${1:-}" in
+  80|100) ;;
+  status) cat "$BAT/charge_control_end_threshold"; exit 0 ;;
+  *) echo "usage: bapirlo-charge 80|100|status" >&2; exit 2 ;;
+esac
+mkdir -p /var/lib/bapirlo
+echo "$1" > "$STATE.new" && mv "$STATE.new" "$STATE"
+echo "$1" > "$BAT/charge_control_end_threshold"
+logger -t bapirlo-charge "charge limit $1 % (by uid ${PKEXEC_UID:-$(id -u)})"
+cat "$BAT/charge_control_end_threshold"
