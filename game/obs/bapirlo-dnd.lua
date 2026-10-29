@@ -1,4 +1,4 @@
--- Bapirlo OS — tell the desktop when OBS is live (recording, streaming or replay buffer saving).
+-- Kuro OS — tell the desktop when OBS is live (recording, streaming or replay buffer saving).
 -- OBS → Tools → Scripts → "+" → pick this file. Remove it there to turn it off.
 -- It only creates/deletes ~/.local/state/bapirlo/obs-live; the bapirlo-game GNOME extension
 -- reacts to that (Do Not Disturb + instant replay). Zero cost while idle.
@@ -28,7 +28,7 @@ local function on_event(ev)
 end
 
 function script_description()
-  return "Bapirlo OS: Do Not Disturb + instant replay while recording or streaming."
+  return "Kuro OS: Do Not Disturb + instant replay while recording or streaming."
 end
 
 function script_load(settings)

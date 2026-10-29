@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — make the NEXT boot (only the next one) start Windows. Runs as root via
+# Kuro OS — make the NEXT boot (only the next one) start Windows. Runs as root via
 # bapirlo-bootnext-windows.service; the user command is `bapirlo-restart-windows`.
 #   bapirlo-bootnext-windows check   show which firmware entry would be used (changes nothing)
 #   bapirlo-bootnext-windows set     set EFI BootNext to it            (BootOrder is NOT touched)

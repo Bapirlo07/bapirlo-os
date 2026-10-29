@@ -6,7 +6,7 @@ index a19d2ad..78bec6e 100644
  
  }
  
-+/* Bapirlo OS: older-style AirPlay clients send POST /play as "text/parameters"
++/* Kuro OS: older-style AirPlay clients send POST /play as "text/parameters"
 +   ("Content-Location: <url>\nStart-Position: <fraction>\n") instead of a binary plist.
 +   Convert that into the plist the handler expects; the session id doubles as the uuid. */
 +static plist_t

@@ -1,4 +1,4 @@
-# Bapirlo OS — after every install/upgrade, empty the package cache.
+# Kuro OS — after every install/upgrade, empty the package cache.
 # Round 10: keeps nothing (-rk0; was -rk1 = the installed version, ~3 GB) — every package can be
 # downloaded again —
 # and deletes download-* folders an interrupted update left behind (older than an hour).
@@ -11,6 +11,6 @@ Type = Package
 Target = *
 
 [Action]
-Description = Bapirlo: removing old package versions from the cache...
+Description = Kuro: removing old package versions from the cache...
 When = PostTransaction
 Exec = /bin/sh -c '/usr/bin/paccache -qrk0; /usr/bin/find /var/cache/pacman/pkg -mindepth 1 -maxdepth 1 -type d -name "download-*" -mmin +60 -exec rm -rf {} +'

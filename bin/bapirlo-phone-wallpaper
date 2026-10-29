@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — the current wallpaper on your phone too (GSConnect / KDE Connect).
+"""Kuro OS — the current wallpaper on your phone too (GSConnect / KDE Connect).
   bapirlo-phone-wallpaper            crop the active theme's wallpaper to phone size and send it
   bapirlo-phone-wallpaper --save     only make the picture (~/Pictures/Phone)
   bapirlo-phone-wallpaper --notify   also tell the outcome in a notification (the app-grid launcher)

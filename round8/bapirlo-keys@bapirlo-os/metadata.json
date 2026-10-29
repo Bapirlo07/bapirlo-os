@@ -1,12 +1,12 @@
 {
   "uuid": "bapirlo-keys@bapirlo-os",
-  "name": "Bapirlo Keys",
-  "description": "Bapirlo OS: Super+/ shows every keyboard shortcut on the system in one manga-styled sheet — your launchers, every extension's hotkeys and GNOME's window and workspace keys, read live (type to filter).",
+  "name": "Kuro Keys",
+  "description": "Kuro OS: Super+/ shows every keyboard shortcut on the system in one manga-styled sheet — your launchers, every extension's hotkeys and GNOME's window and workspace keys, read live (type to filter).",
   "shell-version": [
     "50",
     "51"
   ],
   "settings-schema": "org.gnome.shell.extensions.bapirlo-keys",
   "version": 1,
-  "url": "https://github.com/Bapirlo07/bapirlo-os"
+  "url": "https://github.com/Bapirlo07/kuro-os"
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — top bar v3 (NO sudo). Mac-style layout in capsules, neutral hover, red only for states.
+# Kuro OS — top bar v3 (NO sudo). Mac-style layout in capsules, neutral hover, red only for states.
 #   bash ~/bapirlo-os/360-topbar-v3.sh                 # all steps below, in order
 #   bash ~/bapirlo-os/360-topbar-v3.sh theme|bar|settings|tray   # one step
 #   bash ~/bapirlo-os/360-topbar-v3.sh restore         # undo everything (back to the pre-v3 backup)

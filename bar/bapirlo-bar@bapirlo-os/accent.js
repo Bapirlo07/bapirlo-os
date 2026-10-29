@@ -1,4 +1,4 @@
-// Bapirlo Bar — accent pulse. Switch workspace or window and the active workspace pill plus a thin
+// Kuro Bar — accent pulse. Switch workspace or window and the active workspace pill plus a thin
 // border around the focused window breathe in the wallpaper's crimson three times, then settle on
 // a soft steady glow. Short on purpose: nothing animates while you just work (battery, games).
 //   off: gsettings set org.gnome.shell.extensions.bapirlo-bar accent-pulse false

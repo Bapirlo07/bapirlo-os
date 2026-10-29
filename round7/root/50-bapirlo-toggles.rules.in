@@ -1,4 +1,4 @@
-// Bapirlo OS — let @USER@ switch the Control Centre toggles that need root, without a password:
+// Kuro OS — let @USER@ switch the Control Centre toggles that need root, without a password:
 // start/stop ONLY these units, only from the active local session (not over SSH).
 //   bapirlo-port@airplay.service / bapirlo-port@localsend.service — firewall opening while on
 //   rustdesk.service — RustDesk remote access (off by default, never enabled at boot)

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — Timeshift snapshot before a system update (run by the pacman hook
+# Kuro OS — Timeshift snapshot before a system update (run by the pacman hook
 # /etc/pacman.d/hooks/00-bapirlo-timeshift.hook, as root, before any package is UPGRADED).
 #
 #   · one snapshot per update run: skipped if the last automatic one is < 60 min old
@@ -17,27 +17,27 @@ MIN_FREE_GB=${BAPIRLO_SNAP_MIN_FREE_GB:-15}
 STAMP=/var/lib/bapirlo/last-presnap
 mkdir -p /var/lib/bapirlo
 
-[ -e /run/bapirlo-nosnap ] && { echo ":: Bapirlo: snapshot skipped (/run/bapirlo-nosnap)"; rm -f /run/bapirlo-nosnap; exit 0; }
+[ -e /run/bapirlo-nosnap ] && { echo ":: Kuro: snapshot skipped (/run/bapirlo-nosnap)"; rm -f /run/bapirlo-nosnap; exit 0; }
 command -v timeshift >/dev/null || exit 0
 if [ -f "$STAMP" ] && [ $(( $(date +%s) - $(stat -c %Y "$STAMP") )) -lt 3600 ]; then
-  echo ":: Bapirlo: snapshot already taken $(( ($(date +%s) - $(stat -c %Y "$STAMP")) / 60 )) min ago — skipping"
+  echo ":: Kuro: snapshot already taken $(( ($(date +%s) - $(stat -c %Y "$STAMP")) / 60 )) min ago — skipping"
   exit 0
 fi
 
 free_gb=$(df --output=avail -BG /timeshift 2>/dev/null | tail -1 | tr -dc 0-9)
 if [ -n "$free_gb" ] && [ "$free_gb" -lt "$MIN_FREE_GB" ]; then
-  echo "!! Bapirlo: only ${free_gb}G free (< ${MIN_FREE_GB}G) — snapshot SKIPPED so the update has room" >&2
+  echo "!! Kuro: only ${free_gb}G free (< ${MIN_FREE_GB}G) — snapshot SKIPPED so the update has room" >&2
   exit 0
 fi
 
 pkgs=""; [ -t 0 ] || pkgs=$(cat | tr "\n" " " | head -c 300)   # targets from the hook (NeedsTargets)
-echo ":: Bapirlo: Timeshift snapshot before the update (incremental, usually 1-3 min)…"
+echo ":: Kuro: Timeshift snapshot before the update (incremental, usually 1-3 min)…"
 if nice -n 10 timeshift --create --scripted --tags O \
      --comments "$TAG $(date '+%d %b %H:%M')${pkgs:+ — ${pkgs:0:120}}" >/var/log/bapirlo-presnap.log 2>&1; then
   touch "$STAMP"
-  echo ":: Bapirlo: snapshot OK"
+  echo ":: Kuro: snapshot OK"
 else
-  echo "!! Bapirlo: SNAPSHOT FAILED — the update continues without one. See /var/log/bapirlo-presnap.log" >&2
+  echo "!! Kuro: SNAPSHOT FAILED — the update continues without one. See /var/log/bapirlo-presnap.log" >&2
   exit 0
 fi
 
@@ -47,7 +47,7 @@ mapfile -t ours < <(timeshift --list --scripted 2>/dev/null |
 n=${#ours[@]}
 if [ "$n" -gt "$KEEP" ]; then
   for s in "${ours[@]:0:$((n - KEEP))}"; do
-    echo ":: Bapirlo: removing old automatic snapshot $s"
+    echo ":: Kuro: removing old automatic snapshot $s"
     timeshift --delete --snapshot "$s" --scripted >>/var/log/bapirlo-presnap.log 2>&1 || true
   done
 fi

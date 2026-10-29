@@ -1,4 +1,4 @@
-// Bapirlo AI — Super+A summons a floating Claude Code terminal from anywhere.
+// Kuro AI — Super+A summons a floating Claude Code terminal from anywhere.
 //
 //   no assistant window yet      → opens Alacritty (class "bapirlo-ai") running `claude`,
 //                                  centred near the top of the monitor under the pointer
@@ -91,7 +91,7 @@ export default class BapirloAI extends Extension {
         const init = 'function fish_greeting; end; functions -e __bapirlo_save_pwd; ' +
             'set -q __bapirlo_shell_file; and rm -f $__bapirlo_shell_file; ' +
             this._settings.get_string('command');
-        Util.spawn(['alacritty', '--class', WM_CLASS, '--title', 'Claude · Bapirlo',
+        Util.spawn(['alacritty', '--class', WM_CLASS, '--title', 'Claude · Kuro',
             '--working-directory', GLib.get_home_dir(), '-e', 'fish', '-C', init]);
         this._pending = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 10, () => {
             this._pending = 0;

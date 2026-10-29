@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo wallpaper + Night Light follow sunrise/sunset
+Description=Kuro wallpaper + Night Light follow sunrise/sunset
 PartOf=graphical-session.target
 After=graphical-session.target
 

@@ -1,4 +1,4 @@
-// Bapirlo Bar — focus timer. Sits next to the clock (inside the Dynamic Island's resting capsule)
+// Kuro Bar — focus timer. Sits next to the clock (inside the Dynamic Island's resting capsule)
 // and is only visible while a session runs:  FOCUS 24:13  (crimson) → BREAK 4:59  (jade).
 //   Super+Alt+F (or `bapirlo-focus`) = start / stop · click = pause / resume · right-click = stop
 // A focus block switches notification banners off (only if they were on, and back on after);
@@ -31,7 +31,7 @@ function mmss(s) {
 export const FocusTimer = GObject.registerClass(
 class BapirloFocusTimer extends Group {
     _init(settings) {
-        super._init('Bapirlo focus timer', 'bapirlo-focus');
+        super._init('Kuro focus timer', 'bapirlo-focus');
         this._settings = settings;
         this._btn = new St.Button({
             style_class: 'bapirlo-focus-btn', can_focus: true, track_hover: true,

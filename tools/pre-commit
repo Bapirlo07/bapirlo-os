@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — refuse a commit that contains secrets or personal data.
+# Kuro OS — refuse a commit that contains secrets or personal data.
 # Installed as .git/hooks/pre-commit by:  ln -sf ../../tools/pre-commit .git/hooks/pre-commit
 # Personal words (your name, uni, city, Wi-Fi names, phone name…) live OUTSIDE the repo, one per
 # line, in ~/.config/bapirlo/private-words — so the list itself is never committed.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — keep Android (Waydroid) online.
+# Kuro OS — keep Android (Waydroid) online.
 # Run every minute by bapirlo-android-netwatch.timer, and straight away by
 # bapirlo-android-netwatch.path when Android's display stack crashes (user units, no sudo needed).
 #

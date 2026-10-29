@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
-<!-- Bapirlo OS: battery charge limit (Daily 80 % / Travel 100 %) — no password for the person at the laptop.
+<!-- Kuro OS: battery charge limit (Daily 80 % / Travel 100 %) — no password for the person at the laptop.
      The helper only accepts 80, 100 or status. -->
 <policyconfig>
-  <vendor>Bapirlo OS</vendor>
+  <vendor>Kuro OS</vendor>
   <action id="os.bapirlo.charge-limit">
     <description>Change the battery charge limit</description>
     <message>Change the battery charge limit</message>

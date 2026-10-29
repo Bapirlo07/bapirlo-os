@@ -11,7 +11,7 @@ ap.add_argument("name"); ap.add_argument("--art-dir", default=os.path.dirname(__
 ap.add_argument("--paused", action="store_true"); ap.add_argument("--identity")
 a = ap.parse_args()
 TRACKS = [
-    ("Kuro Scatter", ["Bapirlo Ensemble"], "red.png", 214_000_000),
+    ("Kuro Scatter", ["Kuro Ensemble"], "red.png", 214_000_000),
     ("Spirit Wisps (Extended Night Mix)", ["Sakura Line", "Ink Choir"], "blue.png", 351_000_000),
     ("Episode 12 — The Long Road Home", ["Some Channel"], "wide.png", 1_502_000_000),
 ]

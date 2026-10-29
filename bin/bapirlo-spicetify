@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — the Bapirlo "Kuro" theme for Spotify (Spicetify), kept on through Spotify updates.
+# Kuro OS — the Kuro "Kuro" theme for Spotify (Spicetify), kept on through Spotify updates.
 #   bapirlo-spicetify apply     install the theme and patch Spotify (restarts Spotify if it is open)
 #   bapirlo-spicetify auto      what the watcher runs: re-apply only if Spotify changed since last time
 #   bapirlo-spicetify status    exit 0 = applied · 1 = not applied · 2 = nothing to do (no Spotify yet)
@@ -31,7 +31,7 @@ apply() {
   # after an update the old backup no longer matches: take a new one, then apply
   if spicetify -q backup apply >/tmp/bapirlo-spicetify.$$ 2>&1 || spicetify -q restore backup apply >>/tmp/bapirlo-spicetify.$$ 2>&1; then
     fingerprint > "$MARK"; rm -f /tmp/bapirlo-spicetify.$$
-    echo "Spicetify: Bapirlo theme applied"; return 0
+    echo "Spicetify: Kuro theme applied"; return 0
   fi
   cat /tmp/bapirlo-spicetify.$$ >&2; rm -f /tmp/bapirlo-spicetify.$$
   return 1
@@ -44,13 +44,13 @@ case "${1:-status}" in
     # spotify-launcher is still unpacking: give it a moment to finish writing files
     sleep 8
     if patched && [ "$(cat "$MARK" 2>/dev/null)" = "$(fingerprint)" ]; then exit 0; fi
-    if apply >/dev/null; then note "Spotify updated" "The Bapirlo theme was put back on."
-    else note -u critical "Spotify updated" "Couldn't re-apply the Bapirlo theme — run: bapirlo-spicetify apply"; fi
+    if apply >/dev/null; then note "Spotify updated" "The Kuro theme was put back on."
+    else note -u critical "Spotify updated" "Couldn't re-apply the Kuro theme — run: bapirlo-spicetify apply"; fi
     exit 0 ;;
   status)
     have || { echo "no Spotify / Spicetify yet"; exit 2; }
     if patched; then echo "Spicetify theme applied"; exit 0; fi
-    echo "Spotify is running without the Bapirlo theme"; exit 1 ;;
+    echo "Spotify is running without the Kuro theme"; exit 1 ;;
   off) spicetify restore && rm -f "$MARK" ;;
   *) sed -n '2,10p' "$0"; exit 64 ;;
 esac

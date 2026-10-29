@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — small GRUB tune-up on top of boot v2 (run with sudo).
+# Kuro OS — small GRUB tune-up on top of boot v2 (run with sudo).
 #   sudo bash ~/bapirlo-os/55-grub-tune.sh            apply
 #   sudo bash ~/bapirlo-os/55-grub-tune.sh restore    undo (from the backup this script made)
 #
@@ -55,7 +55,7 @@ if ! grub-mkconfig -o "$NEW"; then echo "!! grub-mkconfig failed — reverting";
 fail=0
 ck() { if grep -qE "$2" "$NEW"; then echo "  OK   $1"; else echo "  FAIL $1"; fail=1; fi; }
 grub-script-check "$NEW" && echo "  OK   syntax" || fail=1
-ck "Linux entry 'Bapirlo OS'"         "menuentry 'Bapirlo OS'"
+ck "Linux entry 'Kuro OS'"         "menuentry 'Kuro OS'"
 ck "kernel image"                     "linux\s+/(boot/)?vmlinuz-linux-cachyos"
 ck "initramfs"                        "initrd\s+.*initramfs-linux-cachyos(-lts)?\.img"
 ck "quiet splash on kernel line"      "vmlinuz-linux-cachyos.*quiet.*splash|vmlinuz-linux-cachyos.*splash.*quiet"

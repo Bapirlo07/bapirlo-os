@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — dock behaviour (NO sudo).
+# Kuro OS — dock behaviour (NO sudo).
 #   bash ~/bapirlo-os/80-dock-behaviour.sh            # backup + apply
 #   bash ~/bapirlo-os/80-dock-behaviour.sh patch      # re-apply only the click patch (after a Dash2Dock update)
 #   bash ~/bapirlo-os/80-dock-behaviour.sh restore    # undo

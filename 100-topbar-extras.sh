@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — top bar extras (NO sudo): Vitals, SimpleWeather (your town, °C), Clipboard Indicator, Caffeine.
+# Kuro OS — top bar extras (NO sudo): Vitals, SimpleWeather (your town, °C), Clipboard Indicator, Caffeine.
 #   bash ~/bapirlo-os/100-topbar-extras.sh            # backup + install + configure + enable
 #   bash ~/bapirlo-os/100-topbar-extras.sh restore    # disable + remove these four + settings back
 # All four verified for the running GNOME version before install. Wayland: log out/in once to load them.

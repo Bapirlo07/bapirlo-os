@@ -1,4 +1,4 @@
-/* Bapirlo Theme Studio — Kuro styling for the "Theme" tab of the Wallpapers window. The window itself
+/* Kuro Theme Studio — Kuro styling for the "Theme" tab of the Wallpapers window. The window itself
    (background, header, brand) is styled by wallpaper/style.css. Everything here is scoped to
    .page-studio so it can't leak into the Wallpapers tab. The app runs this through the active theme's
    colour transform (studio/engine.py), so the window always wears the theme you applied last. */

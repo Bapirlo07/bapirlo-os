@@ -1,4 +1,4 @@
-"""Bapirlo OS Theme Studio — presets, the files every theme touches, and Apply / Original.
+"""Kuro OS Theme Studio — presets, the files every theme touches, and Apply / Original.
 
 How a theme is applied without breaking anything
   · themes that GNOME / GTK / Kvantum load by NAME (shell, GTK3, Kvantum, GTK4 folder) are written
@@ -7,8 +7,8 @@ How a theme is applied without breaking anything
   · our own extensions get ONE extra stylesheet (recoloured copies of their rules, loaded after them
     by bapirlo-studio@bapirlo-os); their installed files are never modified
   · files that can only be changed in place (Alacritty, fastfetch, Spicetify, VS Code + Chrome
-    themes) are copied to originals/ the first time; "Original Bapirlo OS" copies them back
-    byte for byte. If something else rewrites one of them later (a Bapirlo script), the new
+    themes) are copied to originals/ the first time; "Original Kuro OS" copies them back
+    byte for byte. If something else rewrites one of them later (a Kuro script), the new
     version becomes the original automatically.
   · dconf colours (dock, ArcMenu, Coverflow, ddterm, background) — the values before the first
     preset are kept and written back by Original.
@@ -151,7 +151,7 @@ def presets():
 
 
 def original_preset():
-    return {"id": "original", "name": "Original Bapirlo OS", "builtin": True,
+    return {"id": "original", "name": "Original Kuro OS", "builtin": True,
             "roles": dict(E.KURO), "thumb": os.path.join(DATA, "original-thumb.png")}
 
 
@@ -284,7 +284,7 @@ def build_shell_gtk3(slot, T):
 
 
 def build_gtk4(slot, T):
-    """~/.config/gtk-4.0/studio-<slot>/: recoloured WhiteSur GTK4 + Bapirlo surfaces."""
+    """~/.config/gtk-4.0/studio-<slot>/: recoloured WhiteSur GTK4 + Kuro surfaces."""
     d = os.path.join(GTK4, f"studio-{slot}")
     if os.path.isdir(d):
         shutil.rmtree(d)
@@ -325,7 +325,7 @@ def bapirlo_stylesheets():
 
 
 def build_ext_css(slot, T):
-    parts = ["/* Theme Studio — recoloured rules of the Bapirlo extensions (generated; do not edit) */"]
+    parts = ["/* Theme Studio — recoloured rules of the Kuro extensions (generated; do not edit) */"]
     for p in bapirlo_stylesheets():
         with open(p) as f:
             parts.append(f"/* {os.path.basename(os.path.dirname(p))} */\n" + E.css_override(f.read(), T))
@@ -423,7 +423,7 @@ def inplace_restore(written):
 
 
 def vscode_theme(T):
-    """The Bapirlo VS Code colour theme (installed as a local extension), recoloured."""
+    """The Kuro VS Code colour theme (installed as a local extension), recoloured."""
     src = os.path.join(OS_DIR, "apps", "vscode-theme")
     if not shutil.which("code") or not os.path.isdir(src):
         return False
@@ -583,7 +583,7 @@ def apply_preset(pid, fade=True, quiet=False):
     capture_original(g, written.get(g))          # before the first overwrite
     _switch(names, ext_css, fade=fade)
     write_atomic(g,
-                 f'/* Bapirlo OS Theme Studio: {p["name"]} (Original: Theme Studio → Original Bapirlo OS) */\n'
+                 f'/* Kuro OS Theme Studio: {p["name"]} (Original: Theme Studio → Original Kuro OS) */\n'
                  f'@import url("{gtk4dir}/gtk-Dark.css");\n@import url("{gtk4dir}/bapirlo-surfaces.css");\n')
     dconf_apply(T, base)
     state["written"] = {**written, **inplace_apply(T, written), g: sha(g)}
@@ -597,7 +597,7 @@ def apply_preset(pid, fade=True, quiet=False):
 
 
 def apply_original(fade=True):
-    """Everything back exactly as Bapirlo OS was before Theme Studio."""
+    """Everything back exactly as Kuro OS was before Theme Studio."""
     a = active() or {}
     written = a.get("written", {})
     look_save(a.get("preset", "original"))
@@ -619,7 +619,7 @@ def apply_original(fade=True):
     _after(E.KURO)
     for s in ("A", "B"):
         _cleanup_slot(s)
-    log("Original Bapirlo OS restored")
+    log("Original Kuro OS restored")
     return None
 
 
@@ -651,7 +651,7 @@ def _cleanup_slot(slot, keep_original=False):
 
 
 def refresh_if_stale():
-    """At login: rebuild the active preset if any source theme changed (a Bapirlo script ran)."""
+    """At login: rebuild the active preset if any source theme changed (a Kuro script ran)."""
     a = active()
     if not a:
         return False
@@ -695,7 +695,7 @@ def greeter_apply(roles, preset=None):
     css, bg = os.path.join(GREETER_STUDIO, "studio.css"), os.path.join(GREETER_STUDIO, "bg.jpg")
     logo = os.path.join(GREETER_STUDIO, "logo.svg")
     if not preset:
-        write_atomic(css, LIVE_IMPORT + "\n/* Theme Studio: Original Bapirlo OS */\n")
+        write_atomic(css, LIVE_IMPORT + "\n/* Theme Studio: Original Kuro OS */\n")
         for f in (bg, logo):
             if os.path.exists(f):
                 os.remove(f)

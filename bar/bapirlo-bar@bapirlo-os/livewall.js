@@ -1,4 +1,4 @@
-// Bapirlo Bar — live wallpaper button.
+// Kuro Bar — live wallpaper button.
 //   click = live wallpaper on / off (bapirlo-wallpaper live toggle). Red while the video plays,
 //   dim while the still frame shows. Hidden when the current wallpaper is a picture.
 // State comes from ~/.config/bapirlo/wallpaper.json (keys `live` + `current`), watched for changes,
@@ -18,7 +18,7 @@ const VID_EXT = ['.mp4', '.webm', '.mkv', '.mov', '.gif'];   // = VID_EXT in lib
 export const LiveWallButton = GObject.registerClass(
 class BapirloLiveWallButton extends Group {
     _init() {
-        super._init('Bapirlo live wallpaper', 'bapirlo-livewall');
+        super._init('Kuro live wallpaper', 'bapirlo-livewall');
         this._icon = new St.Icon({style_class: 'system-status-icon bapirlo-livewall-icon'});
         this._btn = new St.Button({
             style_class: 'bapirlo-livewall-btn', can_focus: true, track_hover: true,

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 2 — identity (NO sudo; the hostname itself is set by 200-round2-install.sh).
+# Kuro OS round 2 — identity (NO sudo; the hostname itself is set by 200-round2-install.sh).
 #   bash ~/bapirlo-os/250-identity.sh            # backup + install
 #   bash ~/bapirlo-os/250-identity.sh restore    # everything back
-#   1. "About This PC" app (Bapirlo branded; in the app grid / ArcMenu, search "About")
-#   2. Kuro icon for your own app Lectern (Bapirlo icon theme; the package's icon is untouched)
+#   1. "About This PC" app (Kuro branded; in the app grid / ArcMenu, search "About")
+#   2. Kuro icon for your own app Lectern (Kuro icon theme; the package's icon is untouched)
 #   3. fastfetch: device line (MSI model) + live MSI power mode
 set -euo pipefail
 [ "$(id -u)" -ne 0 ] || { echo "Run WITHOUT sudo."; exit 1; }
@@ -27,7 +27,7 @@ apply() {
 Type=Application
 Name=About This PC
 GenericName=System information
-Comment=Bapirlo OS — your laptop, specs and MSI modes at a glance
+Comment=Kuro OS — your laptop, specs and MSI modes at a glance
 Exec=$HERE/apps/about/bapirlo-about
 Icon=bapirlo
 Terminal=false

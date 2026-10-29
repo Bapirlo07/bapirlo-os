@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — sharper wallpaper + live wallpaper (NO sudo).
+# Kuro OS — sharper wallpaper + live wallpaper (NO sudo).
 #   bash ~/bapirlo-os/940-live-wallpaper.sh            # apply both steps
 #   bash ~/bapirlo-os/940-live-wallpaper.sh hd|live    # one step
 #   bash ~/bapirlo-os/940-live-wallpaper.sh restore    # undo

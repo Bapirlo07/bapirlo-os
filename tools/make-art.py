@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Bapirlo OS manga-style background generator.
+"""Kuro OS manga-style background generator.
 
 usage: make-art.py WIDTH HEIGHT OUT.png [--logo] [--title] [--calm] [--right] [--seed N]
-  --logo   draw the Bapirlo logo
-  --title  draw "BAPIRLO OS" in Bangers
+  --logo   draw the Kuro logo
+  --title  draw "KURO OS" in Bangers
   --calm   fewer/dimmer speed lines (for screens with text on top, e.g. GRUB menu)
 """
 import math, os, random, sys
@@ -119,7 +119,7 @@ def main():
     if "--title" in args and os.path.exists(FONT):
         fs = int(min(W, H) * 0.085)
         font = ImageFont.truetype(FONT, fs)
-        text = "BAPIRLO OS"
+        text = "KURO OS"
         dd = ImageDraw.Draw(img)
         tw = dd.textlength(text, font=font)
         tx = cx - tw / 2

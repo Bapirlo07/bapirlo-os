@@ -1,4 +1,4 @@
-/* Bapirlo Wallpapers — Kuro styling. The app runs this through the active theme's colour transform
+/* Kuro Wallpapers — Kuro styling. The app runs this through the active theme's colour transform
    (studio/engine.py), so the window wears the colours the current wallpaper gave the OS.
    Window, header and tab switcher are global; the Wallpapers tab is scoped to .page-wallpapers
    (the Theme tab has its own studio/style.css, scoped to .page-studio). */

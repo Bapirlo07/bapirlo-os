@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo OS — free-space check every 30 min (first 5 min after login)
+Description=Kuro OS — free-space check every 30 min (first 5 min after login)
 
 [Timer]
 OnStartupSec=5min

@@ -81,7 +81,7 @@ const fragmentShaderCode = [
     'cogl_color_out *= rounded_rect_coverage (texture_coord);                 \n',
 ].join('');
 
-// BAPIRLO: GNOME 51 dropped Shell.GLSLEffect. wallpaper.js never attaches this
+// KURO: GNOME 51 dropped Shell.GLSLEffect. wallpaper.js never attaches this
 // effect (add_effect is commented out), so a no-op holder keeps behaviour identical.
 class NoopRoundedCornersEffect {
     setBounds() {}

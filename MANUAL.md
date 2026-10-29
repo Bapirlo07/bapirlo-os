@@ -1,12 +1,12 @@
-# Bapirlo OS — the manual
+# Kuro OS — the manual
 
 Everything on this laptop, in plain English: what it is, how to open it, how it works and how to switch it off.
-Open this any time from the Start menu → **Bapirlo OS Guide** (Ctrl+F searches it).
+Open this any time from the Start menu → **Kuro OS Guide** (Ctrl+F searches it).
 The one-page **Emergency** sheet is a tab in the same window, and a PDF of it is in `~/bapirlo-os/EMERGENCY.pdf` for your phone.
 
 > **The three things that save you most often**
 >
-> 1. **Bapirlo Doctor** (Start menu) tells you what is wrong. It changes nothing.
+> 1. **Kuro Doctor** (Start menu) tells you what is wrong. It changes nothing.
 > 2. A **Timeshift snapshot** is taken before every system update, so a bad update can be rolled back.
 > 3. If the desktop freezes, press [[Ctrl+Alt+F3]]. See [Troubleshooting](#e-troubleshooting).
 
@@ -23,8 +23,8 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | App / tool | What it's for | How to open |
 |---|---|---|
 | **Lectern** | Your own app: timetable, modules, AI tutor, flashcards, mock exams | Start menu / dock → Lectern |
-| **Bapirlo Writer** | Rewrites emails, applications and posts in your voice (Claude) and checks grammar offline (LanguageTool) | Start menu → Bapirlo Writer · [[Shift+Super+H]] rewrites whatever is on the clipboard |
-| **Bapirlo AI** | A floating Claude Code terminal you can summon over anything | [[Super+A]] (press again to hide) |
+| **Kuro Writer** | Rewrites emails, applications and posts in your voice (Claude) and checks grammar offline (LanguageTool) | Start menu → Kuro Writer · [[Shift+Super+H]] rewrites whatever is on the clipboard |
+| **Kuro AI** | A floating Claude Code terminal you can summon over anything | [[Super+A]] (press again to hide) |
 | **Visual Studio Code** | Code editor | Start menu → Visual Studio Code |
 | **IntelliJ IDEA, WebStorm, RustRover, DataGrip** | JetBrains IDEs for Java/Kotlin, JS/TS, Rust and databases | Start menu, or **JetBrains Toolbox** (starts hidden at login) |
 | **Alacritty** | Your main terminal (themed, Starship-ready) | Dock / Start menu → Alacritty |
@@ -34,7 +34,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | **Text Editor, Meld** | Plain text editing; comparing two files or folders | Start menu |
 | **Document Viewer, Document Scanner** | PDFs; scanning paper | Start menu |
 | **Calculator** | Calculator (scientific mode inside) | Start menu, or type in Super+Space |
-| **Google Chrome, Firefox** | Browsers (Chrome has the Bapirlo theme folder ready) | Dock / Start menu |
+| **Google Chrome, Firefox** | Browsers (Chrome has the Kuro theme folder ready) | Dock / Start menu |
 
 ### Gaming & streaming
 
@@ -44,9 +44,9 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | **Instant replay** | Keeps the last 30 s of the screen in memory; save it when something good happens | [[Super+Alt+G]] save · [[Super+Alt+R]] on/off · files in `~/Videos/Replays` |
 | **Screen recording** | Records the screen with the Intel GPU's encoder (no game lag) | Control Centre → Screen Rec · files in `~/Videos/Recordings` |
 | **MangoHud** | FPS / temperature overlay in games | In Steam: launch option `mangohud %command%` · [[Right Shift+F12]] toggles it |
-| **Gaming / Quiet modes** | Gaming = Turbo + DND + replay. Quiet = Eco + silent fans + no sounds | Bapirlo Welcome switches, or `bapirlo-mode gaming toggle` |
+| **Gaming / Quiet modes** | Gaming = Turbo + DND + replay. Quiet = Eco + silent fans + no sounds | Kuro Welcome switches, or `bapirlo-mode gaming toggle` |
 | **Discord** | Voice and chat | Start menu → Discord |
-| **Vesktop** | Discord with Vencord built in, in the Bapirlo Kuro theme (Vencord settings → Themes) | Start menu → Vesktop |
+| **Vesktop** | Discord with Vencord built in, in the Kuro OS theme (Vencord settings → Themes) | Start menu → Vesktop |
 | **Steam, OBS** | *Not installed yet.* The OBS Do-Not-Disturb script is ready in `~/bapirlo-os/game/obs` | Install with `paru -S steam obs-studio` |
 
 ### Media
@@ -54,7 +54,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | App / tool | What it's for | How to open |
 |---|---|---|
 | **Media in the top bar** | What's playing (any player): click for cover, seek, volume; middle-click = play/pause | Top bar music note · [[Super+Alt+M]] |
-| **Spotify** | Music, with the Bapirlo theme (Spicetify), re-applied automatically after Spotify updates | Start menu → Spotify (Launcher) |
+| **Spotify** | Music, with the Kuro theme (Spicetify), re-applied automatically after Spotify updates | Start menu → Spotify (Launcher) |
 | **YouTube Music for Desktop** | YouTube Music app | Start menu |
 | **Video Player, Clapper, mpv** | Videos (mpv for anything odd) | Double-click a video, or Start menu |
 | **Audio Player** | Single audio files | Double-click an audio file |
@@ -69,10 +69,10 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | **Screenshot + annotate (Satty)** | Pick an area/window/screen, then draw, blur, add arrows or text | [[Print]] |
 | **GNOME screenshot / screencast UI** | The built-in one (also records a short clip) | [[Shift+Print]] · [[Ctrl+Print]] full screen · [[Alt+Print]] window |
 | **Colour picker** | Click anywhere and the hex colour is copied | [[Shift+Super+C]] |
-| **Wallpapers** (one window with two tabs: *Wallpapers* and *Theme*) | Every wallpaper in one gallery, live ones too: click to use it, drop pictures or videos on the window to add them, ⋯ for time-of-day tags. Modes: Fixed · Time of day · Shuffle. The OS colours follow the wallpaper (switch it off for the original Bapirlo colours) | Start menu → Wallpapers · [[Super+Alt+P]] · [[Super+Alt+N]] next · Files → right-click → Scripts → *Set as wallpaper* · `bapirlo-wallpaper` |
-| **Theme Studio** (the *Theme* tab of Wallpapers) | Re-themes all of Bapirlo OS from a wallpaper: preview, Apply, save it, switch back. "Original Bapirlo OS" is always one click away | Start menu → Wallpapers → Theme tab · [[Super+Alt+T]] · Control Centre → Theme Studio (right-click it for your saved themes) · drop pictures in `~/Pictures/Theme Studio` |
+| **Wallpapers** (one window with two tabs: *Wallpapers* and *Theme*) | Every wallpaper in one gallery, live ones too: click to use it, drop pictures or videos on the window to add them, ⋯ for time-of-day tags. Modes: Fixed · Time of day · Shuffle. The OS colours follow the wallpaper (switch it off for the original Kuro colours) | Start menu → Wallpapers · [[Super+Alt+P]] · [[Super+Alt+N]] next · Files → right-click → Scripts → *Set as wallpaper* · `bapirlo-wallpaper` |
+| **Theme Studio** (the *Theme* tab of Wallpapers) | Re-themes all of Kuro OS from a wallpaper: preview, Apply, save it, switch back. "Original Kuro OS" is always one click away | Start menu → Wallpapers → Theme tab · [[Super+Alt+T]] · Control Centre → Theme Studio (right-click it for your saved themes) · drop pictures in `~/Pictures/Theme Studio` |
 | **Camera** | Webcam photos and video | Start menu → Camera |
-| **Kvantum Manager, Qt6 Settings, Tweaks** | Theme controls (already set to Bapirlo — leave unless you know why) | Start menu → Tools folder |
+| **Kvantum Manager, Qt6 Settings, Tweaks** | Theme controls (already set to Kuro — leave unless you know why) | Start menu → Tools folder |
 | *Editing apps* | None installed yet (GIMP, Kdenlive, Blender…) — `paru -S gimp kdenlive` | — |
 
 ### iPhone & Windows
@@ -92,7 +92,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 
 | App / tool | What it's for | How to open |
 |---|---|---|
-| **Bapirlo Welcome** | Clock, weather, today's events, battery/CPU/storage, updates, quick launchers, mode switches. Opens on your first login of the day | Start menu → Bapirlo Welcome |
+| **Kuro Welcome** | Clock, weather, today's events, battery/CPU/storage, updates, quick launchers, mode switches. Opens on your first login of the day | Start menu → Kuro Welcome |
 | **Login briefing** | A short "today" card after login: events, weather, battery | Automatic · [[Super+Alt+B]] shows it again |
 | **Desktop widgets** | Clock, Calendar, Up next (your Google Calendar via GNOME Online Accounts), Weather (3-day), System (CPU, memory, temperature, battery, disk). Colours follow the wallpaper. Edit mode: drag cards anywhere (they snap to edges and each other), click a name to show / hide a card, *Reset layout* | On the desktop; hidden when windows cover them · [[Super+Alt+E]] edit |
 | **Launchpad** | Mac-style full-screen app grid with search and folders | [[Super+G]] · dock icon |
@@ -114,13 +114,13 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 
 | Extension | What it does | Where you see it |
 |---|---|---|
-| **Bapirlo Bar** | The whole top bar: logo, workspace numbers, quick launch, power chip, app name, capsules | Top bar |
-| **Logo Menu** | Mac-style menu on the Bapirlo logo: About, App Grid, Software, System Monitor, Terminal, Extensions, Force Quit, Sleep/Restart/Shut Down, Lock, Log Out | Click the **B** logo |
-| **Bapirlo Control Centre** | Mac-style tiles: Wi-Fi, Bluetooth, power mode, DND, Night Light, Caffeine, Screen Rec, Dark Style, sound, brightness, AirPlay, Remote, Captions, Vault, battery, storage, now playing | Top-right capsule · [[Super+S]] |
-| **Bapirlo Dynamic Island** | The clock capsule grows to show volume/brightness, media, notifications, battery and screenshots | Top centre |
-| **Bapirlo Media** | Media button and dropdown (cover, seek, volume, players) | Top bar music note |
-| **Bapirlo Desk** | Desktop widgets, login briefing, Launchpad, PiP on top, pop-out PiP, privacy dots, AirPods chip | Desktop / top bar |
-| **Bapirlo Game Mode, AI, Sounds, Session** | Game detection; Super+A terminal; the Bapirlo sound theme; reopening your apps after login | — |
+| **Kuro Bar** | The whole top bar: logo, workspace numbers, quick launch, power chip, app name, capsules | Top bar |
+| **Logo Menu** | Mac-style menu on the Kuro logo: About, App Grid, Software, System Monitor, Terminal, Extensions, Force Quit, Sleep/Restart/Shut Down, Lock, Log Out | Click the **B** logo |
+| **Kuro Control Centre** | Mac-style tiles: Wi-Fi, Bluetooth, power mode, DND, Night Light, Caffeine, Screen Rec, Dark Style, sound, brightness, AirPlay, Remote, Captions, Vault, battery, storage, now playing | Top-right capsule · [[Super+S]] |
+| **Kuro Dynamic Island** | The clock capsule grows to show volume/brightness, media, notifications, battery and screenshots | Top centre |
+| **Kuro Media** | Media button and dropdown (cover, seek, volume, players) | Top bar music note |
+| **Kuro Desk** | Desktop widgets, login briefing, Launchpad, PiP on top, pop-out PiP, privacy dots, AirPods chip | Desktop / top bar |
+| **Kuro Game Mode, AI, Sounds, Session** | Game detection; Super+A terminal; the Kuro sound theme; reopening your apps after login | — |
 | **Places Status Indicator** | Folder icon: Home, bookmarks, the **Windows** drive and its folders, Network, Trash | Folder icon in the top bar |
 | **Removable Drive Menu** | Eject icon when a USB stick is plugged in | Eject icon in the top bar |
 | **Lock Keys** | Shows a Caps Lock icon while Caps Lock is on; Caps/Num Lock changes pop up in the Island | Top bar (only when on) |
@@ -146,8 +146,8 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 
 | App / tool | What it's for | How to open |
 |---|---|---|
-| **Bapirlo Doctor** | Checks every extension, service, snapshot, disk space and Spotify theme; tells you what to fix | Start menu → Bapirlo Doctor · `bapirlo-doctor` |
-| **Bapirlo OS Guide** | This manual | Start menu → Bapirlo OS Guide |
+| **Kuro Doctor** | Checks every extension, service, snapshot, disk space and Spotify theme; tells you what to fix | Start menu → Kuro Doctor · `bapirlo-doctor` |
+| **Kuro OS Guide** | This manual | Start menu → Kuro OS Guide |
 | **About This PC** | Specs, battery health, MSI modes | Start menu → About This PC · Logo menu |
 | **Settings** | GNOME settings (Wi-Fi, displays, sound, users…) | Control Centre gear · Start menu |
 | **Timeshift** | System snapshots: browse, create, restore | Start menu → Tools → Timeshift |
@@ -156,9 +156,9 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | **Extension Manager / Extensions** | Switch extensions on and off | Start menu · Logo menu → Extensions |
 | **Resources, btop, Power Statistics** | What is using CPU/RAM/GPU; battery history | Start menu · Logo menu → System Monitor |
 | **Disks, Disk Usage Analyzer** | Drives (look, don't format!), what fills the disk | Start menu → Tools |
-| **MControlCenter** | MSI fan / battery settings (Bapirlo already manages them — see Power below) | Start menu → Tools |
+| **MControlCenter** | MSI fan / battery settings (Kuro already manages them — see Power below) | Start menu → Tools |
 | **NVIDIA Settings, CachyOS Kernel Manager, SchedExt Manager** | GPU, kernels, CPU schedulers | Start menu → Tools |
-| **Bapirlo commands** | `bapirlo-doctor`, `bapirlo-windows`, `bapirlo-mode`, `bapirlo-vault`, `bapirlo-update`… | Any terminal (they live in `~/bapirlo-os/bin`) |
+| **Kuro commands** | `bapirlo-doctor`, `bapirlo-windows`, `bapirlo-mode`, `bapirlo-vault`, `bapirlo-update`… | Any terminal (they live in `~/bapirlo-os/bin`) |
 
 ---
 
@@ -172,7 +172,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | [[Super+G]] | Launchpad (all apps) |
 | [[Super+S]] | Control Centre |
 | [[Shift+Super+S]] | GNOME's original quick settings ("Classic") |
-| [[Super+A]] | Bapirlo AI terminal (Claude) |
+| [[Super+A]] | Kuro AI terminal (Claude) |
 | [[Super+Enter]] | Drop-down terminal (ddterm) |
 | [[Super+E]] | Files (home folder) |
 | [[Super+V]] | Clipboard history |
@@ -214,7 +214,7 @@ Commands in `code` go in a terminal (Alacritty, or the drop-down one on [[Super+
 | [[Super+Alt+P]] | Wallpapers → Wallpapers tab |
 | [[Super+Alt+N]] | Next wallpaper |
 | [[Super+Alt+C]] | Live Captions on / off (once installed) |
-| [[Shift+Super+H]] | Bapirlo Writer on the clipboard text |
+| [[Shift+Super+H]] | Kuro Writer on the clipboard text |
 | [[Super+Alt+8]], [[Super+Alt+=]] / [[Super+Alt+-]] | Magnifier on, zoom in / out |
 | [[Super+Alt+S]] | Screen reader on / off |
 | [[Super+F1]] | GNOME help |
@@ -229,9 +229,9 @@ scroll on the Control Centre capsule for volume.
 
 ---
 
-## c) How each Bapirlo OS feature works — and how to turn it off
+## c) How each Kuro OS feature works — and how to turn it off
 
-Every Bapirlo change was made by a script in `~/bapirlo-os`. Each one made a backup in `~/theme-backups` first, and each can undo itself
+Every Kuro change was made by a script in `~/bapirlo-os`. Each one made a backup in `~/theme-backups` first, and each can undo itself
 with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off switch is `gnome-extensions disable <name>`
 (or the Extensions app). To put it back, use `enable`.
 
@@ -239,11 +239,11 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
 
 - **Boot splash and menu.** The GRUB theme and the Plymouth "awakening" splash are themed. *Off:* `sudo bash ~/bapirlo-os/restore-boot-v2.sh`.
   (The Limine/GRUB boot setup itself was never changed.)
-- **Login and lock screen.** This is the web-greeter "Bapirlo" theme. Because GNOME's own lock needs GDM, locking goes through the same screen:
+- **Login and lock screen.** This is the web-greeter "Kuro" theme. Because GNOME's own lock needs GDM, locking goes through the same screen:
   `bapirlo-lockd` locks on [[Super+L]], after 10 minutes idle and before suspend. *Back to the plain login screen:* `sudo bapirlo-greeter-revert`.
 - **Theme everywhere.** GTK3, GTK4, Qt (Kvantum) and the shell all use one palette: ink black, crimson, ember, sakura and paper. *Undo:* `bash ~/bapirlo-os/410-toolkits.sh restore`, `bash ~/bapirlo-os/60-desktop-v2.sh restore`.
 - **Wallpapers.** One library: your files in `~/Pictures/wallpapers/bapirlo` (files in its `dawn/ day/ dusk/ night/`
-  folders are tagged with that time) plus the Bapirlo originals, 4 of them live. Pictures: jpg, png, webp. Live:
+  folders are tagged with that time) plus the Kuro originals, 4 of them live. Pictures: jpg, png, webp. Live:
   mp4, webm, mkv, mov, gif — played by Hanabi on the Intel GPU (the NVIDIA card stays asleep), paused on battery,
   with a maximised or fullscreen window and in the overview; a still frame of the video is what the lock screen and
   the overview show. *Modes:* **Fixed** (what you picked), **Time of day** (dawn · day · dusk · night from sunrise and
@@ -260,7 +260,7 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
   apply. *Apply* re-themes the shell, top bar, dock, ArcMenu, Control Centre, Island, media widget, notifications,
   GTK 3/4 apps, Qt (Kvantum), terminals, fastfetch, the lock & login screen, and VS Code / Chrome / Spotify / Discord
   themes when those apps are installed; the screen cross-fades, no logout. Every applied theme is saved; **Original
-  Bapirlo OS** puts back the exact files and settings you had. *Also apply to login & boot* (password) recolours the
+  Kuro OS** puts back the exact files and settings you had. *Also apply to login & boot* (password) recolours the
   boot splash and rebuilds the boot images, with a backup and automatic roll-back.
   How it stays safe: the original themes are never edited; Studio writes recoloured copies (`Bapirlo-Studio-A/B`) and
   switches names. *Off:* apply Original, then `bash ~/bapirlo-os/studio/install.sh restore`.
@@ -271,17 +271,17 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
   Desktop, Documents, Downloads, Music, Pictures, Videos and the rest. Rebuilt by `tools/build-folders.py`.
 - **Pop-ups (OSD).** Volume and brightness normally show in the Island; in fullscreen apps, and for Caps Lock or
   display switching, GNOME's pop-up appears instead — styled as an ink pill with a crimson bar like the Island.
-- **Window animation (Bapirlo Panels).** Windows open like a manga panel slapped on the page — slide in with a tilt,
+- **Window animation (Kuro Panels).** Windows open like a manga panel slapped on the page — slide in with a tilt,
   an ink frame and a comic "BAM!" burst — and flick away when closed. Dialogs, fullscreen windows and Settings →
   Accessibility → Reduce animation keep GNOME's own. No burst: `gsettings --schemadir ~/.local/share/gnome-shell/extensions/bapirlo-panels@bapirlo-os/schemas set org.gnome.shell.extensions.bapirlo-panels sfx false`.
   *Off:* `gnome-extensions disable bapirlo-panels@bapirlo-os` (then `gnome-extensions enable burn-my-windows@schneegans.github.com` for the old glide).
-- **Sounds.** The Bapirlo sound theme plays on log-in, notifications and so on. *Off:* Settings → Sound → Alert sound, or `gnome-extensions disable bapirlo-sounds@bapirlo-os`.
+- **Sounds.** The Kuro sound theme plays on log-in, notifications and so on. *Off:* Settings → Sound → Alert sound, or `gnome-extensions disable bapirlo-sounds@bapirlo-os`.
 
 ### Top bar, dock & menus
 
-- **Top bar (Bapirlo Bar).** Bapirlo Bar groups everything into capsules. Red appears only for states that need you: recording, low battery, Do Not Disturb, Caffeine.
+- **Top bar (Kuro Bar).** Kuro Bar groups everything into capsules. Red appears only for states that need you: recording, low battery, Do Not Disturb, Caffeine.
   The bar hides over fullscreen apps; push the mouse to the top edge to bring it back. *Off:* `gnome-extensions disable bapirlo-bar@bapirlo-os`.
-- **Focus timer.** Part of Bapirlo Bar. [[Super+Alt+F]] starts a block; the chip next to the clock counts down in crimson and switches notification
+- **Focus timer.** Part of Kuro Bar. [[Super+Alt+F]] starts a block; the chip next to the clock counts down in crimson and switches notification
   pop-ups off (only if they were on). When the block ends, the Island says so with a sound, and a jade 5 min break starts on its own. The next block never starts by itself.
   Every finished or stopped block (1 min or longer) is written to `~/.local/state/bapirlo/focus.tsv`. *Change lengths:* `bapirlo-focus set 50 10`.
 - **Logo menu.** Clicking the B logo opens the Mac-style menu. The Start menu (ArcMenu) still opens with [[Super]]. *Off:* disable `logomenu@aryan_k`,
@@ -294,13 +294,13 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
 - **Dock (Dash to Dock).** At the bottom, hides when a window touches it, crimson dots for open apps; clicking an open app
   focuses it (or minimises it / shows its windows), middle-click opens a new window. It replaced dash2dock-lite on 23 Oct,
   which crashed GNOME when apps closed. Settings: `config/dash-to-dock-kuro.dconf`. *Back to the old dock:* `bash ~/bapirlo-os/960-dock-swap.sh restore`.
-- **Shortcut cheat sheet (Bapirlo Keys).** [[Super+/]] lists every shortcut — your custom ones, every extension's and
+- **Shortcut cheat sheet (Kuro Keys).** [[Super+/]] lists every shortcut — your custom ones, every extension's and
   GNOME's window/workspace keys — read fresh each time, so it is never out of date. *Off:* `gnome-extensions disable bapirlo-keys@bapirlo-os`.
-- **Launchpad.** [[Super+G]] opens it. It has search, A→Z sorting, folders, and [[Esc]] closes it. It lives in Bapirlo Desk:
+- **Launchpad.** [[Super+G]] opens it. It has search, A→Z sorting, folders, and [[Esc]] closes it. It lives in Kuro Desk:
   `gsettings set org.gnome.shell.extensions.bapirlo-desk launchpad-toggle "[]"` removes the shortcut.
-- **Desktop widgets and login briefing** (Bapirlo Desk). Clock, Calendar, Up next, Weather and System only show on an empty desktop ([[Super+Alt+E]] to move or hide them). The briefing appears once after login.
-  *Off:* Bapirlo Desk settings, or `gnome-extensions disable bapirlo-desk@bapirlo-os` (this also turns off Launchpad, PiP and privacy dots).
-- **Privacy dots.** A red dot means the microphone is on, green means the camera, blue means screen sharing. They sit in the system capsule. Part of Bapirlo Desk.
+- **Desktop widgets and login briefing** (Kuro Desk). Clock, Calendar, Up next, Weather and System only show on an empty desktop ([[Super+Alt+E]] to move or hide them). The briefing appears once after login.
+  *Off:* Kuro Desk settings, or `gnome-extensions disable bapirlo-desk@bapirlo-os` (this also turns off Launchpad, PiP and privacy dots).
+- **Privacy dots.** A red dot means the microphone is on, green means the camera, blue means screen sharing. They sit in the system capsule. Part of Kuro Desk.
 - **Session restore.** After login, the apps you had open come back on their workspaces. *Off:* disable `bapirlo-session@bapirlo-os` and `SmartAutoMoveNG@lauinger-clan.de`.
 
 ### Power, performance & games
@@ -310,7 +310,7 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
   Use the Control Centre's power tile to pick a mode by hand until the next plug/unplug.
 - **Game Mode.** A fullscreen game, or OBS going live, turns on Do Not Disturb, holds Performance and starts instant replay. *Off:* disable `bapirlo-game@bapirlo-os`.
 - **Instant replay.** GPU Screen Recorder keeps the last 30 s in memory on the Intel GPU, and nothing touches the disk until you press [[Super+Alt+G]].
-- **Gaming / Quiet modes.** Switches in Bapirlo Welcome, or `bapirlo-mode gaming|quiet|dnd on|off`.
+- **Gaming / Quiet modes.** Switches in Kuro Welcome, or `bapirlo-mode gaming|quiet|dnd on|off`.
 
 ### Phone, sharing & remote
 
@@ -335,7 +335,7 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
 - **Snapshot before every update.** A pacman hook takes a Timeshift snapshot once per update run and keeps only the newest one.
   It is skipped when less than 15 GB is free, so the update has room. Timeshift also keeps 2 weekly snapshots.
   *Skip once:* `sudo touch /run/bapirlo-nosnap`. *Off:* `sudo rm /etc/pacman.d/hooks/00-bapirlo-timeshift.hook`.
-- **Bapirlo Doctor.** Runs after every system update and 90 s after each login, and only notifies you when something is wrong. For example, a GNOME update an extension doesn't
+- **Kuro Doctor.** Runs after every system update and 90 s after each login, and only notifies you when something is wrong. For example, a GNOME update an extension doesn't
   support yet gets switched off at your next login. *Off:* `systemctl --user disable --now bapirlo-doctor.path bapirlo-doctor.timer`.
 - **Health page.** The Welcome app's HEALTH card shows battery wear (capacity vs. new), the SSD's own health report
   (write life left, spare blocks, media errors, temperature, hours on, data written) and free space. The Doctor checks
@@ -347,7 +347,7 @@ with `bash ~/bapirlo-os/<script>.sh restore`. For an extension the quick off swi
 - **Every update cleans up after itself.** Old package versions and half-finished downloads go (pacman hook `zz-bapirlo-pkgcache.hook`),
   along with paru's AUR build files and old Claude Code versions (the one you run and one fallback stay). *Now, without updating:* `bapirlo-update --cleanup`.
 - **Monthly cleanup.** Clears the package cache (keeps 2 versions), removes orphans and trims old logs, then tells you what it freed. *Off:* `sudo systemctl disable --now bapirlo-cleanup.timer`.
-- **Extension updates.** Extensions from extensions.gnome.org update through the Extension Manager app. Bapirlo's own extensions come from `~/bapirlo-os`.
+- **Extension updates.** Extensions from extensions.gnome.org update through the Extension Manager app. Kuro's own extensions come from `~/bapirlo-os`.
 
 ---
 
@@ -362,8 +362,8 @@ When you're done, run `bapirlo-windows ro`. `bapirlo-windows check` shows the sa
 
 **Switching systems.**
 - **To Windows:** Start menu → **Restart to Windows**, or the Windows button in the Control Centre footer. This boots Windows **once**.
-  The boot order isn't changed, so the next normal restart comes back to Bapirlo OS. During start-up you can also use the boot menu: Limine, or **F11** for the MSI boot picker.
-- **Back to Linux:** in Windows, just restart (not "Update and restart" into a loop). Bapirlo OS is the default.
+  The boot order isn't changed, so the next normal restart comes back to Kuro OS. During start-up you can also use the boot menu: Limine, or **F11** for the MSI boot picker.
+- **Back to Linux:** in Windows, just restart (not "Update and restart" into a loop). Kuro OS is the default.
 
 **Shared files (both ways).** Use the **`C:\Shared`** folder:
 - In Windows, it's `C:\Shared`.
@@ -393,7 +393,7 @@ compares the keys, and `sudo bapirlo-bt-sync --apply` copies Windows' keys to Li
 
 ## e) Troubleshooting
 
-**First, always:** run **Bapirlo Doctor** (Start menu, or `bapirlo-doctor` in a terminal or TTY). It lists what is broken and changes nothing.
+**First, always:** run **Kuro Doctor** (Start menu, or `bapirlo-doctor` in a terminal or TTY). It lists what is broken and changes nothing.
 
 ### The desktop is frozen
 1. Wait 10 seconds. Then press [[Esc]] and [[Super]]. A stuck menu or popup is the usual cause, and Esc closes it.
@@ -410,9 +410,9 @@ compares the keys, and `sudo bapirlo-bt-sync --apply` copies Windows' keys to Li
 5. Totally stuck, no TTY: hold the power button for 10 s.
 
 ### An extension disappeared or is "disabled" after an update
-GNOME updates switch off any extension that doesn't list the new version. Bapirlo Doctor notifies you after the update.
+GNOME updates switch off any extension that doesn't list the new version. Kuro Doctor notifies you after the update.
 - **Others' extensions** (Vitals, ArcMenu…): open **Extension Manager → Updates**. Usually a new version arrives within days.
-- **Bapirlo's own extensions** (`bapirlo-*`): the code is in `~/bapirlo-os`. Ask Claude to add the new version and test it, or as a quick fix add the
+- **Kuro's own extensions** (`bapirlo-*`): the code is in `~/bapirlo-os`. Ask Claude to add the new version and test it, or as a quick fix add the
   number to `"shell-version"` in the extension's `metadata.json` and log out and in.
 - **Never** turn on "disable version validation" permanently. A truly incompatible extension can crash the shell at login. If that happens, use the TTY steps above.
 
@@ -420,7 +420,7 @@ GNOME updates switch off any extension that doesn't list the new version. Bapirl
 1. [[Ctrl+Alt+F3]], log in, run `sudo bapirlo-greeter-revert`. This switches back to the plain LightDM login (slick-greeter), and then `sudo systemctl restart lightdm`.
 2. Password refused everywhere? Caps Lock (the top bar shows its icon), keyboard layout (UK), or a broken keyring. In the TTY, `passwd` changes it.
 3. Logs: `sudo journalctl -b -u lightdm` and `/var/log/lightdm/`.
-4. Bring the Bapirlo login screen back later with `sudo bash ~/bapirlo-os/500-round5-greeter.sh switch`.
+4. Bring the Kuro login screen back later with `sudo bash ~/bapirlo-os/500-round5-greeter.sh switch`.
 
 ### No Wi-Fi
 1. Control Centre → Wi-Fi tile: is it on? Is Aeroplane mode off? A Fn key may have switched the radio off.
@@ -432,7 +432,7 @@ GNOME updates switch off any extension that doesn't list the new version. Bapirl
    sudo systemctl restart NetworkManager
    ```
 3. **eduroam:** forget and re-add it with your full uni email and password (Settings → Wi-Fi), with the security set to "PEAP / MSCHAPv2" and "No CA certificate is required" if the uni guide says so.
-4. After a kernel update without a reboot, Wi-Fi, USB or Bluetooth can stop working (the old kernel's drivers were removed). **Reboot.** Bapirlo now keeps
+4. After a kernel update without a reboot, Wi-Fi, USB or Bluetooth can stop working (the old kernel's drivers were removed). **Reboot.** Kuro now keeps
    the running kernel's modules until the next reboot, so this should not happen again.
 5. Phone hotspot or a USB-C Ethernet adapter gets you online to fix things.
 
@@ -447,7 +447,7 @@ GNOME updates switch off any extension that doesn't list the new version. Bapirl
 ### Restore a Timeshift snapshot from the CachyOS USB (when nothing boots)
 1. Plug in the CachyOS USB. At the MSI logo press [[F11]] and pick the USB (UEFI). Boot the live desktop.
 2. Connect to Wi-Fi, open a terminal and run `sudo pacman -Sy --needed timeshift` (skip if Timeshift is already on the stick).
-3. Run `sudo timeshift --list --snapshot-device /dev/nvme0n1p6` to see your snapshots ("Before update …", "Bapirlo OS final", weekly…).
+3. Run `sudo timeshift --list --snapshot-device /dev/nvme0n1p6` to see your snapshots ("Before update …", "Kuro OS final", weekly…).
 4. Restore, choosing the snapshot by name:
    ```
    sudo timeshift --restore --snapshot-device /dev/nvme0n1p6 --target-device /dev/nvme0n1p6 \
@@ -464,14 +464,14 @@ GNOME updates switch off any extension that doesn't list the new version. Bapirl
 |---|---|
 | Sound gone | Control Centre → Sound → pick the output; `systemctl --user restart pipewire wireplumber` |
 | AirPods won't connect | Put them in the case, then hold the button until it flashes white. Bluetooth → remove → pair again, then `sudo bapirlo-bt-sync --apply` if they're also paired in Windows |
-| Screen freezes ~2 s when opening Settings or other apps | The NVIDIA GPU waking up (known). Bapirlo's own buttons avoid it; it's harmless |
+| Screen freezes ~2 s when opening Settings or other apps | The NVIDIA GPU waking up (known). Kuro's own buttons avoid it; it's harmless |
 | Spotify lost its theme | `bapirlo-spicetify apply` |
 | Disk almost full | Control Centre → Storage → Clean up · Disk Usage Analyzer · `sudo timeshift --list` and delete old snapshots |
 | Windows drive won't open | It's in use by Windows hibernation or Fast Startup. Shut down Windows fully (Shift + Shut down), or run `bapirlo-windows check` |
-| The bar or Island looks wrong after an update | Log out and in. Then Bapirlo Doctor |
-| Undo any one Bapirlo change | `bash ~/bapirlo-os/<script>.sh restore` (see `~/theme-backups/LATEST-*`) |
-| Undo everything since the final snapshot | Timeshift → **Bapirlo OS final** → Restore |
+| The bar or Island looks wrong after an update | Log out and in. Then Kuro Doctor |
+| Undo any one Kuro change | `bash ~/bapirlo-os/<script>.sh restore` (see `~/theme-backups/LATEST-*`) |
+| Undo everything since the final snapshot | Timeshift → **Kuro OS final** → Restore |
 
 ---
 
-*Bapirlo OS · CachyOS + GNOME 51 · scripts, backups and this manual live in `~/bapirlo-os` (a git repo; push instructions in README).*
+*Kuro OS · CachyOS + GNOME 51 · scripts, backups and this manual live in `~/bapirlo-os` (a git repo; push instructions in README).*

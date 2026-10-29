@@ -1,4 +1,4 @@
-# Bapirlo OS — emergency sheet
+# Kuro OS — emergency sheet
 
 **Laptop:** MSI Pulse 16 · CachyOS + GNOME 51 · Linux = `nvme0n1p6` (ext4, 150 GB) · Windows = `nvme0n1p3` · EFI = `nvme0n1p1`
 **Never** format, resize or "repair" `p1` (EFI) or `p3`/`p4`/`p5` (Windows).
@@ -13,7 +13,7 @@
 5. Last resort: hold power 10 s.
 
 ## 2 · Extension gone after an update
-Extension Manager → Updates. Bapirlo's own ones: code in `~/bapirlo-os` (add the new GNOME number to `metadata.json`, log out/in).
+Extension Manager → Updates. Kuro's own ones: code in `~/bapirlo-os` (add the new GNOME number to `metadata.json`, log out/in).
 Shell crashes at login → TTY step 3 above.
 
 ## 3 · Login screen broken
@@ -33,7 +33,7 @@ No luck → phone hotspot / USB-C Ethernet.
 2. `sudo pacman -Sy --needed timeshift`
 3. `sudo timeshift --list --snapshot-device /dev/nvme0n1p6`
 4. `sudo timeshift --restore --snapshot-device /dev/nvme0n1p6 --target /dev/nvme0n1p6 --snapshot '<name>' --skip-grub`
-   (`<name>` like `2026-10-12_18-00-00`; pick **Bapirlo OS final** or the newest **Before update**.)
+   (`<name>` like `2026-10-12_18-00-00`; pick **Kuro OS final** or the newest **Before update**.)
 5. **Don't reinstall the bootloader.** Never choose `p1` or `p3`. Remove USB → reboot.
 
 ## 7 · Windows
@@ -43,5 +43,5 @@ No luck → phone hotspot / USB-C Ethernet.
 - Clock 1 h off → in Windows run `C:\Shared\Fix clock for Linux (double-click).reg` once.
 
 ## 8 · Undo
-One change: `bash ~/bapirlo-os/<script>.sh restore` · everything: Timeshift → **Bapirlo OS final** → Restore.
-Full manual: Start menu → **Bapirlo OS Guide** · `~/bapirlo-os/MANUAL.md`
+One change: `bash ~/bapirlo-os/<script>.sh restore` · everything: Timeshift → **Kuro OS final** → Restore.
+Full manual: Start menu → **Kuro OS Guide** · `~/bapirlo-os/MANUAL.md`

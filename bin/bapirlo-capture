@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — screenshots with annotation + colour picker (GNOME screenshot portal).
+"""Kuro OS — screenshots with annotation + colour picker (GNOME screenshot portal).
 
   bapirlo-capture shot   (Print)        GNOME's own selection UI (area / window / screen, works on
                                         both monitors and with fractional scaling) → the picture is
@@ -55,7 +55,7 @@ def portal(method, options):
 
 
 def notify(title, body, icon):
-    subprocess.Popen(["notify-send", "-a", "Bapirlo OS", "-i", icon, title, body])
+    subprocess.Popen(["notify-send", "-a", "Kuro OS", "-i", icon, title, body])
 
 
 def shot():

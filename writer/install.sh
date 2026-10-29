@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo Writer — install / remove (NO sudo, except the `languagetool` step which asks for it).
+# Kuro Writer — install / remove (NO sudo, except the `languagetool` step which asks for it).
 #   bash ~/bapirlo-os/writer/install.sh               # backup → venv + anthropic SDK → Start menu entry, icon, Super+Shift+H
 #   bash ~/bapirlo-os/writer/install.sh languagetool  # sudo pacman: LanguageTool + headless Java 21 (~530 MB, for Grammar mode)
 #   bash ~/bapirlo-os/writer/install.sh restore       # undo the install (keeps your settings, voice profile and history)
@@ -45,11 +45,11 @@ install_app() {
   chmod 755 "$HERE/bapirlo-writer"
 
   for i in "${ICONS[@]}"; do install -Dm644 "$HERE/bapirlo-writer.svg" "$i"; done
-  for t in Bapirlo hicolor; do gtk-update-icon-cache -q -t "$DATA/icons/$t" 2>/dev/null || true; done
+  for t in Kuro hicolor; do gtk-update-icon-cache -q -t "$DATA/icons/$t" 2>/dev/null || true; done
   install -Dm644 /dev/stdin "$DESKTOP" <<EOF
 [Desktop Entry]
 Type=Application
-Name=Bapirlo Writer
+Name=Kuro Writer
 GenericName=Writing assistant
 Comment=Rewrite emails, applications and posts in your own voice; check uni work for spelling and grammar offline
 Exec=$HERE/bapirlo-writer
@@ -72,7 +72,7 @@ EOF
   update-desktop-database -q "$DATA/applications" 2>/dev/null || true
 
   # Super+Shift+H → open with the clipboard loaded
-  dconf write "${KEY}name" "'Bapirlo Writer (clipboard)'"
+  dconf write "${KEY}name" "'Kuro Writer (clipboard)'"
   dconf write "${KEY}binding" "'$BINDING'"
   dconf write "${KEY}command" "'$HERE/bapirlo-writer --clipboard'"
   python3 - "$KEY" <<'PY'
@@ -86,7 +86,7 @@ subprocess.run(["gsettings", "set", *k[2:], str(cur)], check=True)
 PY
 
   echo
-  echo "done. Start menu: Bapirlo Writer · hotkey: Super+Shift+H (opens with your clipboard)"
+  echo "done. Start menu: Kuro Writer · hotkey: Super+Shift+H (opens with your clipboard)"
   if ! command -v java >/dev/null || [ ! -f /usr/share/java/languagetool/languagetool-server.jar ]; then
     echo "Grammar mode needs LanguageTool: bash $0 languagetool"
   fi
@@ -119,7 +119,7 @@ restore() {
   for i in "${ICONS[@]}"; do
     b="$BK/$(basename "$(dirname "$(dirname "$(dirname "$i")")")")-icon.svg"; [ -f "$b" ] && cp -a "$b" "$i"
   done
-  for t in Bapirlo hicolor; do gtk-update-icon-cache -q -t "$DATA/icons/$t" 2>/dev/null || true; done
+  for t in Kuro hicolor; do gtk-update-icon-cache -q -t "$DATA/icons/$t" 2>/dev/null || true; done
   update-desktop-database -q "$DATA/applications" 2>/dev/null || true
   rm -rf "$VENV"
   echo "restored. Kept: ~/.config/bapirlo/writer (settings, voice, dictionary), $DATA/bapirlo-writer (history),"

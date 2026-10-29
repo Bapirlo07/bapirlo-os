@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — depth maps for the 3D wallpaper (bapirlo-live "depth" setting).
+"""Kuro OS — depth maps for the 3D wallpaper (bapirlo-live "depth" setting).
 Depth Anything V2 Small (ONNX, CPU, ~1-2 s per picture) guesses how far away each pixel of the wallpaper
 is; the live extension's shader then moves near things more than far things as the pointer moves.
   python3 bapirlo_depth.py IMAGE OUT.png     (run with the depth venv's python — see DEPTH_PY)

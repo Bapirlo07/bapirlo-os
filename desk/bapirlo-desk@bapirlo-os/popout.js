@@ -1,4 +1,4 @@
-// Bapirlo Desk — pop ANY window out into a live picture-in-picture.
+// Kuro Desk — pop ANY window out into a live picture-in-picture.
 // Super+Alt+I (or "Picture in Picture" in the window menu: Alt+Space / right-click the title bar)
 // floats a small live copy of the focused window in a screen corner, above every window
 // (fullscreen ones too) and on every workspace, so a video, a call, a build log or a game keeps

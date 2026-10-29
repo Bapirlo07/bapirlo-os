@@ -1,4 +1,4 @@
-// Bapirlo Bar — power-mode chip (power-profiles-daemon).
+// Kuro Bar — power-mode chip (power-profiles-daemon).
 //   click = cycle Eco → Balanced → Turbo · right-click = open MControlCenter
 //   a gamepad shows while a game holds Turbo (bapirlo-game extension)
 import Clutter from 'gi://Clutter';
@@ -29,7 +29,7 @@ const LOOK = {
 export const PowerChip = GObject.registerClass(
 class BapirloPowerChip extends Group {
     _init() {
-        super._init('Bapirlo power mode', 'bapirlo-power', true);
+        super._init('Kuro power mode', 'bapirlo-power', true);
         this._chip = new St.Button({
             style_class: 'bapirlo-power-chip', can_focus: true, track_hover: true,
             button_mask: St.ButtonMask.PRIMARY | St.ButtonMask.SECONDARY,

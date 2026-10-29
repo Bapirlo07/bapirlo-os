@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — smooth Plymouth → LightDM hand-off (needs sudo).
+# Kuro OS — smooth Plymouth → LightDM hand-off (needs sudo).
 #   sudo bash ~/bapirlo-os/75-boot-handoff.sh            # backup + apply
 #   sudo bash ~/bapirlo-os/75-boot-handoff.sh restore    # undo
 #
@@ -24,7 +24,7 @@ LATEST=$H/theme-backups/LATEST-BOOT-HANDOFF
 
 restore() {
   local BK; BK=$(cat "$LATEST" 2>/dev/null || true)
-  echo "restoring from ${BK:-<never applied — just removing Bapirlo files>}"
+  echo "restoring from ${BK:-<never applied — just removing Kuro files>}"
   rm -f "$F" "$C"
   rmdir /etc/lightdm/lightdm.conf.d 2>/dev/null || true
   [ -n "$BK" ] && [ -d "$BK/lightdm.service.d" ] && cp -a "$BK/lightdm.service.d/." "$D/"
@@ -43,7 +43,7 @@ echo "backup -> $BK"
 
 mkdir -p "$D"
 cat > "$F" <<'EOF'
-# Bapirlo OS — keep the Plymouth splash up until the greeter is drawn (75-boot-handoff.sh)
+# Kuro OS — keep the Plymouth splash up until the greeter is drawn (75-boot-handoff.sh)
 [Unit]
 Conflicts=plymouth-quit.service
 After=plymouth-start.service
@@ -53,7 +53,7 @@ OnFailure=plymouth-quit.service
 ExecStartPost=-/usr/bin/sh -c 'sleep 30; /usr/bin/plymouth quit --retain-splash'
 EOF
 mkdir -p "$(dirname "$C")"
-printf '%s\n' '# Bapirlo OS (75-boot-handoff.sh): let LightDM take over the Plymouth VT instead of switching to VT7' \
+printf '%s\n' '# Kuro OS (75-boot-handoff.sh): let LightDM take over the Plymouth VT instead of switching to VT7' \
   '[LightDM]' 'minimum-vt=1' > "$C"
 systemctl daemon-reload
 echo "--- lightdm:"; sed 's/^/  /' "$C"

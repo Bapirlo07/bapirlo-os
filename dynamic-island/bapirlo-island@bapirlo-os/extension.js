@@ -1,4 +1,4 @@
-// Bapirlo Island — a Dynamic-Island-style pill in the centre of the top bar.
+// Kuro Island — a Dynamic-Island-style pill in the centre of the top bar.
 // Volume/brightness OSDs, notification banners, now-playing changes, charger plug/unplug and
 // screenshots appear in the pill instead of GNOME's own popups.
 // Game-safe: while the main screen is fullscreen nothing is intercepted (GNOME's normal behaviour,

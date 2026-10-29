@@ -1,5 +1,5 @@
 #!/bin/sh
-# Bapirlo Theme Studio — now the "Theme" tab of the Wallpapers window.   bapirlo-theme-studio [PICTURE]
+# Kuro Theme Studio — now the "Theme" tab of the Wallpapers window.   bapirlo-theme-studio [PICTURE]
 # Kept so Super+Alt+T, the Control Centre tile and "Preview theme" notifications keep working.
 HERE=$(dirname "$(readlink -f "$0")")
 exec "$HERE/../wallpaper/bapirlo-wallpapers" --page theme "$@"

@@ -1,12 +1,12 @@
-// Bapirlo Theme Studio — the part that has to live inside GNOME Shell.
+// Kuro Theme Studio — the part that has to live inside GNOME Shell.
 //   · D-Bus org.bapirlo.Studio on /org/bapirlo/Studio (session bus, owned by gnome-shell):
 //       Freeze(timeout_ms)       freeze the picture: a screenshot of the whole stage goes on top of
 //                                everything, so the theme can change underneath without flicker
-//       Thaw(stylesheet, fade_ms) load the recoloured stylesheet of the Bapirlo extensions (or none),
+//       Thaw(stylesheet, fade_ms) load the recoloured stylesheet of the Kuro extensions (or none),
 //                                wait for the new shell theme, then cross-fade to the new look
 //     A frozen screen thaws by itself after timeout_ms (max 6 s) — it can never get stuck.
 //   · loads the active preset's stylesheet at login and asks Theme Studio to rebuild it when a
-//     Bapirlo script changed one of the themes it is made from (bapirlo-studio refresh).
+//     Kuro script changed one of the themes it is made from (bapirlo-studio refresh).
 // Off switch: gnome-extensions disable bapirlo-studio@bapirlo-os (themes stay; no fade).
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
@@ -31,7 +31,7 @@ export default class BapirloStudioExtension extends Extension {
         this._dbus.export(Gio.DBus.session, '/org/bapirlo/Studio');
         this._timers = new Set();
         this._loadStylesheet(this._activeStylesheet());
-        // a Bapirlo script may have rebuilt a theme this preset was made from: rebuild quietly
+        // a Kuro script may have rebuilt a theme this preset was made from: rebuild quietly
         this._later(4000, () => {
             if (this._activeStylesheet())
                 this._spawn([STUDIO_CLI, 'refresh']);

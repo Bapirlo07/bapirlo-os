@@ -1,4 +1,4 @@
-# Bapirlo OS — helpers for installing GNOME Shell extensions from extensions.gnome.org.
+# Kuro OS — helpers for installing GNOME Shell extensions from extensions.gnome.org.
 # Sourced by the 1xx-*.sh scripts. Every install is pinned to the running shell's major version
 # and refuses an extension whose metadata does not list it.
 SHELL_MAJOR=$(gnome-shell --version | grep -oE '[0-9]+' | head -1)

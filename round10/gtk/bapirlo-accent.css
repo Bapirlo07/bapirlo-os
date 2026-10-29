@@ -1,4 +1,4 @@
-/* Bapirlo OS round 10 — the "do this" colour is crimson, not WhiteSur's macOS blue (#2E7CF7).
+/* Kuro OS round 10 — the "do this" colour is crimson, not WhiteSur's macOS blue (#2E7CF7).
    WhiteSur hard-codes that blue for primary buttons (Save, Connect, Calculator's "="), Nautilus search
    tags and question bars; libadwaita's own accent is already crimson. Loaded last by gtk.css
    (GTK 4 and GTK 3), so the same selectors win. Weather "low" and rating lozenges keep their blue. */

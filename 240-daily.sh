@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 2 — daily use (NO sudo; Drive/calendar need packages from 200-round2-install.sh).
+# Kuro OS round 2 — daily use (NO sudo; Drive/calendar need packages from 200-round2-install.sh).
 #   bash ~/bapirlo-os/240-daily.sh            # backup + install + configure + enable
 #   bash ~/bapirlo-os/240-daily.sh restore    # everything back (Tiling Assistant reinstalled)
 #   1. Emoji picker on Super+. (Emoji Copy): opens at the mouse, picking an emoji pastes it.

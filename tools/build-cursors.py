@@ -95,7 +95,7 @@ def build(out):
     os.makedirs(os.path.join(out, "cursors"))
     os.makedirs(os.path.join(out, "cursors_scalable"))
     with open(os.path.join(out, "index.theme"), "w") as f:
-        f.write("[Icon Theme]\nName=Bapirlo Cursors\nComment=Kuro ink + crimson, manga drop shadow\n"
+        f.write("[Icon Theme]\nName=Kuro Cursors\nComment=Kuro ink + crimson, manga drop shadow\n"
                 "Inherits=WhiteSur-cursors,Adwaita\n")
     links = []
     for name in sorted(os.listdir(SRC)):

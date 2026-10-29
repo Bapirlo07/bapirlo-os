@@ -1,4 +1,4 @@
-// Bapirlo Session — reopen your apps after log out / restart (GNOME Shell 50).
+// Kuro Session — reopen your apps after log out / restart (GNOME Shell 50).
 //
 // Saves (every 30 s, when an app opens, and once more the moment you confirm Log Out / Restart /
 // Power Off) to ~/.local/state/bapirlo-session/session.json:

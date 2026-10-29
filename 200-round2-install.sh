@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 2 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
+# Kuro OS round 2 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
 #   bash ~/bapirlo-os/200-round2-install.sh            # backup + packages + MSI + hostname
 #   bash ~/bapirlo-os/200-round2-install.sh restore    # undo (asks pacman to remove what it added)
 #
@@ -10,7 +10,7 @@
 #      visual-studio-code-bin official Microsoft VS Code
 # 3. msi-ec loaded → bapirlo-perfd (root service): charge limit 80 %, AC → Turbo, battery → Eco,
 #    profile ↔ MSI shift/fan mode. MControlCenter (already installed) works once msi-ec is loaded.
-# 4. hostname bapirlo-os (pretty name "Bapirlo OS"), /etc/hosts updated to match.
+# 4. hostname bapirlo-os (pretty name "Kuro OS"), /etc/hosts updated to match.
 # Never touches partitions, fstab, EFI or the bootloader.
 set -euo pipefail
 [ "$(id -u)" -ne 0 ] || { echo "Run as yourself, WITHOUT sudo (paru must not run as root)."; exit 1; }
@@ -74,7 +74,7 @@ apply() {
   echo; echo "== 4/4 hostname → $NEW_HOST"
   local OLD; OLD=$(cat /etc/hostname)
   sudo hostnamectl set-hostname "$NEW_HOST"
-  sudo hostnamectl set-hostname --pretty "Bapirlo OS"
+  sudo hostnamectl set-hostname --pretty "Kuro OS"
   sudo sed -i -E "s/^(127\.0\.1\.1[[:space:]]+)${OLD}\$/\1${NEW_HOST}/" /etc/hosts
   grep -q "^127\.0\.1\.1[[:space:]]\+${NEW_HOST}\$" /etc/hosts || echo "127.0.1.1  $NEW_HOST" | sudo tee -a /etc/hosts >/dev/null
   hostnamectl | sed -n 1,3p

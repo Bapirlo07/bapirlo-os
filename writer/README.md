@@ -1,6 +1,6 @@
-# Bapirlo Writer
+# Kuro Writer
 
-A small GTK4/libadwaita writing app for Bapirlo OS, styled in the Kuro palette. It has two modes.
+A small GTK4/libadwaita writing app for Kuro OS, styled in the Kuro palette. It has two modes.
 
 **Rewrite** (Claude API) is for your own emails, placement applications, cover letters, LinkedIn posts and messages.
 Pick a type and a tone, press Rewrite (Ctrl+Enter), and you get a UK-English version that sounds like a person

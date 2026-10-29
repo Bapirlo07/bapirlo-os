@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Bapirlo OS — top-right power fix (NO sudo).
+# Kuro OS — top-right power fix (NO sudo).
 #   bash ~/bapirlo-os/370-power-fix.sh            # apply
 #   bash ~/bapirlo-os/370-power-fix.sh restore    # undo
 #
-#   icons  battery-level-N-plugged-in icons in the Bapirlo theme: a plug, not WhiteSur's charging
+#   icons  battery-level-N-plugged-in icons in the Kuro theme: a plug, not WhiteSur's charging
 #          bolt — with the 80 % charge limit the battery sits "plugged in, not charging"   (live)
 #   bar    bapirlo-bar: GNOME's power-mode gauge leaves the system icons (the power chip on the
 #          left already shows Eco / Balanced / Turbo)                                      (logout)

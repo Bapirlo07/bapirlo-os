@@ -1,4 +1,4 @@
-// Bapirlo Media — top-bar button + dropdown player.
+// Kuro Media — top-bar button + dropdown player.
 // Button: cover thumbnail + "Title · Artist" in a fixed-width window that fades at the right edge
 // (the bar never jumps when the track changes). Nothing playing → just a note icon (or hidden,
 // setting "hide-when-idle"). Click / Super+Alt+M opens the dropdown; click again, Esc or a click

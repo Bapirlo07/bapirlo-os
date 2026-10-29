@@ -19,7 +19,7 @@ def get_key():
 
 def set_key(key):
     Secret.password_store_sync(SCHEMA, ATTRS, Secret.COLLECTION_DEFAULT,
-                               "Bapirlo Writer — Anthropic API key", key.strip(), None)
+                               "Kuro Writer — Anthropic API key", key.strip(), None)
 
 
 def clear_key():

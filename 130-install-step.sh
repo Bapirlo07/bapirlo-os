@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — the parts that need your password. Run as YOURSELF (not with sudo); it asks for sudo itself.
+# Kuro OS — the parts that need your password. Run as YOURSELF (not with sudo); it asks for sudo itself.
 #   bash ~/bapirlo-os/130-install-step.sh            # backup + install + firewall + Chrome restore
 #   bash ~/bapirlo-os/130-install-step.sh restore    # undo (packages: asks pacman to remove them)
 #

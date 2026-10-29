@@ -1,4 +1,4 @@
-# Bapirlo Session — terminal folders survive log out / restart.
+# Kuro Session — terminal folders survive log out / restart.
 # Each interactive fish remembers its folder; after a login restore, the reopened terminals
 # (they start in ~) each take back one saved folder. Normal new terminals are untouched.
 # Off: delete ~/.config/fish/conf.d/bapirlo-session.fish

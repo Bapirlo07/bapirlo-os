@@ -57,7 +57,7 @@ fi
 # ---- 0. snapshot FIRST — nothing else runs unless it exists
 [ -z "$(findmnt -nro TARGET -S "UUID=$WIN_UUID")" ] || { echo "!! unmount Windows first (bapirlo-windows off)"; exit 1; }
 if [ -n "${BAPIRLO_INSTALLER:-}" ]; then
-  echo ":: install.sh took \"Before Bapirlo OS\" — no extra snapshot"
+  echo ":: install.sh took \"Before Kuro OS\" — no extra snapshot"
 elif timeshift --list --scripted 2>/dev/null | grep -q "$SNAP"; then
   echo ":: snapshot \"$SNAP\" already there"
 else

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — step 0b: back up system config files (run with sudo).
+# Kuro OS — step 0b: back up system config files (run with sudo).
 # Read-only on the originals: only copies INTO ~/theme-backups/<latest>/system.
 set -euo pipefail
 U_HOME=$(getent passwd "${SUDO_USER:-$USER}" | cut -d: -f6)

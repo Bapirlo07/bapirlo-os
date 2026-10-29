@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS polish — step 2: every app toolkit gets the same ink + crimson look.
+# Kuro OS polish — step 2: every app toolkit gets the same ink + crimson look.
 #   bash ~/bapirlo-os/410-toolkits.sh install    # YOU run this once (sudo): kvantum qt6ct qt6-wayland
 #   bash ~/bapirlo-os/410-toolkits.sh            # backup + apply (no sudo)
 #   bash ~/bapirlo-os/410-toolkits.sh restore    # undo
@@ -47,7 +47,7 @@ apply() {
   echo "== 1/4 GTK3 + GTK4 surfaces"
   python3 tools/tint-surfaces.py
   rm -f "$G4/gtk.css"
-  printf '%s\n' '/* Bapirlo OS: WhiteSur (crimson) + ink surfaces — 410-toolkits.sh */' \
+  printf '%s\n' '/* Kuro OS: WhiteSur (crimson) + ink surfaces — 410-toolkits.sh */' \
     '@import url("gtk-Dark.css");' '@import url("bapirlo-surfaces.css");' > "$G4/gtk.css"
 
   echo "== 2/4 Qt: Kvantum Bapirlo-Kuro"
@@ -79,7 +79,7 @@ menus_have_icons=true
 underline_shortcut=1
 wheel_scroll_lines=3
 EOF
-  printf '# Bapirlo OS — 410-toolkits.sh\nQT_QPA_PLATFORMTHEME=qt6ct\n' > "$ENVF"
+  printf '# Kuro OS — 410-toolkits.sh\nQT_QPA_PLATFORMTHEME=qt6ct\n' > "$ENVF"
 
   echo "== 4/4 Flatpak overrides (future apps)"
   flatpak override --user --filesystem=xdg-config/gtk-3.0:ro --filesystem=xdg-config/gtk-4.0:ro \

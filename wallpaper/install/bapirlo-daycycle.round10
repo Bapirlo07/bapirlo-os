@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — wallpaper + Night Light follow the sun.
+"""Kuro OS — wallpaper + Night Light follow the sun.
 
 Every 10 minutes (bapirlo-daycycle.timer, and at login) this:
   · works out today's sunrise / sunset for your location (SimpleWeather's main location, or
@@ -9,7 +9,7 @@ Every 10 minutes (bapirlo-daycycle.timer, and at login) this:
     A Theme Studio preset's own day / night grades come first (dawn uses day, dusk night).
     Otherwise each slot has a pool, and a different picture from it is picked every day:
       your pictures in ~/Pictures/wallpapers/bapirlo/{dawn,day,dusk,night}
-      + the Bapirlo originals (~/.local/share/backgrounds/bapirlo/originals/<slot>-*.jpg)
+      + the Kuro originals (~/.local/share/backgrounds/bapirlo/originals/<slot>-*.jpg)
       + the Kuro day / night grades for day / night
     The wallpaper is only set when it actually changes, and bapirlo-autotheme picks the
     new accent colours up from it (it watches the wallpaper).

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — Hyprland as a SECOND login session. The parts that need your password.
+# Kuro OS — Hyprland as a SECOND login session. The parts that need your password.
 # Run as YOURSELF (it asks for sudo itself).
 #   bash ~/bapirlo-os/1500-hyprland-install.sh            # snapshot + packages + login entry
 #   bash ~/bapirlo-os/1500-hyprland-install.sh restore    # remove the login entry + the packages it added
@@ -7,7 +7,7 @@
 # 0. Timeshift snapshot "Before Hyprland" FIRST — nothing else runs unless it succeeds
 # 1. packages: hyprland + portal, waybar, fuzzel, mako, hyprlock, hypridle, mpvpaper (live wallpaper),
 #    hyprshot/grim/slurp, cliphist, swayosd, brightnessctl, hyprpolkitagent, blueman, qt5-wayland
-# 2. login entry "Bapirlo Hyprland" (/usr/share/wayland-sessions/bapirlo-hyprland.desktop) →
+# 2. login entry "Kuro Hyprland" (/usr/share/wayland-sessions/bapirlo-hyprland.desktop) →
 #    ~/bapirlo-os/bin/bapirlo-hyprland-session (pins the Intel GPU)
 # GNOME stays the default session; nothing in GNOME, LightDM's config, GRUB or boot is touched.
 # Then run (no sudo):  bash ~/bapirlo-os/1510-hyprland.sh
@@ -39,10 +39,10 @@ apply() {
   echo; echo "== 1/2 packages"
   sudo pacman -S --needed "${PKGS[@]}"
 
-  echo; echo "== 2/2 login entry \"Bapirlo Hyprland\""
+  echo; echo "== 2/2 login entry \"Kuro Hyprland\""
   sudo tee "$SESSION" >/dev/null <<EOF
 [Desktop Entry]
-Name=Bapirlo Hyprland
+Name=Kuro Hyprland
 Comment=Tiling Wayland session, Bapirlo Kuro theme
 Exec=$HOME/bapirlo-os/bin/bapirlo-hyprland-session
 Type=Application

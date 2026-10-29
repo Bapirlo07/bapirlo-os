@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — tidy ~/Downloads once a day.
+"""Kuro OS — tidy ~/Downloads once a day.
 
   bapirlo-tidy            sort now (skipped if it already ran today — the daily timer)
   bapirlo-tidy --force    sort now even if it ran today

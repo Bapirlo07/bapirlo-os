@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 7 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
+# Kuro OS round 7 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
 #   bash ~/bapirlo-os/800-round7-install.sh            # snapshot + backup + install
 #   bash ~/bapirlo-os/800-round7-install.sh restore    # undo everything below (snapshot stays)
 #
@@ -33,7 +33,7 @@ TS=/etc/timeshift/timeshift.json
 TS_EXCLUDES=("$HOME/.local/share/bapirlo/vault/**" "$HOME/.local/share/flatpak/**")
 
 declare -A WHY=(
-  [uxplay]="AirPlay receiver: iPhone → Screen Mirroring → \"Bapirlo OS\". Builds from FDH2/UxPlay source (cmake, ~1 min)."
+  [uxplay]="AirPlay receiver: iPhone → Screen Mirroring → \"Kuro OS\". Builds from FDH2/UxPlay source (cmake, ~1 min)."
   [localsend-bin]="LocalSend: AirDrop-style file sharing with the free LocalSend iPhone app. Official release .deb repacked."
   [rustdesk-bin]="RustDesk: remote desktop from the RustDesk iPhone app / another PC. Official release package repacked."
   [librepods]="LibrePods: AirPods battery (left/right/case) + noise control. Builds the tag signed by its author (Qt6, ~2 min)."
@@ -64,7 +64,7 @@ apply() {
   sudo -v
   echo "== 0/5 Timeshift snapshot \"Before round 7\" (incremental — a few minutes)"
   if [ -n "${BAPIRLO_INSTALLER:-}" ]; then
-    echo "install.sh took \"Before Bapirlo OS\" — no extra snapshot"
+    echo "install.sh took \"Before Kuro OS\" — no extra snapshot"
   elif sudo timeshift --list --scripted 2>/dev/null | grep -q "Before round 7"; then
     echo "already there:"
   else
@@ -141,7 +141,7 @@ apply() {
       printf '   %-34s %s\n' "$1" "$(sudo rustdesk --option "$1")"
     done
     local ID; ID=$(sudo rustdesk --get-id 2>/dev/null | tail -1)
-    printf '%s' "$PW" | secret-tool store --label="RustDesk permanent password (Bapirlo OS)" app bapirlo service rustdesk
+    printf '%s' "$PW" | secret-tool store --label="RustDesk permanent password (Kuro OS)" app bapirlo service rustdesk
     printf '%s' "$ID" > ~/.config/bapirlo/rustdesk-id 2>/dev/null || { mkdir -p ~/.config/bapirlo; printf '%s' "$ID" > ~/.config/bapirlo/rustdesk-id; }
     sudo systemctl stop rustdesk.service
     echo

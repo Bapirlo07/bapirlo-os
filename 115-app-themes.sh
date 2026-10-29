@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — app theming in the Kuro palette (NO sudo). Run after 130-install-step.sh.
+# Kuro OS — app theming in the Kuro palette (NO sudo). Run after 130-install-step.sh.
 #   bash ~/bapirlo-os/115-app-themes.sh            # backup + apply
 #   bash ~/bapirlo-os/115-app-themes.sh restore    # configs back as they were
 #

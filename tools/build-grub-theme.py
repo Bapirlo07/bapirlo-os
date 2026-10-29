@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Bapirlo OS GRUB theme into ~/bapirlo-os/build/grub/bapirlo (no root needed)."""
+"""Build the Kuro OS GRUB theme into ~/bapirlo-os/build/grub/bapirlo (no root needed)."""
 import os, subprocess
 from PIL import Image, ImageDraw, ImageFilter
 
@@ -108,7 +108,7 @@ d.ellipse([96, 96, 160, 160], fill=(0, 0, 0, 0))
 finish(img, ["firmware", "setup", "uefi"])
 
 # --- theme.txt
-theme = f"""# Bapirlo OS GRUB theme
+theme = f"""# Kuro OS GRUB theme
 title-text: ""
 desktop-image: "background.png"
 desktop-image-scale-method: "crop"
@@ -133,7 +133,7 @@ terminal-height: "80%"
   left = 0
   width = 100%
   align = "center"
-  text = "BAPIRLO OS"
+  text = "KURO OS"
   font = "Bangers Regular 84"
   color = "#e3242b"
 }}

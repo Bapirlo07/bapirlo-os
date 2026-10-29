@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo OS — boot Windows once at the next restart (EFI BootNext)
+Description=Kuro OS — boot Windows once at the next restart (EFI BootNext)
 
 [Service]
 Type=oneshot

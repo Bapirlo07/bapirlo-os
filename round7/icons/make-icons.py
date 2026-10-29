@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS round 7 icons — Kuro app icons (ink squircle, crimson glow, paper glyph) and
+"""Kuro OS round 7 icons — Kuro app icons (ink squircle, crimson glow, paper glyph) and
 symbolic versions (single colour, even-odd paths, no masks: St recolours symbolic SVGs).
 Writes into the given output dir: scalable/apps/<name>.svg and symbolic/apps/<name>-symbolic.svg"""
 import os, sys
@@ -27,7 +27,7 @@ G = {
 }
 
 APP = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <!-- {name} — Bapirlo OS "Kuro" app icon -->
+  <!-- {name} — Kuro OS "Kuro" app icon -->
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A1F25"/><stop offset="1" stop-color="#0E0A0D"/></linearGradient>
     <radialGradient id="glow" cx="0.5" cy="0.42" r="0.5"><stop offset="0" stop-color="#FF4655" stop-opacity="0.55"/><stop offset="0.6" stop-color="#E11D2E" stop-opacity="0.14"/><stop offset="1" stop-color="#E11D2E" stop-opacity="0"/></radialGradient>

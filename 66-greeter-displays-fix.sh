@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — fix for the login-screen display script installed by 65-multimonitor.sh (needs sudo).
+# Kuro OS — fix for the login-screen display script installed by 65-multimonitor.sh (needs sudo).
 #   sudo bash ~/bapirlo-os/66-greeter-displays-fix.sh            # backup + install fixed script
 #   sudo bash ~/bapirlo-os/66-greeter-displays-fix.sh restore    # put the previous script back
 #

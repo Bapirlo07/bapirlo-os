@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 12 (NO sudo): more of the desktop follows the wallpaper.
+# Kuro OS round 12 (NO sudo): more of the desktop follows the wallpaper.
 #   · Firefox: Kuro userChrome.css / userContent.css (+ user.js pref) — Theme Studio recolours them
 #   · Vesktop: Studio now recolours the theme you actually have enabled (bapirlo-kuro.theme.css)
 #   · VS Code: "Bapirlo Kuro" selected as the colour theme

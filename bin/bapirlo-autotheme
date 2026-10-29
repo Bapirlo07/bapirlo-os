@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — wallpaper accent sync (matugen).
+"""Kuro OS — wallpaper accent sync (matugen).
 
 The black base (#0E0A0D…) and crimson main accent (#E11D2E / ember #FF4655) NEVER change.
 What follows the wallpaper is the *second* accent (the role sakura #F08AA4 plays in the

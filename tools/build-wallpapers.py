@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — original manga-style wallpapers, drawn entirely in code (no source artwork).
+"""Kuro OS — original manga-style wallpapers, drawn entirely in code (no source artwork).
 
 Eight scenes, two per time of day, in the Kuro palette (tools/palette.py):
   dawn-a  rising sun behind three ink ridges, sakura sky          dawn-b  sun-stripes over a misty lake

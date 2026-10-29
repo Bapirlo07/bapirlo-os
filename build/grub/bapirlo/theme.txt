@@ -1,4 +1,4 @@
-# Bapirlo OS GRUB theme
+# Kuro OS GRUB theme
 title-text: ""
 desktop-image: "background.png"
 desktop-image-scale-method: "crop"
@@ -23,7 +23,7 @@ terminal-height: "80%"
   left = 0
   width = 100%
   align = "center"
-  text = "BAPIRLO OS"
+  text = "KURO OS"
   font = "Bangers Regular 84"
   color = "#e3242b"
 }

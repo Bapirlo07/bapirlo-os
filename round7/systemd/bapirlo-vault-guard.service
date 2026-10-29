@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo OS — lock the Vault when the session ends
+Description=Kuro OS — lock the Vault when the session ends
 
 [Service]
 Type=oneshot

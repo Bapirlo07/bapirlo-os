@@ -1,4 +1,4 @@
-// Bapirlo Desk — radial launcher: Super+Alt+O opens a ring of up to 8 apps around the pointer.
+// Kuro Desk — radial launcher: Super+Alt+O opens a ring of up to 8 apps around the pointer.
 // Point in a direction (the slice under the pointer lights up) and click, or press 1–8, or
 // ←/→ + Enter. Esc, a click in the middle, or the keys again close it. A running app is focused,
 // a stopped one is started. The apps are `radial-apps` (empty = the first 8 dock favourites).

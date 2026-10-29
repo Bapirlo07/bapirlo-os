@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Bapirlo OS — play a video from ANY app on the laptop, while the phone stays free.
+# Kuro OS — play a video from ANY app on the laptop, while the phone stays free.
 #   bapirlo-play URL      play it (YouTube, TikTok, Instagram, X, Reddit, Twitch, Vimeo, Facebook,
 #                         Dailymotion, SoundCloud… anything yt-dlp knows, plus direct .mp4/.m3u8)
 #   bapirlo-play          play the link on the clipboard (the iPhone's clipboard syncs over)
 #   bapirlo-play share URL  from GSConnect: video links play, other links open in the browser
 #   bapirlo-play stop
-# iPhone: in any app, Share → KDE Connect → Bapirlo OS. Or copy the link, then KDE Connect →
+# iPhone: in any app, Share → KDE Connect → Kuro OS. Or copy the link, then KDE Connect →
 #   Run command → "Play copied link". Play / Pause and Stop video are run commands too.
 # A new link replaces the one playing (one mpv window, controlled through $SOCK).
 # Apps with DRM (Netflix, Disney+, Prime, Apple TV+) can't be played this way — use mirroring.
@@ -31,7 +31,7 @@ play() {
   rm -f "$SOCK"
   # --idle=no: closing / the video ending quits; mpv-mpris lets "Play / Pause" (playerctl) drive it
   setsid -f mpv --force-window=immediate --idle=no --keep-open=no --hwdec=auto-safe \
-    --input-ipc-server="$SOCK" --title='${media-title} — Bapirlo OS' \
+    --input-ipc-server="$SOCK" --title='${media-title} — Kuro OS' \
     --ytdl-format="bv*[height<=$MAXH]+ba/b[height<=$MAXH]/b" "$url" >/dev/null 2>&1
 }
 

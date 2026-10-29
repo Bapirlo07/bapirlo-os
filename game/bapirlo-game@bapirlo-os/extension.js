@@ -1,4 +1,4 @@
-// Bapirlo Game Mode — automatic "game is live" handling for Bapirlo OS (GNOME Shell 50).
+// Kuro Game Mode — automatic "game is live" handling for Kuro OS (GNOME Shell 50).
 //
 // LIVE = a game window exists, or OBS is recording/streaming.
 //   game window: any window that went fullscreen and is not a browser / video player / editor

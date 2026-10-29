@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — colour the Hyprland session from Theme Studio's palette.
+"""Kuro OS — colour the Hyprland session from Theme Studio's palette.
 
 Writes (all generated, safe to delete):
   ~/.config/hypr/bapirlo-colors.conf   Hyprland $variables (legacy .conf)

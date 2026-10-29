@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — v3 "polish" pass on top of v2 Kuro (NO sudo). Same palette/wallpaper/layout, refined.
+# Kuro OS — v3 "polish" pass on top of v2 Kuro (NO sudo). Same palette/wallpaper/layout, refined.
 #   bash ~/bapirlo-os/70-polish.sh backup        # always first (done automatically by 'all')
 #   bash ~/bapirlo-os/70-polish.sh extensions | animations | blur | shell | dock | arcmenu | fonts | terminal | fastfetch
 #   bash ~/bapirlo-os/70-polish.sh all

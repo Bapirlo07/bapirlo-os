@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo OS — iCloud Photos every 6 hours (first run 20 min after login)
+Description=Kuro OS — iCloud Photos every 6 hours (first run 20 min after login)
 
 [Timer]
 OnStartupSec=20min

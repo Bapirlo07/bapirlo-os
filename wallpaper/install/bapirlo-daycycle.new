@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — the 10-minute timer (bapirlo-daycycle.timer) and Theme Studio call this.
+"""Kuro OS — the 10-minute timer (bapirlo-daycycle.timer) and Theme Studio call this.
 Wallpapers now live in bapirlo-wallpaper (mode fixed / time / shuffle, live videos, colours → theme);
 this keeps the old name working and Night Light following sunrise / sunset.
 

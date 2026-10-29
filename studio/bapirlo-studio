@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS Theme Studio — command line (the app, the Control Centre tile and the watchers use it).
+"""Kuro OS Theme Studio — command line (the app, the Control Centre tile and the watchers use it).
 
   bapirlo-studio extract IMAGE [--accent HEX] [--vivid N] [--tint N]   palette + contrast report (JSON)
   bapirlo-studio save NAME IMAGE [--accent HEX] [--vivid N] [--tint N] store as a preset → prints its id
@@ -57,7 +57,7 @@ def main():
             print(("* " if p["id"] == act else "  ") + f'{p["id"]:44} {p["name"]}')
     elif a.cmd == "status":
         act = S.active()
-        print(f'Theme Studio: {act["name"]} (slot {act["slot"]})' if act else "Theme Studio: Original Bapirlo OS")
+        print(f'Theme Studio: {act["name"]} (slot {act["slot"]})' if act else "Theme Studio: Original Kuro OS")
     elif a.cmd == "delete":
         S.delete_preset(a.args[0])
     elif a.cmd == "refresh":

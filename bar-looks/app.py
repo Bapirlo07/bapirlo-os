@@ -1,4 +1,4 @@
-"""Bapirlo Bar Looks — the window (GTK4 / libadwaita).
+"""Kuro Bar Looks — the window (GTK4 / libadwaita).
 
 One card per look of the top bar and the dock (classic · manga · glass · islands · flat) with pictures of both;
 click a card to switch. It only writes the bapirlo-bar `bar-look` setting — the bar (looks.js)
@@ -123,7 +123,7 @@ class Window(Adw.ApplicationWindow):
         if self.settings is None:
             for c in self.cards:
                 c.set_sensitive(False)
-            GLib.idle_add(lambda: self.toast("The Bapirlo bar isn't installed — run 1200-bar-looks.sh", 0))
+            GLib.idle_add(lambda: self.toast("The Kuro bar isn't installed — run 1200-bar-looks.sh", 0))
         else:
             self.settings.connect("changed::bar-look", lambda *_: self.sync())
             self.sync()

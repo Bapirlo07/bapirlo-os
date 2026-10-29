@@ -1,4 +1,4 @@
-// Bapirlo Control Centre — tiles.
+// Kuro Control Centre — tiles.
 // Most tiles MIRROR GNOME's own quick-settings items (Wi-Fi, Bluetooth, DND, Night Light, dark
 // mode, Caffeine, volume, brightness): they read the stock item's state and forward clicks to it,
 // and "expanding" a tile borrows the stock item's own menu (network list, device list…).
@@ -1165,7 +1165,7 @@ class BapirloStudioTile extends Tile {
     }
 
     _presets() {
-        const out = [{id: 'original', name: 'Original Bapirlo OS', created: Infinity}];
+        const out = [{id: 'original', name: 'Original Kuro OS', created: Infinity}];
         try {
             const en = Gio.File.new_for_path(STUDIO_PRESETS).enumerate_children('standard::name',
                 Gio.FileQueryInfoFlags.NONE, null);

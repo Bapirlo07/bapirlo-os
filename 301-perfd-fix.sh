@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — fix: bapirlo-perfd never started at boot (ordering cycle with CachyOS's
+# Kuro OS — fix: bapirlo-perfd never started at boot (ordering cycle with CachyOS's
 # power-profiles-daemon, which runs After=multi-user.target). Moves it to graphical.target.
 #   sudo bash ~/bapirlo-os/301-perfd-fix.sh            # backup + fix + start now
 #   sudo bash ~/bapirlo-os/301-perfd-fix.sh restore    # old unit back

@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Bapirlo OS — AirPlay screen mirroring from the iPhone (UxPlay). OFF by default.
+# Kuro OS — AirPlay screen mirroring from the iPhone (UxPlay). OFF by default.
 #   bapirlo-airplay toggle | on | off | status | pin      (Control Centre "AirPlay" tile)
 # On:  checks the Wi-Fi first (campus / open Wi-Fi blocks phone-to-laptop traffic → offers the
 #      iPhone hotspot), opens ONLY the AirPlay ports for home networks (bapirlo-port@airplay,
 #      polkit, no password), then runs UxPlay as the transient user unit bapirlo-airplay.service.
 # Off: stops UxPlay and closes the ports again (also when UxPlay crashes, you log out, or nobody
 #      connected for IDLE_MIN minutes).
-# iPhone: Control Centre → Screen Mirroring → "Bapirlo OS", type the 4-digit code once — the
+# iPhone: Control Centre → Screen Mirroring → "Kuro OS", type the 4-digit code once — the
 # phone is remembered after that (~/.uxplay.register + a fixed server key, so it stays the same
 # "Apple TV" to the phone across restarts).
-# Videos (YouTube app): tap the AirPlay/cast icon in the video → Bapirlo OS. The laptop fetches
+# Videos (YouTube app): tap the AirPlay/cast icon in the video → Kuro OS. The laptop fetches
 # and plays the video itself, so the phone is free — lock it, switch apps, it keeps playing;
 # the phone stays the remote (pause/seek/volume). Other apps' AirPlay video isn't supported by
 # UxPlay yet (Netflix/Disney+ are DRM-locked; Safari/Photos send audio only) → use mirroring.
@@ -20,7 +20,7 @@ CONF=${XDG_CONFIG_HOME:-$HOME/.config}/bapirlo/airplay.conf
 KEY=${CONF%/*}/airplay.pem
 mkdir -p "${CONF%/*}"
 # one fixed code per install, so a remembered iPhone never has to type it again
-[ -f "$CONF" ] || printf 'PIN=%04d\nNAME="Bapirlo OS"\n' $((10#$(od -An -N2 -tu2 /dev/urandom | tr -d ' ') % 9000 + 1000)) > "$CONF"
+[ -f "$CONF" ] || printf 'PIN=%04d\nNAME="Kuro OS"\n' $((10#$(od -An -N2 -tu2 /dev/urandom | tr -d ' ') % 9000 + 1000)) > "$CONF"
 # defaults for settings added later (override any of them in airplay.conf)
 HOTSPOT=iPhone          # NetworkManager connection of the iPhone's Personal Hotspot
 SIZE=2560x1600@60       # asked of the iPhone; it scales to its own aspect ratio

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Bapirlo OS — LocalSend (AirDrop-style sharing with the LocalSend iPhone app).
+# Kuro OS — LocalSend (AirDrop-style sharing with the LocalSend iPhone app).
 #   bapirlo-localsend            open LocalSend (Start menu / dock "LocalSend")
 #   bapirlo-localsend status
 # Port 53317 is opened for home networks ONLY while LocalSend runs (bapirlo-port@localsend)
 # and closed again when you quit it. Received files land in ~/Downloads/iPhone.
-# First run presets: name "Bapirlo OS", dark, received files → ~/Downloads/iPhone, quitting the
+# First run presets: name "Kuro OS", dark, received files → ~/Downloads/iPhone, quitting the
 # window really quits (no hidden tray app keeping the port open).
 set -euo pipefail
 FW=bapirlo-port@localsend.service
@@ -20,7 +20,7 @@ if [ ! -s "$PREFS" ]; then
   mkdir -p "${PREFS%/*}"
   python3 - "$PREFS" "$DEST" <<'PY'
 import json, sys
-json.dump({"flutter.ls_alias": "Bapirlo OS", "flutter.ls_theme": "dark",
+json.dump({"flutter.ls_alias": "Kuro OS", "flutter.ls_theme": "dark",
            "flutter.ls_destination": sys.argv[2], "flutter.ls_minimize_to_tray": False,
            "flutter.ls_save_to_history": True}, open(sys.argv[1], "w"))
 PY

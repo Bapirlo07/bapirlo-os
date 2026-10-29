@@ -1,4 +1,4 @@
-// Bapirlo Bar — the Bapirlo OS top bar layout and its own pieces (GNOME Shell 50/51).
+// Kuro Bar — the Kuro OS top bar layout and its own pieces (GNOME Shell 50/51).
 //   left:   [ArcMenu logo] [workspace numbers] (quick launch · power chip) [focused app name]
 //   centre: clock + date (the Dynamic Island capsule; Do Not Disturb moon when on) · focus timer while one runs
 //   right:  (media · weather · Vitals)  (updates · replay dot · fullscreen · live wallpaper · tray icons)  (Control Centre)

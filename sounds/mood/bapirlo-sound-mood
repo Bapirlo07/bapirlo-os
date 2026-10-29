@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — login + unlock sounds in the wallpaper's mood (generated, no samples).
+"""Kuro OS — login + unlock sounds in the wallpaper's mood (generated, no samples).
   bapirlo-sound-mood            write them for the active Theme Studio palette
   bapirlo-sound-mood --play     … and play the login one
   bapirlo-sound-mood off        put the original Kenney login sound back (unlock: none)

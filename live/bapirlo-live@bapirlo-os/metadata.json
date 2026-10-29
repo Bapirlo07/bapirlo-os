@@ -1,7 +1,7 @@
 {
   "uuid": "bapirlo-live@bapirlo-os",
-  "name": "Bapirlo Live Wallpaper",
-  "description": "Bapirlo OS live wallpaper: GPU-drawn embers and sakura petals drifting over the Kuro art, a slow crimson glow and optional parallax. Pauses whenever the wallpaper can't be seen, on battery and in power-saver.",
+  "name": "Kuro Live Wallpaper",
+  "description": "Kuro OS live wallpaper: GPU-drawn embers and sakura petals drifting over the Kuro art, a slow crimson glow and optional parallax. Pauses whenever the wallpaper can't be seen, on battery and in power-saver.",
   "shell-version": ["51"],
   "settings-schema": "org.gnome.shell.extensions.bapirlo-live",
   "url": "https://github.com/Bapirlo07",

@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo OS — warn once a day when / drops below 15 GB free
+Description=Kuro OS — warn once a day when / drops below 15 GB free
 
 [Service]
 Type=oneshot

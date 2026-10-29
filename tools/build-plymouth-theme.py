@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Bapirlo OS Plymouth theme into ~/bapirlo-os/build/plymouth/bapirlo (no root)."""
+"""Build the Kuro OS Plymouth theme into ~/bapirlo-os/build/plymouth/bapirlo (no root)."""
 import math, os, subprocess
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
@@ -23,11 +23,11 @@ Image.open(LOGO).convert("RGBA").resize((512, 512), Image.LANCZOS).save(f"{OUT}/
 # title
 f = ImageFont.truetype(BANGERS, 110)
 tmp = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
-tw = int(tmp.textlength("BAPIRLO OS", font=f)) + 40
+tw = int(tmp.textlength("KURO OS", font=f)) + 40
 t = Image.new("RGBA", (tw, 150), (0, 0, 0, 0))
 d = ImageDraw.Draw(t)
-d.text((26, 18), "BAPIRLO OS", font=f, fill=(245, 245, 245), stroke_width=5, stroke_fill=(11, 11, 13))
-d.text((20, 12), "BAPIRLO OS", font=f, fill=RED, stroke_width=5, stroke_fill=(11, 11, 13))
+d.text((26, 18), "KURO OS", font=f, fill=(245, 245, 245), stroke_width=5, stroke_fill=(11, 11, 13))
+d.text((20, 12), "KURO OS", font=f, fill=RED, stroke_width=5, stroke_fill=(11, 11, 13))
 t.save(f"{OUT}/title.png")
 
 # slash: full-screen diagonal streak (1920x1200), gradient glow + white core
@@ -65,8 +65,8 @@ b = Image.new("RGBA", (22, 22), (0, 0, 0, 0)); ImageDraw.Draw(b).ellipse([3, 3, 
 b.save(f"{OUT}/bullet.png")
 
 open(f"{OUT}/bapirlo.plymouth", "w").write("""[Plymouth Theme]
-Name=Bapirlo OS
-Description=Bapirlo OS: katana slash, pulsing logo, RGB loader
+Name=Kuro OS
+Description=Kuro OS: katana slash, pulsing logo, RGB loader
 ModuleName=script
 
 [script]

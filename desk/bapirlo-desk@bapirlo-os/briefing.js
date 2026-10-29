@@ -1,4 +1,4 @@
-// Bapirlo Desk — the login briefing.
+// Kuro Desk — the login briefing.
 // A few seconds AFTER the session is up (never during login), a card slides in under the top bar
 // on the right: greeting with your name · today's weather for your location (Open-Meteo, from
 // ~/.config/bapirlo/location.json) · today's events · anything due in the next 3 days · battery

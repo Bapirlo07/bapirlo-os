@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — build a GNOME wallpaper slideshow from ~/Pictures/wallpapers.
+# Kuro OS — build a GNOME wallpaper slideshow from ~/Pictures/wallpapers.
 # Runs automatically (systemd path unit) whenever that folder changes.
 #   BAPIRLO_SLIDE_SECONDS  time per image (default 600 = 10 min)
 set -euo pipefail

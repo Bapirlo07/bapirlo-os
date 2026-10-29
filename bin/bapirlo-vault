@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — Vault: an encrypted folder for private files (gocryptfs, AES-256-GCM).
+# Kuro OS — Vault: an encrypted folder for private files (gocryptfs, AES-256-GCM).
 #   bapirlo-vault toggle | unlock | lock | status   (Start menu "Vault", Control Centre tile, Super+Alt+V)
 # Encrypted store: ~/.local/share/bapirlo/vault (safe to back up / sync — it's ciphertext).
 # Unlocked view:   ~/Vault — only while unlocked; asks for the Vault password.

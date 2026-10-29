@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 7 — everything that does NOT need your password (run after 800-round7-install.sh).
+# Kuro OS round 7 — everything that does NOT need your password (run after 800-round7-install.sh).
 #   bash ~/bapirlo-os/810-round7.sh             # backup + apply (then log out / in once)
 #   bash ~/bapirlo-os/810-round7.sh captions    # + Live Captions (Flatpak, ~1.5 GB incl. GNOME runtime)
 #   bash ~/bapirlo-os/810-round7.sh restore     # undo all of it
@@ -7,7 +7,7 @@
 #  1. bapirlo-desk@bapirlo-os (desk/): Launchpad (Super+G + dock icon), desktop widgets, login briefing
 #     (Super+Alt+B), PiP + Live Captions always on top, privacy dots, AirPods battery chip
 #  2. Control Centre: AirPlay · Remote · Captions · Vault tiles; top bar: slots for the new chips
-#  3. icons (Bapirlo theme) + Start-menu entries: Launchpad, iCloud (web app), Vault, AirPlay Receiver,
+#  3. icons (Kuro theme) + Start-menu entries: Launchpad, iCloud (web app), Vault, AirPlay Receiver,
 #     LocalSend (opens its port only while running, received → ~/Downloads/iPhone)
 #  4. GSConnect for the KDE Connect iOS app (bin/bapirlo-iphone setup)
 #  5. Vault: hotkey Super+Alt+V, locks with the screen (bapirlo-lockd) and at logout, not indexed
@@ -71,7 +71,7 @@ apply() {
   done
   # UxPlay's own entry opens a bare terminal — hidden; "AirPlay Receiver" replaces it
   [ -f /usr/share/applications/uxplay.desktop ] && { cp /usr/share/applications/uxplay.desktop "$APPS/uxplay.desktop"; echo "NoDisplay=true" >> "$APPS/uxplay.desktop"; }
-  # RustDesk keeps its app (shows your ID), with the Bapirlo icon
+  # RustDesk keeps its app (shows your ID), with the Kuro icon
   [ -f /usr/share/applications/rustdesk.desktop ] && sed 's/^Icon=.*/Icon=bapirlo-remote/' /usr/share/applications/rustdesk.desktop > "$APPS/rustdesk.desktop"
   update-desktop-database "$APPS" 2>/dev/null || true
   python3 - <<'PY'

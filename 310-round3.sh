@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 3 — desktop part (NO sudo; run AFTER 300-round3-install.sh).
+# Kuro OS round 3 — desktop part (NO sudo; run AFTER 300-round3-install.sh).
 #   bash ~/bapirlo-os/310-round3.sh            # backup + apply everything
 #   bash ~/bapirlo-os/310-round3.sh restore    # everything back exactly as before
 #   1. Welcome app (welcome-app/): dock icon, opens at the first login of the day
@@ -80,7 +80,7 @@ apply() {
   cat > "$WELCOME_DESK" <<DESKTOP
 [Desktop Entry]
 Type=Application
-Name=Bapirlo Welcome
+Name=Kuro Welcome
 GenericName=Control centre
 Comment=Time, weather, today's events, system status, quick launch and modes
 Exec=$HERE/welcome-app/bapirlo-welcome
@@ -93,7 +93,7 @@ DESKTOP
   cat > "$AUTOSTART" <<DESKTOP
 [Desktop Entry]
 Type=Application
-Name=Bapirlo Welcome (first login of the day)
+Name=Kuro Welcome (first login of the day)
 Exec=$HERE/welcome-app/bapirlo-welcome --daily
 Icon=bapirlo-welcome
 NoDisplay=true
@@ -128,7 +128,7 @@ PY
   echo "== 3/6 update notifier"
   ext_install "$AU"
   eset "$AU" org.gnome.shell.extensions.arch-update check-cmd "/bin/sh -c \"/usr/bin/checkupdates; /usr/bin/paru -Qua 2>/dev/null | grep -v '\\[ignored\\]'\""
-  eset "$AU" org.gnome.shell.extensions.arch-update update-cmd "alacritty --class bapirlo-update -T 'Bapirlo update' -e $HERE/bin/bapirlo-update"
+  eset "$AU" org.gnome.shell.extensions.arch-update update-cmd "alacritty --class bapirlo-update -T 'Kuro update' -e $HERE/bin/bapirlo-update"
   eset "$AU" org.gnome.shell.extensions.arch-update always-visible false
   eset "$AU" org.gnome.shell.extensions.arch-update show-count true
   eset "$AU" org.gnome.shell.extensions.arch-update notify false

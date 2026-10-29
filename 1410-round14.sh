@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 14 (NO sudo — run 1400-round14-install.sh first):
+# Kuro OS round 14 (NO sudo — run 1400-round14-install.sh first):
 #   · desk cards: Now playing (live visualizer) · To-do · Notes   (Super+Alt+D = add a to-do,
 #     Super+Alt+E = edit; terminal: bapirlo-todo). Added to the cards of EVERY wallpaper's saved look.
 #   · session restore: last session's apps come back on their workspaces after login
@@ -87,7 +87,7 @@ install_sound() {
   mkdir -p "$UNITS"
   cat > "$UNITS/bapirlo-easyeffects.service" <<EOF
 [Unit]
-Description=EasyEffects in the background (Bapirlo OS sound presets)
+Description=EasyEffects in the background (Kuro OS sound presets)
 PartOf=graphical-session.target
 After=graphical-session.target pipewire-pulse.service
 
@@ -101,7 +101,7 @@ WantedBy=graphical-session.target
 EOF
   cat > "$UNITS/bapirlo-sound-profile.service" <<EOF
 [Unit]
-Description=Bapirlo OS — EasyEffects preset follows the audio output
+Description=Kuro OS — EasyEffects preset follows the audio output
 PartOf=graphical-session.target
 After=graphical-session.target bapirlo-easyeffects.service
 Wants=bapirlo-easyeffects.service

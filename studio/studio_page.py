@@ -1,4 +1,4 @@
-"""Bapirlo Theme Studio — the "Theme" tab of the Wallpapers window (wallpaper/app.py, GTK4 / libadwaita).
+"""Kuro Theme Studio — the "Theme" tab of the Wallpapers window (wallpaper/app.py, GTK4 / libadwaita).
 
 Left: pictures in ~/Pictures/Theme Studio and your saved themes. Right: a preview of the top bar,
 dock, Control Centre, a window and a notification in the new colours, the palette, the colour
@@ -497,7 +497,7 @@ class StudioPage(Gtk.Box):
             self.load_presets(select=pid)
             self.win.theme_changed()
             self.set_status("")
-            nm = "Original Bapirlo OS" if pid == "original" else S.get_preset(pid)["name"]
+            nm = "Original Kuro OS" if pid == "original" else S.get_preset(pid)["name"]
             self.toasts.add_toast(Adw.Toast(title=f"“{nm}” applied", timeout=4))
         bg(work, done, self.fail)
 

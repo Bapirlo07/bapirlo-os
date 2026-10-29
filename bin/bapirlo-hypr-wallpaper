@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — wallpaper for the Hyprland session (GNOME uses Hanabi instead).
+"""Kuro OS — wallpaper for the Hyprland session (GNOME uses Hanabi instead).
 
 Follows the same ~/.config/bapirlo/wallpaper.json as the Wallpapers app: a video with live on →
 mpvpaper plays it (iGPU VA-API, muted, looping, paused while windows cover it); otherwise →

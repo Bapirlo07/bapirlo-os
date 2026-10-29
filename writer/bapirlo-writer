@@ -1,5 +1,5 @@
 #!/bin/sh
-# Bapirlo Writer launcher.
+# Kuro Writer launcher.
 #   bapirlo-writer               open (or raise) the window
 #   bapirlo-writer --clipboard   open it with the clipboard text loaded (Super+Shift+H)
 #   bapirlo-writer --grammar | --rewrite   choose the mode

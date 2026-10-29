@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — every update deletes the old leftovers. Run in a terminal:
+# Kuro OS — every update deletes the old leftovers. Run in a terminal:
 #   sudo bash ~/bapirlo-os/950-update-cleanup-install.sh            # install
 #   sudo bash ~/bapirlo-os/950-update-cleanup-install.sh restore    # undo
 #

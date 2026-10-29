@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 2 — gaming & streaming (NO sudo; needs mangohud + gpu-screen-recorder from 200-round2-install.sh).
+# Kuro OS round 2 — gaming & streaming (NO sudo; needs mangohud + gpu-screen-recorder from 200-round2-install.sh).
 #   bash ~/bapirlo-os/230-gaming.sh            # backup + configure + enable
 #   bash ~/bapirlo-os/230-gaming.sh restore    # everything back as it was
 #   1. MangoHud "Kuro" overlay: FPS, frame-time graph, CPU/GPU load + temps. Toggle Right Shift+F12.

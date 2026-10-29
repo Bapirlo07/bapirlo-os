@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — wallpapers (pictures + live videos); the OS colours follow the wallpaper.
+"""Kuro OS — wallpapers (pictures + live videos); the OS colours follow the wallpaper.
   bapirlo-wallpaper                    open the Wallpapers app            (= Super+Alt+P)
   bapirlo-wallpaper set FILE           show this one (copied into your library first if it's elsewhere)
   bapirlo-wallpaper add FILE… [--slot dawn|day|dusk|night]   copy into ~/Pictures/wallpapers/bapirlo
   bapirlo-wallpaper next               the next one
   bapirlo-wallpaper mode fixed|time|shuffle [HOURS]
-  bapirlo-wallpaper theme on|off       OS colours follow the wallpaper (off = original Bapirlo colours)
+  bapirlo-wallpaper theme on|off       OS colours follow the wallpaper (off = original Kuro colours)
   bapirlo-wallpaper live on|off|toggle|status   live (video) wallpapers; off = the still frame (Control Centre "Live Wallpaper" tile)
   bapirlo-wallpaper battery lite|pause on battery: play a light 1280x800 copy, or freeze the video
   bapirlo-wallpaper lockscreen on|off  the lock screen plays the live wallpaper too

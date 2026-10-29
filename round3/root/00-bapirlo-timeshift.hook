@@ -1,4 +1,4 @@
-# Bapirlo OS — Timeshift snapshot before packages are upgraded (/usr/local/lib/bapirlo/bapirlo-presnap)
+# Kuro OS — Timeshift snapshot before packages are upgraded (/usr/local/lib/bapirlo/bapirlo-presnap)
 # Off: sudo rm /etc/pacman.d/hooks/00-bapirlo-timeshift.hook
 [Trigger]
 Operation = Upgrade
@@ -6,7 +6,7 @@ Type = Package
 Target = *
 
 [Action]
-Description = Bapirlo: Timeshift snapshot before update...
+Description = Kuro: Timeshift snapshot before update...
 When = PreTransaction
 Exec = /usr/local/lib/bapirlo/bapirlo-presnap
 NeedsTargets

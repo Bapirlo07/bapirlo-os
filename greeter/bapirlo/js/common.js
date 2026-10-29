@@ -1,4 +1,4 @@
-// Bapirlo OS greeter — shared by the primary (index.html) and secondary-monitor (secondary.html) pages:
+// Kuro OS greeter — shared by the primary (index.html) and secondary-monitor (secondary.html) pages:
 // clock, embers, pointer parallax and the "leaving" transition.
 "use strict";
 

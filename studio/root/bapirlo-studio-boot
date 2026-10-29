@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS Theme Studio — boot splash installer (root; run through pkexec = your password).
+# Kuro OS Theme Studio — boot splash installer (root; run through pkexec = your password).
 # Installed root-owned to /usr/local/lib/bapirlo/ by `sudo bash ~/bapirlo-os/studio/install.sh root`.
 #
 #   pkexec bapirlo-studio-boot apply STAGE   STAGE must be <your home>/.local/state/bapirlo/studio/boot-stage

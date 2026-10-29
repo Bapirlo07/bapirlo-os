@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Bapirlo Kuro",
   "version": "1.0",
-  "description": "Bapirlo OS \"Kuro\" theme: ink blacks, crimson accent, KURO. SCATTER. new tab.",
+  "description": "Kuro OS \"Kuro\" theme: ink blacks, crimson accent, KURO. SCATTER. new tab.",
   "theme": {
     "images": {
       "theme_ntp_background": "images/ntp.jpg"

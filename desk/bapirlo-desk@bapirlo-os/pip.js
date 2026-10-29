@@ -1,4 +1,4 @@
-// Bapirlo Desk — picture-in-picture (and Live Captions) always on top.
+// Kuro Desk — picture-in-picture (and Live Captions) always on top.
 // Chrome's (and Firefox's) PiP window and the Live Captions window are made "always on top" and
 // "on every workspace" as soon as they appear — Wayland apps can't ask for that themselves.
 // Fullscreen games / videos: a focused fullscreen window is raised into the same top layer, so

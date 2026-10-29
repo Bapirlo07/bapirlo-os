@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Bapirlo OS final round — the parts that need your password. Run in a terminal:
+# Kuro OS final round — the parts that need your password. Run in a terminal:
 #   sudo bash ~/bapirlo-os/900-final-install.sh             # 1-6 below, then run 900-final.sh (no sudo)
-#   sudo bash ~/bapirlo-os/900-final-install.sh snapshot    # the "Bapirlo OS final" snapshot (at the very end)
+#   sudo bash ~/bapirlo-os/900-final-install.sh snapshot    # the "Kuro OS final" snapshot (at the very end)
 #   sudo bash ~/bapirlo-os/900-final-install.sh restore     # undo 2-4 (Spicetify stays installed: pacman -R it)
 #
 #  1. Timeshift snapshot "Before final" (incremental, 1-3 min)
@@ -34,7 +34,7 @@ snap() {  # $1 = comment
 
 case "${1:-install}" in
 snapshot)
-  snap "Bapirlo OS final"
+  snap "Kuro OS final"
   timeshift --list --scripted | tail -8
   exit 0 ;;
 restore)

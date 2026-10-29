@@ -1,4 +1,4 @@
-// Bapirlo Keys — Super+/ cheat sheet of every keyboard shortcut (GNOME Shell 50/51).
+// Kuro Keys — Super+/ cheat sheet of every keyboard shortcut (GNOME Shell 50/51).
 // Read live each time it opens, so it is never out of date:
 //   · your custom shortcuts (Settings → Keyboard → Custom Shortcuts: lock, replay, Writer, Vault …)
 //   · every ACTIVE extension's hotkeys: keys of its settings schema whose value is a list of
@@ -105,7 +105,7 @@ export default class BapirloKeysExtension extends Extension {
                 groups.get(group).push({label, accels});
         };
 
-        add('Bapirlo', 'This cheat sheet', this._settings.get_strv('keys-toggle'));
+        add('Kuro', 'This cheat sheet', this._settings.get_strv('keys-toggle'));
 
         // custom shortcuts
         const mk = settingsFor('org.gnome.settings-daemon.plugins.media-keys');
@@ -134,7 +134,7 @@ export default class BapirloKeysExtension extends Extension {
             if (!schema)
                 continue;
             const s = new Gio.Settings({settings_schema: schema});
-            const group = uuid.endsWith('@bapirlo-os') ? 'Bapirlo' : 'Extensions';
+            const group = uuid.endsWith('@bapirlo-os') ? 'Kuro' : 'Extensions';
             for (const key of schema.list_keys()) {
                 if (SKIP.some(r => r.test(key)) || s.get_value(key).get_type_string() !== 'as')
                     continue;
@@ -167,7 +167,7 @@ export default class BapirloKeysExtension extends Extension {
                     gnomeRow(id, key);
             }
         }
-        const order = ['Bapirlo', 'Launch & tools', 'Windows', 'Workspaces', 'System', 'Extensions'];
+        const order = ['Kuro', 'Launch & tools', 'Windows', 'Workspaces', 'System', 'Extensions'];
         return [...groups].sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
     }
 
@@ -192,7 +192,7 @@ export default class BapirloKeysExtension extends Extension {
         const head = new St.BoxLayout({style_class: 'bk-head'});
         const titles = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true});
         titles.add_child(new St.Label({text: 'KEYS', style_class: 'bk-title'}));
-        titles.add_child(new St.Label({text: 'Every shortcut on Bapirlo OS · type to filter · Esc to close',
+        titles.add_child(new St.Label({text: 'Every shortcut on Kuro OS · type to filter · Esc to close',
             style_class: 'bk-sub'}));
         head.add_child(titles);
         this._entry = new St.Entry({style_class: 'bk-search', hint_text: 'Filter…', can_focus: true,

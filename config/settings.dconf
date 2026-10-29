@@ -1,4 +1,4 @@
-# Bapirlo OS — exported GNOME settings (tools/export-settings.py). Personal data removed;
+# Kuro OS — exported GNOME settings (tools/export-settings.py). Personal data removed;
 # @HOME@ = your home folder. Load: sed "s|@HOME@|$HOME|g" config/settings.dconf | dconf load /
 
 [org/gnome/shell/extensions/SmartAutoMoveNG]
@@ -27,7 +27,7 @@ check-cmd="/bin/sh -c \"/usr/bin/checkupdates; /usr/bin/paru -Qua 2>/dev/null | 
 check-interval=60
 notify=false
 show-count=true
-update-cmd="alacritty --class bapirlo-update -T 'Bapirlo update' -e @HOME@/bapirlo-os/bin/bapirlo-update"
+update-cmd="alacritty --class bapirlo-update -T 'Kuro update' -e @HOME@/bapirlo-os/bin/bapirlo-update"
 
 [org/gnome/shell/extensions/arcmenu]
 activate-on-launch=true
@@ -319,7 +319,7 @@ name='bapirlo-captions'
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-lock]
 binding='<Super>l'
 command='@HOME@/bapirlo-os/bin/bapirlo-lockd --lock-now'
-name='Lock screen (Bapirlo)'
+name='Lock screen (Kuro)'
 
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-pick]
 binding='<Shift><Super>c'
@@ -349,7 +349,7 @@ name='bapirlo-vault'
 [org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/bapirlo-writer]
 binding='<Shift><Super>h'
 command='@HOME@/bapirlo-os/writer/bapirlo-writer --clipboard'
-name='Bapirlo Writer (clipboard)'
+name='Kuro Writer (clipboard)'
 
 [org/gnome/desktop/wm/keybindings]
 maximize=['<Super>Up']

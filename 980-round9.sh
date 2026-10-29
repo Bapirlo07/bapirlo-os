@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 9 — everything that does NOT need your password (run after 970-round9-install.sh).
+# Kuro OS round 9 — everything that does NOT need your password (run after 970-round9-install.sh).
 #   bash ~/bapirlo-os/980-round9.sh             # backup + apply (then log out / in once)
 #   bash ~/bapirlo-os/980-round9.sh restore     # undo all of it
 #

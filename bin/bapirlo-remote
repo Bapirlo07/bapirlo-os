@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — RustDesk remote access. OFF by default, never started at boot.
+# Kuro OS — RustDesk remote access. OFF by default, never started at boot.
 #   bapirlo-remote toggle | on | off | status     (Control Centre "Remote" tile)
 #   bapirlo-remote password                       show the permanent password (from your keyring)
 #   bapirlo-remote id                             show this laptop's RustDesk ID

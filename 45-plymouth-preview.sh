@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — preview the new Plymouth splash WITHOUT rebooting and without changing
+# Kuro OS — preview the new Plymouth splash WITHOUT rebooting and without changing
 # the boot setup. Run from a text console, because your GNOME session owns the screen:
 #
 #   1. Ctrl+Alt+F3, log in

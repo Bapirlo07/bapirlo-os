@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 9 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
+# Kuro OS round 9 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
 #   bash ~/bapirlo-os/970-round9-install.sh            # snapshot + backup + install
 #   bash ~/bapirlo-os/970-round9-install.sh restore    # undo everything below (snapshot stays)
 #

@@ -1,4 +1,4 @@
-/* Bapirlo OS "Kuro" for Firefox's own pages (new tab, settings, about:*). Theme Studio recolours it. */
+/* Kuro OS "Kuro" for Firefox's own pages (new tab, settings, about:*). Theme Studio recolours it. */
 @-moz-document url-prefix("about:newtab"), url-prefix("about:home"), url-prefix("about:privatebrowsing") {
   :root, body {
     --newtab-background-color: #0E0A0D !important;

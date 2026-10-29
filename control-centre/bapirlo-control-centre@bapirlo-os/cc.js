@@ -1,4 +1,4 @@
-// Bapirlo Control Centre — the drop-down panel (a PopupMenu anchored to the stock quick-settings
+// Kuro Control Centre — the drop-down panel (a PopupMenu anchored to the stock quick-settings
 // button). Grid of tiles, a detail page that slides in for an expanded tile, an edit mode
 // (drag to reorder, − to remove, + to add) and a footer (settings, lock, power, edit, classic).
 import Clutter from 'gi://Clutter';

@@ -1,4 +1,4 @@
-# Bapirlo OS "Kuro" — Starship prompt. Palette: ~/bapirlo-os/tools/palette.py
+# Kuro OS "Kuro" — Starship prompt. Palette: ~/bapirlo-os/tools/palette.py
 # Needs a Nerd Font (Alacritty uses JetBrainsMono Nerd Font).
 "$schema" = 'https://starship.rs/config-schema.json'
 

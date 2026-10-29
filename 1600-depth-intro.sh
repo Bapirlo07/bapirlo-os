@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — 3D wallpaper + login intro (NO sudo):
+# Kuro OS — 3D wallpaper + login intro (NO sudo):
 #   · 3D wallpaper (bapirlo-live "depth"): an AI depth map of the wallpaper (Depth Anything V2 Small,
 #     CPU, ~3 s, once per wallpaper) — near things move more than far ones as the pointer moves, also on
 #     live videos; slow sway when the animation may run. Model + private venv in ~/.local/share/bapirlo

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — media player moves into the top bar (NO sudo).
+# Kuro OS — media player moves into the top bar (NO sudo).
 #   bash ~/bapirlo-os/430-media-topbar.sh            # backup + install (then log out / in once)
 #   bash ~/bapirlo-os/430-media-topbar.sh restore    # back to the previous desktop card + bar mini player
 #

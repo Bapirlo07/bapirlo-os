@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# restart the Bapirlo Desk preview shell (JS is cached per process). Starts a fake MPRIS player.
+# restart the Kuro Desk preview shell (JS is cached per process). Starts a fake MPRIS player.
 T=${T:-/tmp/claude-1000/bapirlo-desk-test}
 HERE=$(dirname "$(readlink -f "$0")")
 D=$HERE/../../media-widget/test/drive.sh

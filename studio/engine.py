@@ -1,4 +1,4 @@
-"""Bapirlo OS Theme Studio — colour engine (no GTK, no root; imported by the app, the CLI and the
+"""Kuro OS Theme Studio — colour engine (no GTK, no root; imported by the app, the CLI and the
 root helpers).
 
   palette_from_image(img, …)  matugen (through bapirlo-autotheme, never called twice) → a full
@@ -231,7 +231,7 @@ def build_palette(accent, accent2=None, accent3=None, vivid=1.0, tint=1.0, neutr
 
 
 def checks(r):
-    """The contrast pairs that matter in Bapirlo OS, with their WCAG AA target."""
+    """The contrast pairs that matter in Kuro OS, with their WCAG AA target."""
     pairs = [("Text on the base", r["paper"], r["ink"], AA_TEXT),
              ("Text on panels", r["paper"], r["night"], AA_TEXT),
              ("Text on raised cards", r["paper"], r["surface"], AA_TEXT),

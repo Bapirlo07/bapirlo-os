@@ -1,4 +1,4 @@
-// Bapirlo Island — the pill itself.
+// Kuro Island — the pill itself.
 // At rest the centre of the top bar (clock + weather) wears a dark capsule. An event grows an overlay
 // out of that capsule (same spot, same shape), shows its view, then shrinks back into it.
 // Only Clutter implicit transitions while something is on screen — nothing runs when idle.

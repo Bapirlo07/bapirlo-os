@@ -1,5 +1,5 @@
 [Unit]
-Description=Re-apply the Bapirlo Spotify theme (Spicetify) after Spotify updated itself
+Description=Re-apply the Kuro Spotify theme (Spicetify) after Spotify updated itself
 
 [Service]
 Type=oneshot

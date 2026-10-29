@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — desktop "Kuro" (NO sudo). Each step can be run alone so you can watch it:
+# Kuro OS — desktop "Kuro" (NO sudo). Each step can be run alone so you can watch it:
 #   bash ~/bapirlo-os/60-desktop-v2.sh backup      # always first (done automatically by 'all')
 #   bash ~/bapirlo-os/60-desktop-v2.sh topbar | blur | gtk | dock | arcmenu | terminal | fastfetch | wallpaper
 #   bash ~/bapirlo-os/60-desktop-v2.sh all

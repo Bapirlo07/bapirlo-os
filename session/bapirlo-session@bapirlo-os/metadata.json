@@ -1,11 +1,11 @@
 {
   "uuid": "bapirlo-session@bapirlo-os",
-  "name": "Bapirlo Session",
-  "description": "Bapirlo OS: remembers your open apps, terminal folders and Files folders, and reopens them after log out / restart. Window places come back via Smart Auto Move NG.",
+  "name": "Kuro Session",
+  "description": "Kuro OS: remembers your open apps, terminal folders and Files folders, and reopens them after log out / restart. Window places come back via Smart Auto Move NG.",
   "shell-version": [
     "50",
     "51"
   ],
   "version": 1,
-  "url": "https://github.com/Bapirlo07/bapirlo-os"
+  "url": "https://github.com/Bapirlo07/kuro-os"
 }

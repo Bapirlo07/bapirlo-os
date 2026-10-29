@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — top bar layout + menu contrast fix (NO sudo).
+# Kuro OS — top bar layout + menu contrast fix (NO sudo).
 #   bash ~/bapirlo-os/340-topbar-layout.sh            # backup + apply
 #   bash ~/bapirlo-os/340-topbar-layout.sh restore    # put everything back from the backup
 #   bash ~/bapirlo-os/340-topbar-layout.sh settings   # only the dconf part (used by the test shell)

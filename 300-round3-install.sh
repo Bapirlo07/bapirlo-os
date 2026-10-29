@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 3 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
+# Kuro OS round 3 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
 #   bash ~/bapirlo-os/300-round3-install.sh            # snapshot + backup + install
 #   bash ~/bapirlo-os/300-round3-install.sh restore    # undo everything below (snapshot stays)
 #
@@ -39,7 +39,7 @@ apply() {
   sudo -v
   echo "== 0/5 Timeshift snapshot \"Before round 3\" (incremental — a few minutes)"
   if [ -n "${BAPIRLO_INSTALLER:-}" ]; then
-    echo "install.sh already took a \"Before Bapirlo OS\" snapshot"
+    echo "install.sh already took a \"Before Kuro OS\" snapshot"
   elif sudo timeshift --list --scripted 2>/dev/null | grep -q "Before round 3"; then
     echo "already there:"; sudo timeshift --list --scripted | grep "Before round 3"
   else
@@ -96,7 +96,7 @@ apply() {
   systemctl list-timers bapirlo-cleanup.timer --no-pager | head -2 | sed 's/^/   /'
 
   echo; echo "== 5/5 Plymouth reboot caption"
-  if [ ! -d "$PTHEME" ]; then echo "   Bapirlo Plymouth theme not installed (boot phase skipped) — nothing to do"
+  if [ ! -d "$PTHEME" ]; then echo "   Kuro Plymouth theme not installed (boot phase skipped) — nothing to do"
   else
   sudo install -m644 "$HERE/build/plymouth-v2/bapirlo/bye-reboot.png" "$PTHEME/bye-reboot.png"
   sudo install -m644 "$HERE/build/plymouth-v2/bapirlo/bapirlo.script" "$PTHEME/bapirlo.script"

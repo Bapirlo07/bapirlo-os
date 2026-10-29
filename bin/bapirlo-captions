@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — Live Captions: offline, real-time subtitles for whatever is playing (lectures,
+# Kuro OS — Live Captions: offline, real-time subtitles for whatever is playing (lectures,
 # videos, calls). Runs fully on this laptop (Live Captions / aprilasr, English), nothing is sent
 # anywhere. OFF unless you switch it on — it uses some CPU while running.
 #   bapirlo-captions toggle | on | off | status   (Control Centre "Captions" tile, Super+Alt+C)

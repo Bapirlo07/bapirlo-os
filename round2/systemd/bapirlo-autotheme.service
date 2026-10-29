@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo wallpaper accent sync (matugen)
+Description=Kuro wallpaper accent sync (matugen)
 PartOf=graphical-session.target
 After=graphical-session.target
 

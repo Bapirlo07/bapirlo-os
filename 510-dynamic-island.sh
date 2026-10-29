@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — Dynamic Island in the centre of the top bar (NO sudo).
+# Kuro OS — Dynamic Island in the centre of the top bar (NO sudo).
 #   bash ~/bapirlo-os/510-dynamic-island.sh            # backup + install + enable (then log out / in once)
 #   bash ~/bapirlo-os/510-dynamic-island.sh restore    # remove it, settings back as before
 #

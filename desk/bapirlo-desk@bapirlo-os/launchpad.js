@@ -1,4 +1,4 @@
-// Bapirlo Desk — Launchpad: a Mac-style full-screen app grid.
+// Kuro Desk — Launchpad: a Mac-style full-screen app grid.
 // Opens with Super+G or the dock's Launchpad icon (os.bapirlo.Launchpad.desktop → D-Bus).
 // Blurred, dimmed wallpaper (like the lock screen: only the wallpaper is blurred, not live windows —
 // cheap on the iGPU), pages of icons that zoom in, page dots, a search field that is focused at

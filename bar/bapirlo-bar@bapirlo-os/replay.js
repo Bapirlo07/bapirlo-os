@@ -1,4 +1,4 @@
-// Bapirlo Bar — instant-replay dot. Only visible while the replay buffer
+// Kuro Bar — instant-replay dot. Only visible while the replay buffer
 // (systemd --user bapirlo-replay.service) is running.
 //   click = save the last 30 s (same as Super+Alt+G) · right-click = stop the buffer
 // When a clip lands in ~/Videos/Replays an OSD says so (works over fullscreen games,
@@ -36,7 +36,7 @@ function run(...args) {
 export const ReplayDot = GObject.registerClass(
 class BapirloReplayDot extends Group {
     _init() {
-        super._init('Bapirlo instant replay', 'bapirlo-replay');
+        super._init('Kuro instant replay', 'bapirlo-replay');
         this._btn = new St.Button({
             style_class: 'bapirlo-replay-btn', can_focus: true, track_hover: true,
             button_mask: St.ButtonMask.PRIMARY | St.ButtonMask.SECONDARY,

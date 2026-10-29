@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — MSI power glue (root daemon, bapirlo-perfd.service).
+"""Kuro OS — MSI power glue (root daemon, bapirlo-perfd.service).
 
 1. Base profile follows the charger (power-profiles-daemon):
      plugged in → performance        on battery → power-saver

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — tidy the app grid / ArcMenu and the home folder (NO sudo).
+# Kuro OS — tidy the app grid / ArcMenu and the home folder (NO sudo).
 #   bash ~/bapirlo-os/330-declutter.sh            # backup + apply
 #   bash ~/bapirlo-os/330-declutter.sh restore    # undo
 #

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 8 — everything that does NOT need your password (run after 800-round8-install.sh).
+# Kuro OS round 8 — everything that does NOT need your password (run after 800-round8-install.sh).
 #   bash ~/bapirlo-os/820-round8.sh             # backup + apply (then log out / in once)
 #   bash ~/bapirlo-os/820-round8.sh restore     # undo all of it
 #
 #  1. OSD pop-ups (volume/brightness in fullscreen, Caps Lock, displays): Island-style ink pill, crimson
 #     bar, Bangers label — appended to the Bapirlo-Kuro shell theme (+ its build copies), live reload
-#  2. Folder icons: crimson manga folders (tools/build-folders.py) in the Bapirlo icon theme
+#  2. Folder icons: crimson manga folders (tools/build-folders.py) in the Kuro icon theme
 #  3. Cursor: Bapirlo-Cursors for your session (the login screen got it from 800-round8-install.sh)
-#  4. Bapirlo Panels: manga-panel window open/close + SFX burst — replaces Burn My Windows (switched off)
-#  5. Bapirlo Keys: Super+/ cheat sheet of every shortcut
+#  4. Kuro Panels: manga-panel window open/close + SFX burst — replaces Burn My Windows (switched off)
+#  5. Kuro Keys: Super+/ cheat sheet of every shortcut
 #  6. fish: zoxide (z / zi) + fzf (Ctrl+R history, Ctrl+T files, Alt+C folders) in Kuro colours
 #  7. Vesktop: Bapirlo Kuro theme, enabled (only if Vesktop is installed)
 #  8. Health: free-space watch every 30 min (one notification a day below 15 GB). The Welcome app's
@@ -106,7 +106,7 @@ apply() {
   fi
   gsettings set org.gnome.desktop.interface cursor-theme 'Bapirlo-Cursors'
 
-  echo "== 4-5/8 Bapirlo Panels + Bapirlo Keys (Burn My Windows off)"
+  echo "== 4-5/8 Kuro Panels + Kuro Keys (Burn My Windows off)"
   for e in "${NEW_EXTS[@]}"; do
     glib-compile-schemas "$R8/$e/schemas"
     rm -rf "${EXT_DIR:?}/$e"; cp -rL "$R8/$e" "$EXT_DIR/"

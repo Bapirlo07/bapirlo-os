@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Bapirlo OS — pop-out picture-in-picture for ANY window (NO sudo):
+# Kuro OS — pop-out picture-in-picture for ANY window (NO sudo):
 #   Super+Alt+I (or window menu → "Picture in Picture") floats a live mini copy of the window in a
 #   corner, above everything, on every workspace. Drag / scroll / Ctrl+scroll / double-click / ✕.
-#   Lives in the Bapirlo Desk extension (desk/…/popout.js).
+#   Lives in the Kuro Desk extension (desk/…/popout.js).
 #   bash ~/bapirlo-os/1320-popout-pip.sh            install
 #   bash ~/bapirlo-os/1320-popout-pip.sh restore    put the previous Desk extension back
 # Needs a log out/in once (shell extension code). Backup: ~/theme-backups/LATEST-POPOUT

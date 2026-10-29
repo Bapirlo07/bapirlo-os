@@ -1,4 +1,4 @@
-// Bapirlo Media — the player view shared by the top-bar dropdown and the desktop card:
+// Kuro Media — the player view shared by the top-bar dropdown and the desktop card:
 // manga "NOW PLAYING" sticker + player switcher, art (square covers, 16:9 video thumbnails),
 // title / artist, seek bar with times, transport, volume (per-app stream → MPRIS → system).
 // The host decides where it lives and calls setLive(true) while it is on screen; the progress

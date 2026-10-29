@@ -1,4 +1,4 @@
-// Bapirlo Bar — switchable bar looks (GNOME Shell 51).
+// Kuro Bar — switchable bar looks (GNOME Shell 51).
 //   classic  the floating pill from the shell theme (nothing added)
 //   manga    ink panel, paper outline, hard crimson offset shadow, Bangers app name + clock
 //   glass    see-through frosted gradient, light hairline, soft shadow

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — open / close the firewall for ONE known feature, only while it is switched on.
+# Kuro OS — open / close the firewall for ONE known feature, only while it is switched on.
 #   bapirlo-port open|close|status airplay|localsend
 # Rules go into ufw's own runtime chains (ufw-user-input / ufw6-user-input) and are NOT saved:
 # they vanish on close, on `ufw reload` and on every reboot, so "off" is always the default.

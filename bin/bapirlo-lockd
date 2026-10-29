@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS lock daemon — locking for GNOME 50 under LightDM.
+"""Kuro OS lock daemon — locking for GNOME 50 under LightDM.
 
 GNOME's own lock screen only exists with GDM, so on this system Super+L, suspend and idle never
 locked anything. This locks through LightDM instead: it switches to the themed login screen in
@@ -141,7 +141,7 @@ class Daemon:
         try:
             r, fds = SYSTEM.call_with_unix_fd_list_sync(
                 "org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", "Inhibit",
-                GLib.Variant("(ssss)", ("sleep", "Bapirlo lock", "Lock the screen before suspend", "delay")),
+                GLib.Variant("(ssss)", ("sleep", "Kuro lock", "Lock the screen before suspend", "delay")),
                 None, Gio.DBusCallFlags.NONE, 2000, None, None)
             self.inhibit_fd = fds.get(r.unpack()[0])
         except GLib.Error as e:

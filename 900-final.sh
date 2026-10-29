@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
-# Bapirlo OS final round — everything that does NOT need your password (after 900-final-install.sh).
+# Kuro OS final round — everything that does NOT need your password (after 900-final-install.sh).
 #   bash ~/bapirlo-os/900-final.sh            backup → apply (then log out / in once)
 #   bash ~/bapirlo-os/900-final.sh restore    undo all of it
 #
 #  1. fixes: Control Centre (150 log warnings per login, deprecated button masks, Restart-to-Windows
 #     button, "Classic" moved to Shift+Super+S — Super+Alt+S is the screen reader), top bar slots +
 #     Places icon + logo colour for the new extensions
-#  2. new extensions from extensions.gnome.org (GNOME 51 builds only): Logo Menu (on the Bapirlo logo;
+#  2. new extensions from extensions.gnome.org (GNOME 51 builds only): Logo Menu (on the Kuro logo;
 #     ArcMenu's own button hidden, ArcMenu stays on Super), Lock Keys (Caps Lock icon only while on),
 #     Just Perfection (faster animations = Impatience, banners top-right when the Island steps aside),
 #     Bluetooth Battery Meter, Alphabetical App Grid, Wiggly (shake to find the cursor), plus GNOME's
 #     own Removable Drive Menu and Places Status Indicator (with the Windows drive)
-#  3. Start menu: Bapirlo OS Guide (the manual), Bapirlo Doctor, Restart to Windows (+ icons)
+#  3. Start menu: Kuro OS Guide (the manual), Kuro Doctor, Restart to Windows (+ icons)
 #  4. update-proofing: bapirlo-doctor after every system update + after login (notifies only on
 #     problems); Spotify theme re-applied after every Spotify update (bapirlo-spicetify.path)
 #  5. ~/bapirlo-os/bin on your PATH (fish), so `bapirlo-doctor`, `bapirlo-mode`… work everywhere
-#  6. Spicetify: Bapirlo theme applied (only if Spicetify is installed)
+#  6. Spicetify: Kuro theme applied (only if Spicetify is installed)
 set -euo pipefail
 [ "$(id -u)" -ne 0 ] || { echo "Run WITHOUT sudo."; exit 1; }
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -90,7 +90,7 @@ apply() {
 
   echo "== 5/6 PATH"
   mkdir -p "$(dirname "$FISH")"
-  printf '# Bapirlo OS: the bapirlo-* commands (bapirlo-doctor, bapirlo-mode, bapirlo-vault …)\nfish_add_path -g %s\n' "$BIN" > "$FISH"
+  printf '# Kuro OS: the bapirlo-* commands (bapirlo-doctor, bapirlo-mode, bapirlo-vault …)\nfish_add_path -g %s\n' "$BIN" > "$FISH"
 
   echo "== 6/6 Spotify theme"
   if command -v spicetify >/dev/null; then "$BIN/bapirlo-spicetify" apply || echo "spicetify: open Spotify once, then: bapirlo-spicetify apply"

@@ -1,4 +1,4 @@
-# Bapirlo OS — dual boot: show the Windows partition in Files as "Windows" (mountable without a
+# Kuro OS — dual boot: show the Windows partition in Files as "Windows" (mountable without a
 # password by the logged-in user, through udisks; options in /etc/udisks2/mount_options.conf),
 # and hide the two Windows recovery partitions so they can't be mounted by accident.
 # Matches by filesystem UUID only (filled in by 700-windows-link.sh from lsblk). Remove this file +

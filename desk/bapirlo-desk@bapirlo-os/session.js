@@ -1,4 +1,4 @@
-// Bapirlo Desk — session restore: the apps you had open come back after you log in, each window
+// Kuro Desk — session restore: the apps you had open come back after you log in, each window
 // on its own workspace, monitor, size and position (maximised / minimised too).
 //   SAVING   every 30 s the open app windows are written to ~/.local/state/bapirlo/session/last.json
 //            (cheap: a list of ~10 windows). A drop in the number of windows is only kept once it
@@ -131,7 +131,7 @@ export class SessionKeeper {
     _notify(title, actions) {
         try {
             const source = MessageTray.getSystemSource();
-            const n = new MessageTray.Notification({source, title, body: 'Session restore · Bapirlo Desk',
+            const n = new MessageTray.Notification({source, title, body: 'Session restore · Kuro Desk',
                 iconName: 'view-restore-symbolic'});
             for (const [name, cb] of actions ?? [])
                 n.addAction(name, cb);

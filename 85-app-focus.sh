@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — "click a running app = focus it" everywhere (NO sudo). Complements 80-dock-behaviour.sh.
+# Kuro OS — "click a running app = focus it" everywhere (NO sudo). Complements 80-dock-behaviour.sh.
 #   bash ~/bapirlo-os/85-app-focus.sh            # backup + apply
 #   bash ~/bapirlo-os/85-app-focus.sh restore    # undo
 #

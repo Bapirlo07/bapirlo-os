@@ -1,5 +1,5 @@
-// Bapirlo Bar — capsule layout of the whole top bar (GNOME Shell 51).
-//   left:   [Bapirlo logo menu] [workspace numbers] (quick launch · power chip) [focused app name]
+// Kuro Bar — capsule layout of the whole top bar (GNOME Shell 51).
+//   left:   [Kuro logo menu] [workspace numbers] (quick launch · power chip) [focused app name]
 //   centre: clock + date — the Dynamic Island's resting capsule — and the focus timer while it runs
 //   right:  (media · AirPods · weather · Vitals)  (updates · replay · fullscreen · live wallpaper · places · drives · lock keys ·
 //           tray icons · the rest)  (Control Centre)

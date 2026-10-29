@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — iCloud Photos → ~/Pictures/iCloud (icloudpd). OFF until you run `setup`.
+# Kuro OS — iCloud Photos → ~/Pictures/iCloud (icloudpd). OFF until you run `setup`.
 #   bapirlo-icloud setup     sign in once (Apple ID password + 2FA code), then syncs every 6 h
 #   bapirlo-icloud sync      download new photos now
 #   bapirlo-icloud status | off

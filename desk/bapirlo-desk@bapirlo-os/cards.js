@@ -1,4 +1,4 @@
-// Bapirlo Desk — the round-14 desktop cards (used by widgets.js):
+// Kuro Desk — the round-14 desktop cards (used by widgets.js):
 //   NOW PLAYING  cover, title, artist of the active MPRIS player + a live visualizer. The bars
 //                come from `cava` (raw ascii on stdout), which runs ONLY while the card can be
 //                seen AND something is playing — otherwise there is no process at all.

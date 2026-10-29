@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — the desk To-do card from the terminal (same file, the card updates by itself).
+"""Kuro OS — the desk To-do card from the terminal (same file, the card updates by itself).
   bapirlo-todo                 list (numbers for done / rm)
   bapirlo-todo add buy milk    add one
   bapirlo-todo done 2          tick / untick number 2

@@ -1,4 +1,4 @@
-// Bapirlo Panels — manga-panel window open/close (GNOME Shell 50/51). Replaces Burn My Windows' glide.
+// Kuro Panels — manga-panel window open/close (GNOME Shell 50/51). Replaces Burn My Windows' glide.
 // Open: the window lands like a panel slapped onto the page — slides in from one side with a small tilt
 // and overshoot, an ink frame with a crimson offset edge flashes around it, and a comic SFX burst
 // ("BAM!") pops at its top-right corner. Close: the window flicks down and away (SFX optional).

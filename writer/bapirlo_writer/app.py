@@ -1,4 +1,4 @@
-"""Bapirlo Writer — GTK4/libadwaita window: Rewrite mode (Claude API) and Grammar mode (local LanguageTool)."""
+"""Kuro Writer — GTK4/libadwaita window: Rewrite mode (Claude API) and Grammar mode (local LanguageTool)."""
 import datetime
 import difflib
 import os
@@ -876,13 +876,13 @@ class Prefs(Adw.PreferencesDialog):
 # ═══════════════════════════════════════════════ Window / app ═══════════════════════════════════════════
 class Window(Adw.ApplicationWindow):
     def __init__(self, app):
-        super().__init__(application=app, title="Bapirlo Writer", default_width=1280, default_height=820,
+        super().__init__(application=app, title="Kuro Writer", default_width=1280, default_height=820,
                          css_classes=["bapirlo-writer"])
         self.set_icon_name("bapirlo-writer")
         self.toasts = Adw.ToastOverlay()
         tb = Adw.ToolbarView()
         hb = Adw.HeaderBar()
-        hb.pack_start(lbl("BAPIRLO WRITER", css=["brand"], margin_start=6))
+        hb.pack_start(lbl("KURO WRITER", css=["brand"], margin_start=6))
         self.stack = Adw.ViewStack()
         self.rewrite = RewritePage(self)
         self.grammar = GrammarPage(self)

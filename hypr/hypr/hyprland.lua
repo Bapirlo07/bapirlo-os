@@ -1,4 +1,4 @@
--- Bapirlo OS — Hyprland session (Kuro). Linked into ~/.config/hypr by 1510-hyprland.sh.
+-- Kuro OS — Hyprland session (Kuro). Linked into ~/.config/hypr by 1510-hyprland.sh.
 -- Hyprland 0.57+ reads this Lua file (hyprland.conf is ignored once it exists).
 -- Colours live in bapirlo-colors.lua, re-written by tools/hypr-theme.py whenever Theme Studio
 -- re-themes for a new wallpaper, so edit the template there, not the generated file.
@@ -138,7 +138,7 @@ hl.bind(key("L"),      run("loginctl lock-session"))
 hl.bind(key("SHIFT + E"), run(bin .. "bapirlo-hypr-power"))
 hl.bind(key("V"),      run("cliphist list | fuzzel --dmenu --prompt 'clipboard › ' | cliphist decode | wl-copy"))
 
--- Bapirlo apps (same chords as GNOME)
+-- Kuro apps (same chords as GNOME)
 hl.bind(key("ALT + P"), run(bin .. "bapirlo-wallpaper"))
 hl.bind(key("ALT + N"), run(bin .. "bapirlo-wallpaper next"))
 hl.bind(key("ALT + W"), run(bin .. "bapirlo-wallpaper live toggle"))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Bapirlo OS Guide — the manual in a themed window (GTK4 / libadwaita + WebKit).
+"""Kuro OS Guide — the manual in a themed window (GTK4 / libadwaita + WebKit).
 
-  bapirlo-guide                 open the manual          (Start menu "Bapirlo OS Guide")
+  bapirlo-guide                 open the manual          (Start menu "Kuro OS Guide")
   bapirlo-guide --emergency     open the one-page emergency sheet
   bapirlo-guide --html OUT      just write the styled HTML (used to make the phone PDF)
 
@@ -81,7 +81,7 @@ def render(name):
              " p, li { margin: 1px 0; } ol, ul { padding-left: 16px; margin: 2px 0; } code { font-size: 8.8px; padding: 0 3px; }"
              " kbd { font-size: 8.4px; padding: 0 3px; border-bottom-width: 2px; } }"
              if name == "emergency" else "")
-    return (f"<!doctype html><html><head><meta charset='utf-8'><title>Bapirlo OS Guide</title>"
+    return (f"<!doctype html><html><head><meta charset='utf-8'><title>Kuro OS Guide</title>"
             f"<style>{CSS}{extra}</style></head><body>{body}</body></html>")
 
 
@@ -134,11 +134,11 @@ def main():
             prov.load_from_string(APP_CSS)
             Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), prov,
                                                       Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-            win = self.win = Adw.ApplicationWindow(application=self, title="Bapirlo OS Guide",
+            win = self.win = Adw.ApplicationWindow(application=self, title="Kuro OS Guide",
                                                    default_width=1060, default_height=820)
             win.add_css_class("bapirlo-guide")
             head = Adw.HeaderBar()
-            title = Gtk.Label(label="BAPIRLO OS GUIDE")
+            title = Gtk.Label(label="KURO OS GUIDE")
             title.add_css_class("brand")
             head.set_title_widget(title)
             box = Gtk.Box(spacing=6)

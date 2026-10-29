@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — restore everything from a backup.
+# Kuro OS — restore everything from a backup.
 #   User settings only:   bash ~/bapirlo-os/restore.sh user   [backup-dir]
 #   System (boot/login):  sudo bash ~/bapirlo-os/restore.sh system [backup-dir]
 # Default backup-dir = the first backup taken (~/theme-backups/LATEST).
@@ -12,7 +12,7 @@ echo "Restoring $MODE from $B"
 
 if [ "$MODE" = user ]; then
   [ "$(id -u)" -ne 0 ] || { echo "run 'user' mode WITHOUT sudo"; exit 1; }
-  # Disable everything Bapirlo enabled, then restore dconf exactly
+  # Disable everything Kuro enabled, then restore dconf exactly
   for e in $(gnome-extensions list --enabled); do
     grep -qx "$e" "$B/user/extensions-enabled.txt" || gnome-extensions disable "$e" || true
   done

@@ -1,4 +1,4 @@
-/* Bapirlo Bar — Kuro tokens: crimson #E11D2E · ember #FF4655 · paper #F2E9EC · mist #CAB5BF
+/* Kuro Bar — Kuro tokens: crimson #E11D2E · ember #FF4655 · paper #F2E9EC · mist #CAB5BF
    item radius 11 (concentric with the 16px bar, 5px inset) · chip 8 · motion 180ms.
    Colours that follow the wallpaper are overridden by ~/.local/state/bapirlo/accent/shell.css */
 
@@ -271,7 +271,7 @@
 #panel .panel-button .bapirlo-low-battery .system-status-icon,
 #panel .panel-button .bapirlo-low-battery StLabel { color: #FF4655; }
 
-/* ---------------------------------------------------------------- Bapirlo logo (Logo Menu) */
+/* ---------------------------------------------------------------- Kuro logo (Logo Menu) */
 /* the brand mark keeps its ember colour (ArcMenu's button used to carry it); white while open */
 #panel .panel-button .menu-button { color: #FF4655; }
 #panel .panel-button:hover .menu-button,

@@ -1,12 +1,12 @@
 {
   "uuid": "bapirlo-island@bapirlo-os",
-  "name": "Bapirlo Island",
-  "description": "Bapirlo OS Dynamic Island: the centre of the top bar expands to show volume/brightness, notifications, now playing, charging and screenshots, then shrinks back. Steps aside while a fullscreen game runs.",
+  "name": "Kuro Island",
+  "description": "Kuro OS Dynamic Island: the centre of the top bar expands to show volume/brightness, notifications, now playing, charging and screenshots, then shrinks back. Steps aside while a fullscreen game runs.",
   "shell-version": [
     "50",
     "51"
   ],
   "version": 1,
-  "url": "https://github.com/Bapirlo07/bapirlo-os",
+  "url": "https://github.com/Bapirlo07/kuro-os",
   "settings-schema": "org.gnome.shell.extensions.bapirlo-island"
 }

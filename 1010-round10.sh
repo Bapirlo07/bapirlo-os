@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 10 — everything that does NOT need your password (run after 1000-round10-install.sh).
+# Kuro OS round 10 — everything that does NOT need your password (run after 1000-round10-install.sh).
 #   bash ~/bapirlo-os/1010-round10.sh              # backup + all steps (then log out / in once)
 #   bash ~/bapirlo-os/1010-round10.sh STEP …       # only those steps (exts vesktop grid wallpapers space caps gtk)
 #   bash ~/bapirlo-os/1010-round10.sh restore      # undo all of it
@@ -7,7 +7,7 @@
 #  exts       Smart Auto Move + Wiggly off (stay installed)
 #  vesktop    discord:// links open Vesktop; the old Discord app's 0.7 GB of data goes
 #  grid       app grid, folders, search and workspace thumbnails in Kuro ink + crimson (Blur My Shell
-#             stops repainting them grey); folders: Focus Timer → Bapirlo, new Android folder,
+#             stops repainting them grey); folders: Focus Timer → Kuro, new Android folder,
 #             Onedriver → Internet. Island notifications fit their text, first action filled crimson
 #  wallpapers 8 original manga wallpapers (tools/build-wallpapers.py) in four time slots —
 #             dawn · day · dusk · night — plus your own pictures in ~/Pictures/wallpapers/bapirlo/<slot>
@@ -188,7 +188,7 @@ step_caps() {
   echo "== caps: caches stay small"
   touch "$CHROME_FLAGS"
   grep -q -- '--disk-cache-size' "$CHROME_FLAGS" ||
-    printf '# Bapirlo OS round 10 — HTTP cache at most 300 MB\n--disk-cache-size=314572800\n' >> "$CHROME_FLAGS"
+    printf '# Kuro OS round 10 — HTTP cache at most 300 MB\n--disk-cache-size=314572800\n' >> "$CHROME_FLAGS"
   echo "   Chrome: 300 MB from its next start"
   if running spotify /spotify/spotify; then
     echo "   Spotify is running (it rewrites its settings on exit) — quit it, then: bash $0 caps"
@@ -197,7 +197,7 @@ step_caps() {
     echo "   Spotify: 500 MB"
   fi
   install -Dm644 /dev/stdin "$TMPFILES" <<'EOF'
-# Bapirlo OS round 10 — caches with no size limit of their own: files unused this long are deleted
+# Kuro OS round 10 — caches with no size limit of their own: files unused this long are deleted
 # (systemd-tmpfiles-clean.timer, once a day). Delete this file to stop.
 e %C/spotify/Browser - - - 7d
 e %C/spotify/Data - - - 14d

@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo instant replay buffer (GPU Screen Recorder, last 30 s)
+Description=Kuro instant replay buffer (GPU Screen Recorder, last 30 s)
 PartOf=graphical-session.target
 After=graphical-session.target
 

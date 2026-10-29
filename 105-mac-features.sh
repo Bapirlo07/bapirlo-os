@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Bapirlo OS — Mac-style features (NO sudo).
+# Kuro OS — Mac-style features (NO sudo).
 #   bash ~/bapirlo-os/105-mac-features.sh            # backup + install + configure + enable
 #   bash ~/bapirlo-os/105-mac-features.sh restore    # everything back as it was
 #
 # - Spotlight-style search: ArcMenu's standalone runner, centred, on Super+Space
 #   (Search Light was skipped: its GNOME 50 build crashes the shell on outside click, fix #170 unmerged).
 #   Super+Space was "switch keyboard layout"; you only have the GB layout, so that binding is dropped.
-# - Rounded Window Corners Reborn: 16px = the Bapirlo surface radius. Maximised / fullscreen windows
+# - Rounded Window Corners Reborn: 16px = the Kuro surface radius. Maximised / fullscreen windows
 #   (games!) are left square and unshadowed, so nothing extra is drawn over them.
 # - Desktop Cube: 3D cube when switching workspaces (also follows 3-finger swipes).
 # - Touchpad gestures need nothing: GNOME 50 has 3-finger left/right = workspaces, 3-finger up = overview.

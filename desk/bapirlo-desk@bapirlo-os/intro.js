@@ -1,4 +1,4 @@
-// Bapirlo Desk — the login intro (setting "login-intro").
+// Kuro Desk — the login intro (setting "login-intro").
 // The session comes up behind black; GNOME's own startup animation runs unseen. Then, ~2.6 s:
 //   greeting + date in the middle · the wallpaper (or live video) fades up from black while settling
 //   from a slight zoom · the top bar slides down · the dock rises · the desk widgets cascade in.

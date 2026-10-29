@@ -81,7 +81,7 @@ ADW = {"window_bg_color": "#222226", "view_bg_color": "#1d1d20", "headerbar_bg_c
        "popover_bg_color": "#36363a", "dialog_bg_color": "#36363a", "thumbnail_bg_color": "#39393d",
        "headerbar_backdrop_color": "#222226", "sidebar_backdrop_color": "#28282c"}
 def tint_hex(h): return hexc(tint(*(int(h[i:i + 2], 16) for i in (1, 3, 5))))
-lines = ["/* Bapirlo OS — libadwaita surfaces with the shell's ink undertone (tools/tint-surfaces.py) */"]
+lines = ["/* Kuro OS — libadwaita surfaces with the shell's ink undertone (tools/tint-surfaces.py) */"]
 lines += [f"@define-color {k} {tint_hex(v)};" for k, v in ADW.items()]
 lines += [":root {"] + [f"  --{k.replace('_color', '').replace('_', '-')}-color: {tint_hex(v)};" for k, v in ADW.items()] + ["}"]
 out = f"{HOME}/.config/gtk-4.0/bapirlo-surfaces.css"

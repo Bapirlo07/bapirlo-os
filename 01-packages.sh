@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — step 1: official-repo packages only (run with sudo).
+# Kuro OS — step 1: official-repo packages only (run with sudo).
 set -euo pipefail
 pacman -S --needed --noconfirm \
   paru extension-manager \

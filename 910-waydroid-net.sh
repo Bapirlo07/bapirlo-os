@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — give Waydroid (Android) internet, and install the "Android" launcher.
+# Kuro OS — give Waydroid (Android) internet, and install the "Android" launcher.
 # Run once:  sudo bash ~/bapirlo-os/910-waydroid-net.sh
 # Why: UFW blocks Waydroid's bridge (waydroid0) — Android's DHCP/DNS requests to the host are
 # dropped as incoming traffic, and its outgoing traffic hits DEFAULT_FORWARD_POLICY="DROP".

@@ -1,4 +1,4 @@
-# Bapirlo OS — jump around faster (installed by 800-round8 … 820-round8.sh)
+# Kuro OS — jump around faster (installed by 800-round8 … 820-round8.sh)
 #   z proj        cd to the best match among folders you've visited ("frecency"), e.g. z dl → ~/Downloads
 #   zi            pick one of them from a fuzzy list
 #   Ctrl+R        fuzzy search through your command history (fzf)

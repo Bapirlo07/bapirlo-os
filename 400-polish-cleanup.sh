@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS polish — step 1: remove the leftovers the audit found. Run as YOURSELF (it asks for sudo itself).
+# Kuro OS polish — step 1: remove the leftovers the audit found. Run as YOURSELF (it asks for sudo itself).
 #   bash ~/bapirlo-os/400-polish-cleanup.sh            # snapshot + backup + remove
 #   bash ~/bapirlo-os/400-polish-cleanup.sh restore    # reinstall everything below (snapshot stays)
 #

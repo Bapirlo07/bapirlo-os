@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Bapirlo OS — step 9: GRUB theme + rename "Arch Linux" -> "Bapirlo OS" (run with sudo).
+# Kuro OS — step 9: GRUB theme + rename "Arch Linux" -> "Kuro OS" (run with sudo).
 # Safe-by-design:
 #   * never touches partitions, fstab, the EFI partition, or grub-install
 #   * generates the new grub.cfg to a TEMP file and only installs it if it still
-#     contains the Bapirlo kernel entry AND Windows Boot Manager; otherwise rolls back.
+#     contains the Kuro kernel entry AND Windows Boot Manager; otherwise rolls back.
 set -euo pipefail
 [ "$(id -u)" -eq 0 ] || { echo "Run with sudo."; exit 1; }
 U_HOME=$(getent passwd "${SUDO_USER:?run via sudo}" | cut -d: -f6)
@@ -41,7 +41,7 @@ cp -r "$SRC" "$THEME_DIR"
 chown -R root:root "$THEME_DIR"
 
 echo "== 2. /etc/default/grub: name, theme, resolution"
-setkey GRUB_DISTRIBUTOR "Bapirlo OS"
+setkey GRUB_DISTRIBUTOR "Kuro OS"
 setkey GRUB_THEME "$THEME_DIR/theme.txt"
 setkey GRUB_GFXMODE "1920x1200,1920x1080,auto"
 grep -nE '^GRUB_(DISTRIBUTOR|THEME|GFXMODE|GFXPAYLOAD_LINUX|DISABLE_OS_PROBER)=' /etc/default/grub
@@ -60,7 +60,7 @@ Operation = Upgrade
 Target = grub
 
 [Action]
-Description = Bapirlo OS: keep GRUB entry name "Bapirlo OS"
+Description = Kuro OS: keep GRUB entry name "Kuro OS"
 When = PostTransaction
 Exec = /usr/bin/sh -c 'sed -i "s|OS=\"\${GRUB_DISTRIBUTOR} Linux\"|OS=\"\${GRUB_DISTRIBUTOR}\"|" /etc/grub.d/10_linux && /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg'
 EOF
@@ -72,7 +72,7 @@ echo "== 6. Verifying the new config"
 fail=0
 check() { if grep -qE "$2" "$NEW"; then echo "  OK   $1"; else echo "  FAIL $1"; fail=1; fi; }
 grub-script-check "$NEW" && echo "  OK   syntax (grub-script-check)" || fail=1
-check "entry named 'Bapirlo OS'"          "menuentry 'Bapirlo OS'"
+check "entry named 'Kuro OS'"          "menuentry 'Kuro OS'"
 check "Linux kernel vmlinuz-linux-cachyos" "linux\s+/(boot/)?vmlinuz-linux-cachyos"
 check "initramfs"                          "initrd\s+.*initramfs-linux-cachyos\.img"
 check "Windows Boot Manager"               "Windows Boot Manager"

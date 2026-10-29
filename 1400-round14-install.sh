@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 14 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
+# Kuro OS round 14 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
 #   bash ~/bapirlo-os/1400-round14-install.sh            # snapshot + backup + changes
 #   bash ~/bapirlo-os/1400-round14-install.sh restore    # undo (snapshot stays; packages stay installed)
 #

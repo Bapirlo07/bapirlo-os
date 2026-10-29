@@ -1,4 +1,4 @@
-// Bapirlo Control Centre — a Mac-style control centre for the Bapirlo OS top bar.
+// Kuro Control Centre — a Mac-style control centre for the Kuro OS top bar.
 // It replaces what the quick-settings button (and Super+S) opens; GNOME's original menu is left
 // intact and still opens from the "Classic" footer button or Shift+Super+S.
 import GLib from 'gi://GLib';

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — sound theme + working, themed lock (NO sudo).
+# Kuro OS — sound theme + working, themed lock (NO sudo).
 #   bash ~/bapirlo-os/120-sound-lock.sh            # backup + install + enable
 #   bash ~/bapirlo-os/120-sound-lock.sh restore    # everything back as it was
 #
@@ -47,7 +47,7 @@ apply() {
   mkdir -p "$(dirname "$UNIT")"
   cat > "$UNIT" <<EOF
 [Unit]
-Description=Bapirlo OS lock (Super+L / suspend / idle via LightDM)
+Description=Kuro OS lock (Super+L / suspend / idle via LightDM)
 PartOf=graphical-session.target
 After=graphical-session.target
 
@@ -74,7 +74,7 @@ cur = [] if cur.startswith("@as") else ast.literal_eval(cur)
 if p not in cur: cur.append(p)
 subprocess.run(["gsettings", "set", k, "custom-keybindings", str(cur)], check=True)
 s = f"{k}.custom-keybinding:{p}"
-for key, val in (("name", "Lock screen (Bapirlo)"), ("command", f"{sys.argv[1]} --lock-now"), ("binding", "<Super>l")):
+for key, val in (("name", "Lock screen (Kuro)"), ("command", f"{sys.argv[1]} --lock-now"), ("binding", "<Super>l")):
     subprocess.run(["gsettings", "set", s, key, val], check=True)
 PY
   echo; echo "done. Sounds + Super+L work now; the notification sound extension loads at next login."

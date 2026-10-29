@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — step 10: Plymouth splash (run with sudo).
+# Kuro OS — step 10: Plymouth splash (run with sudo).
 #   1. install theme + make it the default
 #   2. add 'splash' to the kernel command line (GRUB regenerated to a temp file + verified)
 #   3. rebuild initramfs and verify success + theme presence; roll back on failure
@@ -29,7 +29,7 @@ else
   fail=0
   ck() { grep -qE "$2" "$NEW" && echo "  OK   $1" || { echo "  FAIL $1"; fail=1; }; }
   grub-script-check "$NEW" && echo "  OK   syntax" || fail=1
-  ck "entry 'Bapirlo OS'"        "menuentry 'Bapirlo OS'"
+  ck "entry 'Kuro OS'"        "menuentry 'Kuro OS'"
   ck "kernel + splash"           "linux\s+/(boot/)?vmlinuz-linux-cachyos.* splash"
   ck "Windows Boot Manager"      "Windows Boot Manager"
   ck "theme"                     "set theme=.*bapirlo/theme.txt"
@@ -44,7 +44,7 @@ else
 fi
 
 echo "== 2b. Verifying the boot menu currently installed ($CFG)"
-for pat in "menuentry 'Bapirlo OS'" "Windows Boot Manager" "vmlinuz-linux-cachyos .* splash" "bapirlo/theme.txt"; do
+for pat in "menuentry 'Kuro OS'" "Windows Boot Manager" "vmlinuz-linux-cachyos .* splash" "bapirlo/theme.txt"; do
   grep -qE "$pat" "$CFG" && echo "  OK   $pat" || { echo "  FAIL $pat — stopping, nothing changed"; plymouth-set-default-theme "$OLD_THEME"; exit 1; }
 done
 grep -qE "vmlinuz-linux-cachyos-lts" "$CFG" && echo "  OK   LTS fallback kernel present" || echo "  info LTS kernel not in menu"
@@ -61,7 +61,7 @@ echo "== 4. Verifying images"
 ok=1
 for img in /boot/initramfs-*.img; do
   if lsinitcpio "$img" | grep -q 'usr/share/plymouth/themes/bapirlo/bapirlo.script'; then
-    echo "  OK   $img contains the Bapirlo theme"
+    echo "  OK   $img contains the Kuro theme"
   else
     echo "  FAIL $img is missing the theme"; ok=0
   fi

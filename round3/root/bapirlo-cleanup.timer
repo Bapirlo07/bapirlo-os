@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo OS monthly cleanup
+Description=Kuro OS monthly cleanup
 
 [Timer]
 OnCalendar=monthly

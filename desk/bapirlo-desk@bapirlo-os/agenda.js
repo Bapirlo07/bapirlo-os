@@ -1,4 +1,4 @@
-// Bapirlo Desk — calendar data for the widgets and the briefing.
+// Kuro Desk — calendar data for the widgets and the briefing.
 // bin/bapirlo-agenda (Python + libecal, Evolution Data Server = GNOME Online Accounts' Google
 // Calendar/Tasks) runs as a short niced process; the shell never loads libecal itself and does
 // not touch GNOME's own calendar-server range (that one belongs to the clock menu).

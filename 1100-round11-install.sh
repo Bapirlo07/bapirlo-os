@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 11 (wallpapers) — the parts YOU run. Run as yourself (it asks for sudo for the snapshot).
+# Kuro OS round 11 (wallpapers) — the parts YOU run. Run as yourself (it asks for sudo for the snapshot).
 #   bash ~/bapirlo-os/1100-round11-install.sh            # snapshot + live engine
 #   bash ~/bapirlo-os/1100-round11-install.sh restore    # remove the live engine again (snapshot stays)
 #
 # 0. Timeshift snapshot "Before round 11" FIRST — nothing else runs unless it succeeds
 # 1. live wallpaper engine: Hanabi (github.com/jeffshee/gnome-ext-hanabi), the last plain-JavaScript
-#    version (commit 033dc86) vendored in wallpaper/vendor/, + "51" in its metadata and one Bapirlo
+#    version (commit 033dc86) vendored in wallpaper/vendor/, + "51" in its metadata and one Kuro
 #    patch (pause while the overview is open). Installed for you only (~/.local/share), not enabled —
 #    the wallpaper manager turns it on when you pick a video and off for a picture.
 #    Settings: pause on battery / with a maximised or fullscreen window, muted, Intel video decoding
@@ -58,7 +58,7 @@ apply() {
   hset enable-va true                        # Intel VA decoders above nvcodec → the dGPU stays asleep
   hset content-fit 2                         # cover
   hset show-panel-menu false
-  hset change-wallpaper false                # the Bapirlo manager decides what plays
+  hset change-wallpaper false                # the Kuro manager decides what plays
   echo "   installed -> $DEST"
   echo
   echo "Next:  bash $HERE/1110-round11.sh      (then log out and back in once so GNOME sees the new extension)"

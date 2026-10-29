@@ -1,4 +1,4 @@
-// Bapirlo Bar — the focused app's name, Mac style (last item on the left).
+// Kuro Bar — the focused app's name, Mac style (last item on the left).
 //   click = small menu: New Window · Show All Windows · Quit
 //   no focused app (desktop) = "Desktop"; hidden in the overview
 //   apps without a launcher (e.g. a terminal with its own window class) get a readable name
@@ -12,9 +12,9 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-const KNOWN = {'bapirlo-ai': 'Bapirlo AI', 'bapirlo-update': 'Updates'};
+const KNOWN = {'bapirlo-ai': 'Kuro AI', 'bapirlo-update': 'Updates'};
 
-// "bapirlo-ai" → "Bapirlo AI" (table), "my_tool.app" → "My Tool App"
+// "bapirlo-ai" → "Kuro AI" (table), "my_tool.app" → "My Tool App"
 function appName(app) {
     const name = app.get_name();
     if (app.get_app_info())
@@ -25,7 +25,7 @@ function appName(app) {
 export const AppName = GObject.registerClass(
 class BapirloAppName extends PanelMenu.Button {
     _init() {
-        super._init(0.0, 'Bapirlo app name');
+        super._init(0.0, 'Kuro app name');
         this.add_style_class_name('bapirlo-appname');
         this._label = new St.Label({style_class: 'bapirlo-appname-label', y_align: Clutter.ActorAlign.CENTER});
         this._label.clutter_text.ellipsize = Pango.EllipsizeMode.END;

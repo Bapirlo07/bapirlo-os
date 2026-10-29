@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — Doctor: one health check for everything Bapirlo OS added.
+"""Kuro OS — Doctor: one health check for everything Kuro OS added.
 
-  bapirlo-doctor              full report in the terminal (Start menu "Bapirlo Doctor")
+  bapirlo-doctor              full report in the terminal (Start menu "Kuro Doctor")
   bapirlo-doctor --notify     quiet; a notification only when something needs you
                               (run after every system update and 1 min after each login)
   bapirlo-doctor --json       machine-readable report
@@ -12,11 +12,11 @@ Checks
   · every enabled extension supports the GNOME version on disk (an update to GNOME that an
     extension does not list = it gets switched off at your next login) and is ACTIVE in the
     running shell (not ERROR / OUT OF DATE)
-  · Bapirlo services and timers (failed units), the pacman snapshot hook, Timeshift age
+  · Kuro services and timers (failed units), the pacman snapshot hook, Timeshift age
   · battery wear (below 60 % of design capacity) and the SSD's SMART health (critical warnings,
     media errors, write life, spare blocks) — read through UDisks, no root
   · Spicetify still applied to Spotify, free disk space, the Windows drive's safety flags
-    (only if it is mounted), JS errors from Bapirlo extensions in this login's shell log
+    (only if it is mounted), JS errors from Kuro extensions in this login's shell log
 Never changes anything. Exit code 0 = all good, 1 = something needs a look.
 """
 import json
@@ -129,7 +129,7 @@ def check_units(rep):
     for line in failed.splitlines():
         unit = line.split()[0] if line.split() else ""
         if unit and unit not in USER_UNITS:
-            rep.info("Services", f"{unit} (not Bapirlo) failed this boot")
+            rep.info("Services", f"{unit} (not Kuro) failed this boot")
 
 
 def check_snapshots(rep):
@@ -199,7 +199,7 @@ def disk_watch():
         pass
     os.makedirs(STATE, exist_ok=True)
     open(stamp, "w").write(today)
-    subprocess.run(["notify-send", "-a", "Bapirlo Doctor", "-i", "drive-harddisk-symbolic", "-u", "critical",
+    subprocess.run(["notify-send", "-a", "Kuro Doctor", "-i", "drive-harddisk-symbolic", "-u", "critical",
                     f"Only {free:.1f} GB free",
                     f"Below {MIN_FREE_GB} GB, system updates skip their safety snapshot.\n"
                     "Free space: Control Centre → Storage, or run bapirlo-cleanup-now."], check=False)
@@ -249,7 +249,7 @@ def check_shell_log(rep):
     for k, n in list(errs.items())[:5]:
         rep.problem("Shell log", f"{n}× {k}")
     if not errs:
-        rep.ok("Shell log", "no errors from Bapirlo extensions this login")
+        rep.ok("Shell log", "no errors from Kuro extensions this login")
 
 
 class Report:
@@ -299,14 +299,14 @@ def main():
         open(last, "w").write(sig)
         if probs and sig != prev:   # tell once per new set of problems, not after every update
             body = "\n".join("• " + p for p in probs[:4]) + (f"\n…and {len(probs) - 4} more" if len(probs) > 4 else "")
-            subprocess.run(["notify-send", "-a", "Bapirlo Doctor", "-i", "bapirlo-doctor", "-u", "critical",
-                            f"Bapirlo Doctor: {len(probs)} thing{'s' if len(probs) > 1 else ''} need a look",
-                            body + "\nOpen “Bapirlo Doctor” from the Start menu for details."], check=False)
+            subprocess.run(["notify-send", "-a", "Kuro Doctor", "-i", "bapirlo-doctor", "-u", "critical",
+                            f"Kuro Doctor: {len(probs)} thing{'s' if len(probs) > 1 else ''} need a look",
+                            body + "\nOpen “Kuro Doctor” from the Start menu for details."], check=False)
     else:
         colour = sys.stdout.isatty()
         mark = {"ok": ("\033[32m✔\033[0m" if colour else "OK "), "info": ("\033[36mℹ\033[0m" if colour else "i  "),
                 "problem": ("\033[1;31m✘\033[0m" if colour else "!! ")}
-        print("Bapirlo Doctor —", time.strftime("%d %b %Y %H:%M"))
+        print("Kuro Doctor —", time.strftime("%d %b %Y %H:%M"))
         sec = None
         for level, s, msg in rep.items:
             if s != sec:

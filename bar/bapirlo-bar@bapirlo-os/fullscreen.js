@@ -1,4 +1,4 @@
-// Bapirlo Bar — fullscreen button for the focused window (made for Waydroid's Android window,
+// Kuro Bar — fullscreen button for the focused window (made for Waydroid's Android window,
 // works for any normal window).
 //   click = fullscreen on / off. While fullscreen, push the pointer against the top edge
 //   (reveal.js) to bring the bar back and click again to leave.
@@ -15,7 +15,7 @@ import {Group, attachTooltip, addLift} from './util.js';
 export const FullscreenButton = GObject.registerClass(
 class BapirloFullscreenButton extends Group {
     _init() {
-        super._init('Bapirlo fullscreen', 'bapirlo-fullscreen');
+        super._init('Kuro fullscreen', 'bapirlo-fullscreen');
         this._icon = new St.Icon({style_class: 'system-status-icon', icon_name: 'view-fullscreen-symbolic'});
         this._btn = new St.Button({
             style_class: 'bapirlo-fullscreen-btn', can_focus: true, track_hover: true,

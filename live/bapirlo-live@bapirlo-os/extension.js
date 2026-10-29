@@ -1,4 +1,4 @@
-// Bapirlo Live Wallpaper — GPU-drawn embers + sakura petals over the wallpaper (GNOME Shell 51).
+// Kuro Live Wallpaper — GPU-drawn embers + sakura petals over the wallpaper (GNOME Shell 51).
 //   effect.js   the shader (one Clutter.ShaderEffect per monitor's wallpaper actor)
 // Frames are driven at the "fps" setting (30 by default), not the 240 Hz panel rate. The
 // animation fades out and the timer stops whenever nobody can see it:

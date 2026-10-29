@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — switch the look of the top bar (bapirlo-bar, looks.js).
+# Kuro OS — switch the look of the top bar (bapirlo-bar, looks.js).
 #   bapirlo-bar-look              show the current look and the choices
 #   bapirlo-bar-look NAME         classic | manga | glass | islands | flat
 #   bapirlo-bar-look next         the next one (= Super+Alt+L)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Neutral Bapirlo wallpaper + avatar (no third-party art) — used for the public README screenshots.
+"""Neutral Kuro wallpaper + avatar (no third-party art) — used for the public README screenshots.
    python3 make-neutral-wallpaper.py OUTDIR   → OUTDIR/neutral.jpg (2560x1600), neutral-right.jpg (wordmark on
    the right, for the login screen whose card sits on the left), neutral-avatar.png"""
 import os, sys
@@ -22,16 +22,16 @@ base = img.copy()
 for name, cx in (("neutral.jpg", W / 2), ("neutral-right.jpg", W * 0.66)):
     im = base.copy()
     d = ImageDraw.Draw(im)
-    tw = d.textlength("BAPIRLO", font=big)
-    d.text((cx - tw / 2 + 12, 572), "BAPIRLO", font=big, fill=(60, 8, 16))
-    d.text((cx - tw / 2, 560), "BAPIRLO", font=big, fill=(225, 29, 46))
-    sw = d.textlength("OS  ·  KURO", font=small)
-    d.text((cx - sw / 2, 900), "OS  ·  KURO", font=small, fill=(242, 233, 236))
+    tw = d.textlength("KURO", font=big)
+    d.text((cx - tw / 2 + 12, 572), "KURO", font=big, fill=(60, 8, 16))
+    d.text((cx - tw / 2, 560), "KURO", font=big, fill=(225, 29, 46))
+    sw = d.textlength("OS", font=small)
+    d.text((cx - sw / 2, 900), "OS", font=small, fill=(242, 233, 236))
     im.save(os.path.join(OUT, name), quality=92)
 a = Image.new("RGB", (512, 512), (22, 16, 21))
 ad = ImageDraw.Draw(a)
 ad.ellipse((40, 40, 472, 472), fill=(225, 29, 46))
 fb = ImageFont.truetype(FONT, 330)
-ad.text(((512 - ad.textlength("B", font=fb)) / 2, 70), "B", font=fb, fill=(255, 255, 255))
+ad.text(((512 - ad.textlength("K", font=fb)) / 2, 70), "K", font=fb, fill=(255, 255, 255))
 a.save(os.path.join(OUT, "neutral-avatar.png"))
 print("->", OUT)

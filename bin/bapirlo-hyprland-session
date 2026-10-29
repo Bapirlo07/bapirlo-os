@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — starts the Hyprland login session (Exec of bapirlo-hyprland.desktop).
+# Kuro OS — starts the Hyprland login session (Exec of bapirlo-hyprland.desktop).
 # Pins rendering to the Intel iGPU (it drives the laptop panel) so the RTX 4060 can stay asleep;
 # the card number can swap between boots, so resolve it from the PCI path every time.
 intel=$(readlink -f /dev/dri/by-path/pci-0000:00:02.0-card 2>/dev/null)

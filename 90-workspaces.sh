@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — workspace shortcuts (NO sudo).
+# Kuro OS — workspace shortcuts (NO sudo).
 #   bash ~/bapirlo-os/90-workspaces.sh            # backup + apply
 #   bash ~/bapirlo-os/90-workspaces.sh restore    # undo
 #
@@ -9,7 +9,7 @@
 # - Ctrl+Super+Left/Right also switch workspace (on top of GNOME's Super+PgUp/PgDn, Ctrl+Alt+arrows)
 # Super+D (show desktop) is untouched.
 # SUPERSEDED by 320-workspace-actions.sh (2026-10-06): dynamic workspaces + the bar's right-click
-# menu; Ctrl+Super+D / Ctrl+Super+F4 now live in the Bapirlo Bar extension (F4 removes the CURRENT one).
+# menu; Ctrl+Super+D / Ctrl+Super+F4 now live in the Kuro Bar extension (F4 removes the CURRENT one).
 set -euo pipefail
 [ "$(id -u)" -ne 0 ] || { echo "Run WITHOUT sudo."; exit 1; }
 LATEST=~/theme-backups/LATEST-WORKSPACES

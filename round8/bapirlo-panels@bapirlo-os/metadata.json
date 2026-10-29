@@ -1,12 +1,12 @@
 {
   "uuid": "bapirlo-panels@bapirlo-os",
-  "name": "Bapirlo Panels",
-  "description": "Bapirlo OS: windows open like a manga panel landing on the page (ink frame, slight tilt, a comic SFX burst) and flick away when closed.",
+  "name": "Kuro Panels",
+  "description": "Kuro OS: windows open like a manga panel landing on the page (ink frame, slight tilt, a comic SFX burst) and flick away when closed.",
   "shell-version": [
     "50",
     "51"
   ],
   "settings-schema": "org.gnome.shell.extensions.bapirlo-panels",
   "version": 1,
-  "url": "https://github.com/Bapirlo07/bapirlo-os"
+  "url": "https://github.com/Bapirlo07/kuro-os"
 }

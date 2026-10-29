@@ -1,4 +1,4 @@
-// Bapirlo Media — the desktop card / pill (optional since the top-bar dropdown; setting
+// Kuro Media — the desktop card / pill (optional since the top-bar dropdown; setting
 // "desktop-widget"). Floats above every app window (layer sits right above global.window_group);
 // the layer is not reactive, so only the card and the pill take clicks — the rest falls through.
 // Drag the card or the pill anywhere (any monitor); the spot is remembered across logins.

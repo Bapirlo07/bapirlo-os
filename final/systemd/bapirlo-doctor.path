@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo Doctor after every system update (pacman package database changed)
+Description=Kuro Doctor after every system update (pacman package database changed)
 
 [Path]
 PathChanged=/var/lib/pacman/local

@@ -1,4 +1,4 @@
-# Bapirlo OS final round — settings for the extensions added in 900-final.sh (@HOME@ = your home).
+# Kuro OS final round — settings for the extensions added in 900-final.sh (@HOME@ = your home).
 # Loaded with: sed "s|@HOME@|$HOME|g" new-extensions.dconf | dconf load /org/gnome/shell/extensions/
 
 [Logo-menu]

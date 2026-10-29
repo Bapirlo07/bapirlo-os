@@ -1,4 +1,4 @@
-// Bapirlo Media — now playing for Bapirlo OS (GNOME Shell 50, Wayland).
+// Kuro Media — now playing for Kuro OS (GNOME Shell 50, Wayland).
 //   top bar: cover + title button; click or Super+Alt+M opens the dropdown player (panel.js)
 //   desktop: the floating card (widget.js) — OFF by default, setting "desktop-widget"
 // Off switch:  gnome-extensions disable bapirlo-media@bapirlo-os

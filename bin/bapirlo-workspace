@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — add / remove workspaces (bound to Ctrl+Super+D / Ctrl+Super+F4 by 90-workspaces.sh)
+# Kuro OS — add / remove workspaces (bound to Ctrl+Super+D / Ctrl+Super+F4 by 90-workspaces.sh)
 # GNOME (Wayland) only lets scripts change the COUNT, so "remove" closes the LAST workspace;
 # any windows on it are moved to the one before it — nothing is closed.
 set -u

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo folder icons — crimson manga folders for the Bapirlo icon theme.
+"""Kuro folder icons — crimson manga folders for the Kuro icon theme.
 
   python3 build-folders.py OUT_DIR [--preview PNG]
 

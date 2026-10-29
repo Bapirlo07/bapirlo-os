@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — build every hero-art variant from the one source image.
+"""Kuro OS — build every hero-art variant from the one source image.
 
   build/art/hero-2560x1600.png   desktop wallpaper (clean, light grade)
   build/art/boot-2560x1600.png   GRUB / Plymouth / login base (darker left side for UI)

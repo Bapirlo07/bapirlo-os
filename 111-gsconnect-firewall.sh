@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — open KDE Connect ports (1714-1764 tcp+udp) in ufw for HOME networks only. NEEDS sudo.
+# Kuro OS — open KDE Connect ports (1714-1764 tcp+udp) in ufw for HOME networks only. NEEDS sudo.
 #   sudo bash ~/bapirlo-os/111-gsconnect-firewall.sh            # backup + add rules
 #   sudo bash ~/bapirlo-os/111-gsconnect-firewall.sh restore    # remove exactly these rules
 # Allowed from: 192.168.0.0/16 (home routers), 10.0.0.0/8 (Android hotspots, some routers),

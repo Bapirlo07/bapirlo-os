@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — step 4/5: GNOME look & behaviour (run as your user, NOT sudo).
+# Kuro OS — step 4/5: GNOME look & behaviour (run as your user, NOT sudo).
 # Re-runnable. Undo with: bash ~/bapirlo-os/restore.sh user
 set -euo pipefail
 E=~/.local/share/gnome-shell/extensions
@@ -34,7 +34,7 @@ gsettings set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift
 gsettings set org.gnome.desktop.wm.keybindings switch-applications "['<Super>Tab']"
 gsettings set org.gnome.desktop.wm.keybindings switch-applications-backward "['<Shift><Super>Tab']"
 
-echo "== ArcMenu: Windows 11 layout, top-left, opened by Super, Bapirlo icon"
+echo "== ArcMenu: Windows 11 layout, top-left, opened by Super, Kuro icon"
 gsettings set org.gnome.shell.extensions.arcmenu menu-layout '11'
 gsettings set org.gnome.shell.extensions.arcmenu position-in-panel 'Left'
 gsettings set org.gnome.shell.extensions.arcmenu arcmenu-hotkey "['Super_L']"

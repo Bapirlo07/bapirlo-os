@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo OS — tidy ~/Downloads (once a day)
+Description=Kuro OS — tidy ~/Downloads (once a day)
 
 [Service]
 Type=oneshot

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — original LIVE wallpapers: four of the code-drawn scenes, animated, as seamless loops.
+"""Kuro OS — original LIVE wallpapers: four of the code-drawn scenes, animated, as seamless loops.
 
   night-live  night-a: petals fall from the sakura branch, stars twinkle, the moon halo breathes
   dawn-live   dawn-b:  a breeze carries petals over the lake, the sun's path glitters, the mist breathes

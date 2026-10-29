@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — screen recording (GPU Screen Recorder, same low-lag iGPU encode as instant replay).
+# Kuro OS — screen recording (GPU Screen Recorder, same low-lag iGPU encode as instant replay).
 #   bapirlo-record toggle   start / stop          (Control Centre "Screen Rec" tile)
 #   bapirlo-record start | stop | status
 # Files land in ~/Videos/Recordings. Runs as the transient user unit bapirlo-record.service,

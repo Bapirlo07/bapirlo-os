@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — day / night grades of the Kuro wallpaper (no root, deterministic).
+"""Kuro OS — day / night grades of the Kuro wallpaper (no root, deterministic).
 
   day    brighter: shadows lifted, paper-white highlights, a touch warmer — reads like a printed page
   night  darker: deeper ink, crimson kept glowing, soft vignette — easy on the eyes after sunset

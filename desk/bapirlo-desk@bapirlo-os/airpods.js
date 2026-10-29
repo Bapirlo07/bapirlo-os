@@ -1,4 +1,4 @@
-// Bapirlo Desk — AirPods battery in the top bar (status capsule).
+// Kuro Desk — AirPods battery in the top bar (status capsule).
 // BlueZ gives no battery for AirPods; LibrePods (AUR librepods, started hidden after login)
 // talks Apple's protocol and publishes "Battery Status: Left: 80%, Right: 75%, Case: 40%" as its
 // tray icon's tooltip. This chip finds that tray item on D-Bus (StatusNotifierItem.ToolTip,

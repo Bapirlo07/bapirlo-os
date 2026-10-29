@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
-Name=Bapirlo OS Guide
+Name=Kuro OS Guide
 GenericName=Manual
-Comment=Everything on Bapirlo OS: apps, shortcuts, features, Windows and troubleshooting
+Comment=Everything on Kuro OS: apps, shortcuts, features, Windows and troubleshooting
 Exec=env VK_DRIVER_FILES=/usr/share/vulkan/icd.d/intel_icd.json __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json @OS@/apps/guide/bapirlo-guide
 Icon=bapirlo-guide
 Terminal=false

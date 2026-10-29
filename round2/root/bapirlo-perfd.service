@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo OS MSI power glue (power profile <-> msi-ec, AC/battery switching, charge limit)
+Description=Kuro OS MSI power glue (power profile <-> msi-ec, AC/battery switching, charge limit)
 After=power-profiles-daemon.service upower.service
 Wants=power-profiles-daemon.service upower.service
 

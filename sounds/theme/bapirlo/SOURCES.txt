@@ -15,4 +15,4 @@ desktop-login.oga  (login)
     metalLatch.ogg + knifeSlice.ogg (RPG Audio) + glass_004.ogg (Interface Sounds)
     = hilt click -> blade draw -> ring, -24 LUFS
 
-Built with ffmpeg on 2026-10-05 by Bapirlo OS (Claude). Preview:  pw-play <file>
+Built with ffmpeg on 2026-10-05 by Kuro OS (Claude). Preview:  pw-play <file>

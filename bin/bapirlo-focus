@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — focus timer (it runs in the top bar, next to the clock).
+"""Kuro OS — focus timer (it runs in the top bar, next to the clock).
   bapirlo-focus                 start a block (25 min) or stop the running one   (= Super+Alt+F)
   bapirlo-focus start [MIN]     start a block of MIN minutes (default 25)
   bapirlo-focus stop | pause    stop / pause-or-resume
@@ -36,7 +36,7 @@ def main(argv):
         return 0
     st = focus.state()
     if st is None:
-        print("The Bapirlo bar isn't installed — the focus timer lives in it.", file=sys.stderr)
+        print("The Kuro bar isn't installed — the focus timer lives in it.", file=sys.stderr)
         return 1
     if verb == "status":
         if not st["phase"]:

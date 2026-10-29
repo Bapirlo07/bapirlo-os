@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS polish — step 3: notifications, quick settings, calendar (NO sudo, no logout).
+# Kuro OS polish — step 3: notifications, quick settings, calendar (NO sudo, no logout).
 #   bash ~/bapirlo-os/420-shell-polish.sh            # backup + apply (preview: build/polish/notif-qs-preview.png)
 #   bash ~/bapirlo-os/420-shell-polish.sh restore    # undo
 #

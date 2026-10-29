@@ -1,4 +1,4 @@
-"""Bapirlo OS — wallpaper media jobs (ffmpeg + a little numpy). Used by lib/bapirlo_wallpaper.py,
+"""Kuro OS — wallpaper media jobs (ffmpeg + a little numpy). Used by lib/bapirlo_wallpaper.py,
 bin/bapirlo-wallpaper and the Wallpapers app.
 
     make_loop()     a seamless loop cut from any video: the last `fade` seconds cross-fade into the

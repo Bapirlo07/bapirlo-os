@@ -1,9 +1,9 @@
-"""Bapirlo OS — wallpapers: one library, three modes, live video, and the OS theme follows the colours.
+"""Kuro OS — wallpapers: one library, three modes, live video, and the OS theme follows the colours.
 
 Library (everything here shows up in the Wallpapers app):
     ~/Pictures/wallpapers/bapirlo/              your pictures and videos (the app copies dropped files here)
         dawn/ day/ dusk/ night/                 … files in these sub-folders are tagged with that time of day
-    ~/.local/share/backgrounds/bapirlo/originals[/live]   the Bapirlo originals (dawn-a.jpg, night-live.mp4, …)
+    ~/.local/share/backgrounds/bapirlo/originals[/live]   the Kuro originals (dawn-a.jpg, night-live.mp4, …)
     the Kuro day / night pictures
 Pictures: .jpg .jpeg .png .webp   Live: .mp4 .webm .mkv .mov .gif (played by Hanabi, paused on battery,
 with a maximised / fullscreen window and in the overview; a still frame of it is the "real" GNOME wallpaper,
@@ -150,7 +150,7 @@ def _scan(folder, recursive):
 
 
 def items(include_hidden=False):
-    """[{path, name, live, mine, tags}] — yours first (newest first), then the Bapirlo ones."""
+    """[{path, name, live, mine, tags}] — yours first (newest first), then the Kuro ones."""
     c = conf()
     hidden = set(c["hidden"])
     mine = sorted(_scan(LIBRARY, True), key=lambda p: os.path.getmtime(p), reverse=True)
@@ -204,7 +204,7 @@ def add(files, slot=None):
 
 
 def remove(path):
-    """Yours go to the Bin; Bapirlo ones are only hidden (the app can show them again)."""
+    """Yours go to the Bin; Kuro ones are only hidden (the app can show them again)."""
     c = conf()
     if os.path.commonpath([os.path.abspath(path), LIBRARY]) == LIBRARY:
         Gio.File.new_for_path(path).trash(None)
@@ -413,7 +413,7 @@ def theme_for(path, fade=True):
 
 
 def theme_off():
-    """Back to the original Bapirlo colours, if the wallpaper had set them."""
+    """Back to the original Kuro colours, if the wallpaper had set them."""
     E, S = _studio()
     a = S.active() or {}
     try:
@@ -821,7 +821,7 @@ def status():
              f"now      {st.get('path') or '—'}" + ("  [live]" if st.get("live") else ""),
              f"sun      {loc[0]:.3f},{loc[1]:.3f}  sunrise {rise:%H:%M}  sunset {sset:%H:%M}  slot {slot}",
              "slots    " + "  ".join(f"{s} {starts[s]:%H:%M}" for s in SLOTS),
-             f"library  {sum(i['mine'] for i in its)} yours + {sum(not i['mine'] for i in its)} Bapirlo "
+             f"library  {sum(i['mine'] for i in its)} yours + {sum(not i['mine'] for i in its)} Kuro "
              f"({sum(i['live'] for i in its)} live) — add in {LIBRARY}"]
     for s in SLOTS:
         lines.append(f"  {s:5} {len([i for i in its if s in i['tags']])} tagged")

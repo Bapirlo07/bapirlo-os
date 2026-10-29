@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — make boot + login fit every screen (laptop panel AND the HDMI monitor). Run with sudo.
+# Kuro OS — make boot + login fit every screen (laptop panel AND the HDMI monitor). Run with sudo.
 #   sudo bash ~/bapirlo-os/65-multimonitor.sh            apply
 #   sudo bash ~/bapirlo-os/65-multimonitor.sh restore    undo (from the backup this script made)
 #

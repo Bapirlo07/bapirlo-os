@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 10 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
+# Kuro OS round 10 — the parts that need your password. Run as YOURSELF (it asks for sudo itself).
 #   bash ~/bapirlo-os/1000-round10-install.sh            # snapshot + backup + changes
 #   bash ~/bapirlo-os/1000-round10-install.sh restore    # undo (snapshot stays; deleted caches stay deleted)
 #
@@ -64,7 +64,7 @@ apply() {
 
   echo; echo "== 4/4 system logs: 100 MB cap"
   sudo install -Dm644 /dev/stdin "$JOURNALD" <<'EOF'
-# Bapirlo OS round 10 — keep at most 100 MB of system logs (was ~200 MB). Remove this file to undo.
+# Kuro OS round 10 — keep at most 100 MB of system logs (was ~200 MB). Remove this file to undo.
 [Journal]
 SystemMaxUse=100M
 EOF

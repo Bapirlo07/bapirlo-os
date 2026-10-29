@@ -1,7 +1,7 @@
 {
   "uuid": "bapirlo-desk@bapirlo-os",
-  "name": "Bapirlo Desk",
-  "description": "Bapirlo OS smart desktop: Launchpad, desktop widgets, login briefing, picture-in-picture on top, privacy dots and AirPods battery.",
+  "name": "Kuro Desk",
+  "description": "Kuro OS smart desktop: Launchpad, desktop widgets, login briefing, picture-in-picture on top, privacy dots and AirPods battery.",
   "shell-version": ["51"],
   "settings-schema": "org.gnome.shell.extensions.bapirlo-desk",
   "url": "https://github.com/Bapirlo07",

@@ -1,4 +1,4 @@
-// Bapirlo Bar — red only where it matters, tooltips on other extensions' icons, and small fixes.
+// Kuro Bar — red only where it matters, tooltips on other extensions' icons, and small fixes.
 //   low battery (≤ 20 %, discharging) → battery icon + % turn ember   (.bapirlo-low-battery)
 //   Do Not Disturb on, Caffeine on, screen recording / sharing → GNOME's own icon for it in the
 //   system icons turns ember (.bapirlo-alert) — those icons only show while the state is on
@@ -28,7 +28,7 @@ const DISCHARGING = 2;
 // role → tooltip text (only icon-only items, or items whose meaning isn't obvious)
 const TIPS = {
     'ArcMenu': () => 'Start — Super',
-    'LogoMenu': () => 'Bapirlo menu — Start menu is Super, apps are Super+G',
+    'LogoMenu': () => 'Kuro menu — Start menu is Super, apps are Super+G',
     'places-menu': () => 'Places — folders, bookmarks and the Windows drive',
     'drive-menu': () => 'USB drives — click to open or eject',
     'lockkeys': () => 'Caps Lock / Num Lock is on',

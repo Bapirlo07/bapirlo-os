@@ -1,4 +1,4 @@
-// Bapirlo Media — MPRIS player tracking.
+// Kuro Media — MPRIS player tracking.
 // One Player per org.mpris.MediaPlayer2.* bus name; PlayerManager picks the one to show.
 // Position is extrapolated locally (MPRIS never signals it) and re-synced on events,
 // so nothing polls D-Bus on a tight loop.

@@ -1,4 +1,4 @@
-// Bapirlo Bar — numbered workspace chips (1, 2, 3 …).
+// Kuro Bar — numbered workspace chips (1, 2, 3 …).
 //   active = crimson pill with a white number · has windows = bright number + ember underline
 //   empty = dim number
 //   click a dot = go there (click the active one = overview) · scroll = previous / next
@@ -38,7 +38,7 @@ const osd = (icon, label) =>
 export const WorkspaceDots = GObject.registerClass(
 class BapirloWorkspaceDots extends Group {
     _init() {
-        super._init('Bapirlo workspaces', 'bapirlo-ws');
+        super._init('Kuro workspaces', 'bapirlo-ws');
         this._dots = [];
         this._workspaces = [];
         this._syncId = 0;

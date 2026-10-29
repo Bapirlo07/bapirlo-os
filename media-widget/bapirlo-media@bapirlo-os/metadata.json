@@ -1,12 +1,12 @@
 {
   "uuid": "bapirlo-media@bapirlo-os",
-  "name": "Bapirlo Media",
-  "description": "Bapirlo OS now playing: a top-bar button with a dropdown player (cover, seek, controls, volume, player switcher; Super+Alt+M), plus the optional floating desktop card.",
+  "name": "Kuro Media",
+  "description": "Kuro OS now playing: a top-bar button with a dropdown player (cover, seek, controls, volume, player switcher; Super+Alt+M), plus the optional floating desktop card.",
   "shell-version": [
     "50",
     "51"
   ],
   "version": 2,
-  "url": "https://github.com/Bapirlo07/bapirlo-os",
+  "url": "https://github.com/Bapirlo07/kuro-os",
   "settings-schema": "org.gnome.shell.extensions.bapirlo-media"
 }

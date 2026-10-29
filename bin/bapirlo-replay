@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — instant replay (GPU Screen Recorder keeps the last 30 s in RAM).
+# Kuro OS — instant replay (GPU Screen Recorder keeps the last 30 s in RAM).
 #   bapirlo-replay save     write the last 30 s to ~/Videos/Replays   (Super+Alt+G, or click REPLAY in the bar)
 #   bapirlo-replay toggle   start / stop the buffer                   (Super+Alt+R)
 #   bapirlo-replay start | stop | status

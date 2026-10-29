@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — switchable top bar looks (NO sudo). bapirlo-bar gains looks.js:
+# Kuro OS — switchable top bar looks (NO sudo). bapirlo-bar gains looks.js:
 #   classic (the bar as it was) · manga · glass · islands · flat — colours follow the wallpaper palette.
 #   The bottom dock (Dash to Dock) follows the same look; classic gives it back its own colour settings.
 #   Switch: the Bar Looks app · right-click an empty spot on the bar · Super+Alt+L cycles · bapirlo-bar-look <name|next>

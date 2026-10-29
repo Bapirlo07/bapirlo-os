@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — Google Drive in Files via rclone (GNOME's own Drive backend was removed from gvfs).
+# Kuro OS — Google Drive in Files via rclone (GNOME's own Drive backend was removed from gvfs).
 #   bapirlo-gdrive setup     one-time Google sign-in in your browser, then mount at login
 #   bapirlo-gdrive off       stop + don't mount at login (your rclone sign-in is kept)
 #   bapirlo-gdrive status

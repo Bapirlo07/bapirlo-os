@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — round 6 · Mac-style Control Centre (NO sudo).
+# Kuro OS — round 6 · Mac-style Control Centre (NO sudo).
 #   bash ~/bapirlo-os/610-control-centre.sh            # backup + install + enable (then log out / in once)
 #   bash ~/bapirlo-os/610-control-centre.sh restore    # remove it, settings back as before
 #

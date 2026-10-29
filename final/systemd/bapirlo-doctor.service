@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo Doctor — check extensions and services, notify only if something needs you
+Description=Kuro Doctor — check extensions and services, notify only if something needs you
 
 [Service]
 Type=oneshot

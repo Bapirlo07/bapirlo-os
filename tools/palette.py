@@ -1,4 +1,4 @@
-"""Bapirlo OS "Kuro" palette — single source of truth.
+"""Kuro OS "Kuro" palette — single source of truth.
 
 Sampled from the "KURO. SCATTER." wallpaper (fan art colour by eSM1LE — not redistributed here):
 ink blacks with a violet undertone, blood-red eye/aura glow, sakura-pink and

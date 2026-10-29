@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — your calendar as JSON, for the desktop widgets and the login briefing.
+"""Kuro OS — your calendar as JSON, for the desktop widgets and the login briefing.
 
   bapirlo-agenda [--from EPOCH] [--to EPOCH]      default: today 00:00 → +8 days
 

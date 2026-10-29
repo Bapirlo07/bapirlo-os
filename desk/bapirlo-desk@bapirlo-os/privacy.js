@@ -1,4 +1,4 @@
-// Bapirlo Desk — privacy dots in the top bar (system capsule, left of the Control Centre icons).
+// Kuro Desk — privacy dots in the top bar (system capsule, left of the Control Centre icons).
 //   red   = an app is recording from a microphone
 //   green = the camera is in use
 //   blue  = the screen is being shared / cast (portal screencast, remote desktop)

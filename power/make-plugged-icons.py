@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Bapirlo OS — battery "plugged in, holding at the charge limit" icons.
+# Kuro OS — battery "plugged in, holding at the charge limit" icons.
 # WhiteSur links battery-level-N-plugged-in to the charging bolt, so with the 80 % limit the bar
 # claimed "charging" forever. These draw WhiteSur's battery with a small plug instead of a bolt.
 #   python3 make-plugged-icons.py OUT_DIR

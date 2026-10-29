@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — keep apps open across log out / restart (NO sudo).
+# Kuro OS — keep apps open across log out / restart (NO sudo).
 #   bash ~/bapirlo-os/125-session.sh            # backup + install + enable
 #   bash ~/bapirlo-os/125-session.sh restore    # everything back as it was
 #

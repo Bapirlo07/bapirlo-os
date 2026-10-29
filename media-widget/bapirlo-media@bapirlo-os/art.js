@@ -1,4 +1,4 @@
-// Bapirlo Media — artwork: local cache for remote covers, accent colour extraction and the
+// Kuro Media — artwork: local cache for remote covers, accent colour extraction and the
 // "frosted" card background (a pre-blurred slice of the wallpaper, rendered once — no live
 // blur shader, so it costs nothing per frame).
 import Gio from 'gi://Gio';

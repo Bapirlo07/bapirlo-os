@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — install the "Kuro" boot experience (run with sudo, AFTER approving the preview).
+# Kuro OS — install the "Kuro" boot experience (run with sudo, AFTER approving the preview).
 #   sudo bash ~/bapirlo-os/50-boot-v2.sh
 #
 #  0. full backup  -> ~/theme-backups/<timestamp>-boot-v2/   (incl. current initramfs images)
@@ -75,7 +75,7 @@ grep -nE '^GRUB_(THEME|GFXMODE|GFXPAYLOAD_LINUX|TIMEOUT|TIMEOUT_STYLE|DISABLE_BO
 
 cat > "$WRAP" <<'EOF'
 #!/bin/sh
-# Bapirlo OS: EFI BootNext entries, relabelled. The stock 31_efi_bootnext is silenced with
+# Kuro OS: EFI BootNext entries, relabelled. The stock 31_efi_bootnext is silenced with
 # GRUB_DISABLE_BOOTNEXT=true in /etc/default/grub; here we run it with the switch off and
 #   * show "Windows Boot Manager (EFI BootNext)" as "Windows"
 #   * drop "CachyOS (EFI BootNext)" — that firmware entry is THIS grub (\EFI\CachyOS\grubx64.efi)
@@ -101,7 +101,7 @@ if ! grub-mkconfig -o "$NEW"; then echo "!! grub-mkconfig failed — reverting";
 fail=0
 ck() { if grep -qE "$2" "$NEW"; then echo "  OK   $1"; else echo "  FAIL $1"; fail=1; fi; }
 grub-script-check "$NEW" && echo "  OK   syntax" || fail=1
-ck "Linux entry 'Bapirlo OS'"         "menuentry 'Bapirlo OS'"
+ck "Linux entry 'Kuro OS'"         "menuentry 'Kuro OS'"
 ck "kernel image"                     "linux\s+/(boot/)?vmlinuz-linux-cachyos"
 ck "initramfs"                        "initrd\s+.*initramfs-linux-cachyos(-lts)?\.img"
 ck "quiet splash on kernel line"      "vmlinuz-linux-cachyos.*quiet.*splash|vmlinuz-linux-cachyos.*splash.*quiet"
@@ -182,9 +182,9 @@ grep -q '^greeter-session=lightdm-slick-greeter' /etc/lightdm/lightdm.conf && ec
 cat <<EOF
 
 =====================================================================
- Bapirlo OS "Kuro" boot experience installed.  Backup: $BK
+ Kuro OS "Kuro" boot experience installed.  Backup: $BK
 
- If anything looks wrong after reboot, from the GRUB menu pick Bapirlo OS
+ If anything looks wrong after reboot, from the GRUB menu pick Kuro OS
  (or press E and remove 'splash' from the linux line for a text boot), then:
 
    sudo bash $U_HOME/bapirlo-os/restore-boot-v2.sh

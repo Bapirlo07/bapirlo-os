@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo OS — download new iCloud Photos to ~/Pictures/iCloud
+Description=Kuro OS — download new iCloud Photos to ~/Pictures/iCloud
 ConditionACPower=true
 
 [Service]

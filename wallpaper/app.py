@@ -1,10 +1,10 @@
-"""Bapirlo Wallpapers — one window, two tabs (GTK4 / libadwaita).
+"""Kuro Wallpapers — one window, two tabs (GTK4 / libadwaita).
 
 Wallpapers tab (WallpaperPage, below) and Theme tab (Theme Studio, studio/studio_page.py).
 `bapirlo-wallpapers --page theme [PICTURE]` opens on the Theme tab (Super+Alt+T, the Control Centre tile).
 
 Wallpapers tab — top: what's on screen now, its colours, and the mode (Fixed / Time of day / Shuffle) with the
-"colours follow the wallpaper" switch. Below: every wallpaper — yours first, then the Bapirlo ones —
+"colours follow the wallpaper" switch. Below: every wallpaper — yours first, then the Kuro ones —
 click one to use it, drop files anywhere on the window to add them, right-click for time-of-day tags,
 remove / hide. All the work happens in lib/bapirlo_wallpaper.py (the same code bin/bapirlo-wallpaper
 and the 10-minute timer use).
@@ -680,7 +680,7 @@ class WallpaperPage(Gtk.Box):
         if self.syncing:
             return
         on = sw.get_active()
-        self.run("Matching the colours to the wallpaper…" if on else "Back to the original Bapirlo colours…",
+        self.run("Matching the colours to the wallpaper…" if on else "Back to the original Kuro colours…",
                  lambda: W.set_theme(on))
 
     def retag(self, item, tags):

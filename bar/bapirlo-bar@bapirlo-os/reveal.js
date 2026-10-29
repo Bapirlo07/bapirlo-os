@@ -1,4 +1,4 @@
-// Bapirlo Bar — the bar over fullscreen apps.
+// Kuro Bar — the bar over fullscreen apps.
 // GNOME already hides the bar while the primary monitor shows a fullscreen window (games, videos).
 // Push the pointer against the top edge and it slides in over the app; it slides away again once
 // the pointer has left it and no dropdown is open.

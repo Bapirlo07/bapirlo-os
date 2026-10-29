@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — monthly cleanup (bapirlo-cleanup.timer, runs as root at idle priority).
+# Kuro OS — monthly cleanup (bapirlo-cleanup.timer, runs as root at idle priority).
 #
 #   1. pacman package cache: keep the last 2 versions of installed packages, and nothing of
 #      packages that are no longer installed            (paccache -rk2 / -ruk0)
@@ -29,7 +29,7 @@ human() { numfmt --to=iec --suffix=B "${1:-0}" 2>/dev/null || echo "${1}B"; }
 pacman_busy() { [ -e /var/lib/pacman/db.lck ]; }
 if pacman_busy; then echo "pacman is running — skipping this time"; exit 0; fi
 
-say "== Bapirlo cleanup $(date '+%Y-%m-%d %H:%M')$([ $DRY = 1 ] && echo '  (DRY RUN — nothing removed)')"
+say "== Kuro cleanup $(date '+%Y-%m-%d %H:%M')$([ $DRY = 1 ] && echo '  (DRY RUN — nothing removed)')"
 
 # ---- 1. package cache
 cache_before=$(du -sb /var/cache/pacman/pkg 2>/dev/null | cut -f1)
@@ -101,7 +101,7 @@ Full report: /var/log/bapirlo-cleanup.log"
     u=$(id -nu "$uid")
     [ -S "/run/user/$uid/bus" ] || continue
     runuser -u "$u" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
-      notify-send -a "Bapirlo OS" -i user-trash-full-symbolic "Monthly cleanup done" "$body" 2>/dev/null || true
+      notify-send -a "Kuro OS" -i user-trash-full-symbolic "Monthly cleanup done" "$body" 2>/dev/null || true
   done
 fi
 rm -f "$REPORT"

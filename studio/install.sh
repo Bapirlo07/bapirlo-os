@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS Theme Studio — install / remove.
+# Kuro OS Theme Studio — install / remove.
 #   bash ~/bapirlo-os/studio/install.sh             # you (no sudo): app, Start menu entry, Super+Alt+T, folder
 #                                                   # watcher, shell extension, Control Centre tile
 #   sudo bash ~/bapirlo-os/studio/install.sh root   # once: lock/login screen folder + boot splash helper
@@ -80,7 +80,7 @@ EOF
 
 if [ "${1:-}" = restore ]; then
   BK=$(cat ~/theme-backups/LATEST-STUDIO)
-  [ -f ~/.local/state/bapirlo/studio/active.json ] && { echo "Switch to Original Bapirlo OS in Theme Studio first."; exit 1; }
+  [ -f ~/.local/state/bapirlo/studio/active.json ] && { echo "Switch to Original Kuro OS in Theme Studio first."; exit 1; }
   systemctl --user disable --now bapirlo-studio-watch.path 2>/dev/null || true
   rm -f "$UNITS/bapirlo-studio-watch.path" "$UNITS/bapirlo-studio-watch.service" "$DESKTOP"
   systemctl --user daemon-reload
@@ -114,13 +114,13 @@ install -Dm644 "$HERE/icons/bapirlo-studio.svg" "$ICONS/Bapirlo/scalable/apps/ba
 install -Dm644 "$HERE/icons/bapirlo-studio.svg" "$ICONS/hicolor/scalable/apps/bapirlo-studio.svg"
 install -Dm644 "$HERE/icons/bapirlo-studio-symbolic.svg" "$ICONS/Bapirlo/symbolic/apps/bapirlo-studio-symbolic.svg"
 install -Dm644 "$HERE/icons/bapirlo-studio-symbolic.svg" "$ICONS/hicolor/symbolic/apps/bapirlo-studio-symbolic.svg"
-for t in Bapirlo hicolor; do gtk-update-icon-cache -q -t "$ICONS/$t" 2>/dev/null || true; done
+for t in Kuro hicolor; do gtk-update-icon-cache -q -t "$ICONS/$t" 2>/dev/null || true; done
 install -Dm644 /dev/stdin "$DESKTOP" <<EOF
 [Desktop Entry]
 Type=Application
 Name=Theme Studio
 GenericName=Wallpaper theming
-Comment=Re-theme Bapirlo OS from a wallpaper — the Theme tab of Wallpapers
+Comment=Re-theme Kuro OS from a wallpaper — the Theme tab of Wallpapers
 Exec=$HERE/bapirlo-theme-studio %f
 NoDisplay=true
 Icon=bapirlo-studio
@@ -150,7 +150,7 @@ echo "== folder watcher: a new picture in ~/Pictures/Theme Studio → \"Preview 
 mkdir -p "$UNITS"
 cat > "$UNITS/bapirlo-studio-watch.path" <<'EOF'
 [Unit]
-Description=Bapirlo Theme Studio: watch ~/Pictures/Theme Studio
+Description=Kuro Theme Studio: watch ~/Pictures/Theme Studio
 
 [Path]
 PathChanged=%h/Pictures/Theme Studio
@@ -161,7 +161,7 @@ WantedBy=default.target
 EOF
 cat > "$UNITS/bapirlo-studio-watch.service" <<EOF
 [Unit]
-Description=Bapirlo Theme Studio: offer a preview of a new wallpaper
+Description=Kuro Theme Studio: offer a preview of a new wallpaper
 
 [Service]
 Type=oneshot

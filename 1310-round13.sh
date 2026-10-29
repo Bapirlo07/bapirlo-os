@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 13 (NO sudo):
+# Kuro OS round 13 (NO sudo):
 #   · wallpaper shuffle ON: a new wallpaper + theme every SHUFFLE_HOURS (default 3), each bringing back
 #     its own bar look / widgets (round 12)          change: bapirlo-wallpaper mode fixed|shuffle N
 #   · notifications (Dynamic Island + GNOME banners) wear the bar look — manga = comic bubble

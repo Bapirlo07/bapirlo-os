@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — battery charge limit + health.
+# Kuro OS — battery charge limit + health.
 #   bapirlo-charge            show limit, health, cycles
 #   bapirlo-charge daily|80   stop charging at 80 %
 #   bapirlo-charge travel|100 charge to full

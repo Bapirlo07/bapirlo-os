@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — Android (Waydroid) in one command.
+# Kuro OS — Android (Waydroid) in one command.
 #   bapirlo-android               open Android full screen (starts it if needed)
 #   bapirlo-android stop          shut Android down (frees RAM)
 #   bapirlo-android status        is it running, does it have internet

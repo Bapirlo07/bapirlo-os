@@ -1,4 +1,4 @@
-// Bapirlo Bar — quick launch.
+// Kuro Bar — quick launch.
 //   click = focus the app (or open it) · middle-click = new window
 //   dot under the icon: ember = running, crimson pill = focused
 import Clutter from 'gi://Clutter';
@@ -73,7 +73,7 @@ class BapirloLauncher extends St.Button {
 export const QuickLaunch = GObject.registerClass(
 class BapirloQuickLaunch extends Group {
     _init() {
-        super._init('Bapirlo quick launch', 'bapirlo-launch', true);
+        super._init('Kuro quick launch', 'bapirlo-launch', true);
         Shell.AppSystem.get_default().connectObject('installed-changed', () => this._rebuild(), this);
         this._rebuild();
     }

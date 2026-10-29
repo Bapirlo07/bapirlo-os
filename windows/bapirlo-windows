@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — the Windows partition, from Linux (no sudo; mounts go through udisks).
+# Kuro OS — the Windows partition, from Linux (no sudo; mounts go through udisks).
 #   bapirlo-windows            status
 #   bapirlo-windows mount      mount READ-ONLY (same as clicking "Windows" in Files)
 #   bapirlo-windows check      mount ro + report BitLocker / Fast Startup / hibernation / dirty flag

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — step 8: LightDM slick-greeter theme (run with sudo).
+# Kuro OS — step 8: LightDM slick-greeter theme (run with sudo).
 # The greeter runs as the 'lightdm' user, so theme/icons/cursor/art are copied system-wide.
 set -euo pipefail
 [ "$(id -u)" -eq 0 ] || { echo "Run with sudo."; exit 1; }
@@ -25,7 +25,7 @@ for t in WhiteSur-red WhiteSur-red-dark WhiteSur-cursors Bapirlo; do
     && { echo "  /usr/share/icons/$t exists and isn't ours — leaving it"; continue; }
   put "$U_HOME/.local/share/icons/$t" "/usr/share/icons/$t"
 done
-# Bapirlo icon theme's logo files live in the user's assets; make them self-contained copies
+# Kuro icon theme's logo files live in the user's assets; make them self-contained copies
 find /usr/share/icons/Bapirlo -type l -exec sh -c 'cp --remove-destination "$(readlink -f "$1")" "$1"' _ {} \;
 gtk-update-icon-cache -q -f /usr/share/icons/Bapirlo || true
 
@@ -37,7 +37,7 @@ install -m 644 "$U_HOME/bapirlo-os/build/lightdm/badge.png" /usr/share/backgroun
 
 echo "== 3. /etc/lightdm/slick-greeter.conf"
 cat > /etc/lightdm/slick-greeter.conf <<'EOF'
-# Bapirlo OS login screen
+# Kuro OS login screen
 [Greeter]
 background=/usr/share/backgrounds/bapirlo/login.png
 background-color=#0b0b0d

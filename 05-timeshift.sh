@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — Timeshift safety net (ext4 → rsync mode). NEEDS sudo.
+# Kuro OS — Timeshift safety net (ext4 → rsync mode). NEEDS sudo.
 #   sudo bash ~/bapirlo-os/05-timeshift.sh            # backup + install + "Before extras" snapshot + weekly x3
 #   sudo bash ~/bapirlo-os/05-timeshift.sh restore    # schedule off, cronie off, config back (snapshots are KEPT)
 #

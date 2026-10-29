@@ -1,4 +1,4 @@
-// Bapirlo Island — what the pill shows. Each builder returns a spec for Island.push():
+// Kuro Island — what the pill shows. Each builder returns a spec for Island.push():
 // {kind, key, width, height, timeout, build() -> actor, update?(spec), onClick?, onDismiss?}
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 11 — wallpapers, everything that does NOT need your password (after 1100-round11-install.sh).
+# Kuro OS round 11 — wallpapers, everything that does NOT need your password (after 1100-round11-install.sh).
 #   bash ~/bapirlo-os/1110-round11.sh              # backup + all steps
 #   bash ~/bapirlo-os/1110-round11.sh STEP …       # only those steps (live app switch)
 #   bash ~/bapirlo-os/1110-round11.sh restore      # undo all of it
 #
 #  live    4 original live wallpapers (tools/build-live-wallpapers.py: night, dawn, day, dusk — 16 s
-#          seamless loops, 2560x1600 H.264, ~70 MB) into the Bapirlo originals
+#          seamless loops, 2560x1600 H.264, ~70 MB) into the Kuro originals
 #  app     the Wallpapers app (Super+Alt+P; also in the app grid), Super+Alt+N = next wallpaper,
 #          Files right-click → Scripts → "Set as wallpaper"
 #  switch  the wallpaper manager takes over (bin/bapirlo-wallpaper; the 10-minute timer keeps running
@@ -74,7 +74,7 @@ step_app() {
 Type=Application
 Name=Wallpapers
 GenericName=Wallpapers and live wallpapers
-Comment=Pick a wallpaper or a live one, and make Bapirlo OS themes from it (Wallpapers + Theme Studio)
+Comment=Pick a wallpaper or a live one, and make Kuro OS themes from it (Wallpapers + Theme Studio)
 Exec=$HERE/wallpaper/bapirlo-wallpapers %F
 Icon=preferences-desktop-wallpaper
 Terminal=false
@@ -90,7 +90,7 @@ EOF
   mkdir -p "$NAUT"
   cat > "$NSCRIPT" <<EOF
 #!/bin/sh
-# Files → right-click → Scripts → Set as wallpaper (Bapirlo OS): the first selected picture / video
+# Files → right-click → Scripts → Set as wallpaper (Kuro OS): the first selected picture / video
 f=\$(printf '%s\n' "\$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" | head -n1)
 [ -n "\$f" ] && exec "$HERE/bin/bapirlo-wallpaper" set "\$f"
 EOF

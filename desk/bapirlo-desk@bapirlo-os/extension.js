@@ -1,4 +1,4 @@
-// Bapirlo Desk — the "smart desktop" of Bapirlo OS (GNOME Shell 51).
+// Kuro Desk — the "smart desktop" of Kuro OS (GNOME Shell 51).
 //   launchpad.js  Mac-style full-screen app grid: folders, search, zoom (Super+G, dock icon)
 //   widgets.js    clock · calendar · deadlines · weather · system on the wallpaper, behind windows;
 //                 Super+Alt+E edits them (drag anywhere, show / hide cards), colours follow the wallpaper

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — "Clean up" from the Control Centre storage tile.
+# Kuro OS — "Clean up" from the Control Centre storage tile.
 # User caches first (thumbnails, paru build files), then the monthly system cleanup
 # (bapirlo-cleanup.service: package cache keep 2, orphans minus keep-list, old logs) — that one
 # asks for your password through GNOME's own dialog. Shows a notification with what was freed.

@@ -1,4 +1,4 @@
-"""Bapirlo OS — battery / SSD / disk health readings, shared by the Welcome app and bapirlo-doctor.
+"""Kuro OS — battery / SSD / disk health readings, shared by the Welcome app and bapirlo-doctor.
 
 No root needed: the battery comes from sysfs, the drives' SMART data from UDisks2 on the system bus
 (NVMe health log or ATA SMART). Nothing here writes anything or wakes the NVIDIA GPU.

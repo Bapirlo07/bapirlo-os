@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Bapirlo OS — iPhone integration in one place.
+# Kuro OS — iPhone integration in one place.
 #   bapirlo-iphone            status of everything (KDE Connect link, AirPlay, LocalSend, iCloud)
 #   bapirlo-iphone setup      GSConnect for the KDE Connect iOS app (run again after pairing a new phone)
-# GSConnect setup: service on, this laptop shows as "Bapirlo OS", for every paired phone →
+# GSConnect setup: service on, this laptop shows as "Kuro OS", for every paired phone →
 #   clipboard shared both ways, files/links from the phone → ~/Downloads/iPhone, and the
 #   "Run command" list on the phone gets: Lock, AirPlay on/off, Vault lock, Play/Pause, Play copied
 #   link, Stop video, Suspend. Links shared from any app play on the laptop if they're videos
@@ -17,7 +17,7 @@ DEST=$HOME/Downloads/iPhone
 setup() {
   mkdir -p "$DEST"
   dconf write $GS/enabled true
-  dconf write $GS/name "'Bapirlo OS'"
+  dconf write $GS/name "'Kuro OS'"
   dconf write $GS/discoverable true
   local cmds="{'lock': <{'name': 'Lock laptop', 'command': '$BIN/bapirlo-lockd --lock-now'}>, \
 'airplay': <{'name': 'AirPlay on/off', 'command': '$BIN/bapirlo-airplay toggle'}>, \
@@ -45,13 +45,13 @@ setup() {
 patch_share() {
   local js=$HOME/.local/share/gnome-shell/extensions/gsconnect@andyholmes.github.io/service/plugins/share.js
   [ -f "$js" ] || return 0
-  grep -q 'Bapirlo OS' "$js" && return 0
+  grep -qE "(Bapirlo|Kuro) OS" "$js" && return 0
   python3 - "$js" "$BIN/bapirlo-play" <<'PY'
 import sys
 p, play = sys.argv[1:]
 s = open(p).read()
 old = "    _handleUri(uri) {\n"
-new = old + ("        // Bapirlo OS: video links play on the laptop, other links open in the browser\n"
+new = old + ("        // Kuro OS: video links play on the laptop, other links open in the browser\n"
              "        if (GLib.file_test('%s', GLib.FileTest.IS_EXECUTABLE)) {\n"
              "            GLib.spawn_async(null, ['%s', 'share', uri], null, GLib.SpawnFlags.DEFAULT, null);\n"
              "            return;\n"

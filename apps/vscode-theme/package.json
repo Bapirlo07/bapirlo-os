@@ -1,7 +1,7 @@
 {
   "name": "bapirlo-kuro",
   "displayName": "Bapirlo Kuro",
-  "description": "Bapirlo OS \"Kuro\" colour theme: ink blacks, crimson accent, sakura + paper text.",
+  "description": "Kuro OS \"Kuro\" colour theme: ink blacks, crimson accent, sakura + paper text.",
   "version": "1.0.0",
   "publisher": "bapirlo",
   "engines": { "vscode": "^1.80.0" },

@@ -1,4 +1,4 @@
-// Bapirlo OS — fastfetch "Kuro" v3 (70-polish.sh)
+// Kuro OS — fastfetch "Kuro" v3 (70-polish.sh)
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {
@@ -67,7 +67,7 @@
     {
       "type": "os",
       "key": "󰣇 os",
-      "format": "Bapirlo OS ({name} base) {arch}"
+      "format": "Kuro OS ({name} base) {arch}"
     },
     {
       "type": "kernel",

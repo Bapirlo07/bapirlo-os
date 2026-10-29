@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 5 — animated web login screen (web-greeter 4 + theme greeter/bapirlo).
+# Kuro OS round 5 — animated web login screen (web-greeter 4 + theme greeter/bapirlo).
 # Run as YOURSELF (it asks for sudo itself). Each step is separate so nothing switches by surprise:
 #
 #   bash ~/bapirlo-os/500-round5-greeter.sh snapshot  # only the Timeshift snapshot "Before round 5"
@@ -58,7 +58,7 @@ install_theme() {
 
 write_conf() {
   sudo tee "$WG_CONF" >/dev/null <<'EOF'
-# Bapirlo OS — web-greeter config (written by 500-round5-greeter.sh; package default is in the backup)
+# Kuro OS — web-greeter config (written by 500-round5-greeter.sh; package default is in the backup)
 layouts = ["gb"]
 
 [greeter]
@@ -99,7 +99,7 @@ default_gnome() {
 install_revert_tool() {
   sudo tee "$REVERT" >/dev/null <<'EOF'
 #!/bin/sh
-# Bapirlo OS — put the old slick-greeter login screen back (safe to run from a TTY).
+# Kuro OS — put the old slick-greeter login screen back (safe to run from a TTY).
 #   sudo bapirlo-greeter-revert && sudo reboot
 set -e
 [ "$(id -u)" -eq 0 ] || { echo "run with sudo"; exit 1; }

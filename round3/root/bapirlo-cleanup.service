@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo OS monthly cleanup (package cache, orphans, old logs)
+Description=Kuro OS monthly cleanup (package cache, orphans, old logs)
 After=network-online.target
 ConditionACPower=true
 

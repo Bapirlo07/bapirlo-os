@@ -1,12 +1,12 @@
 {
   "uuid": "bapirlo-ai@bapirlo-os",
-  "name": "Bapirlo AI",
+  "name": "Kuro AI",
   "description": "Super+A: a floating Claude Code terminal you can summon from anywhere and hide again.",
   "shell-version": [
     "50",
     "51"
   ],
   "settings-schema": "org.gnome.shell.extensions.bapirlo-ai",
-  "url": "https://github.com/Bapirlo07/bapirlo-os",
+  "url": "https://github.com/Bapirlo07/kuro-os",
   "version": 1
 }

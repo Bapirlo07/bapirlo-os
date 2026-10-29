@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Bapirlo OS — Restart to Windows (Start menu "Restart to Windows", Control Centre power page).
+# Kuro OS — Restart to Windows (Start menu "Restart to Windows", Control Centre power page).
 #   bapirlo-restart-windows          ask, then restart straight into Windows (this once)
 #   bapirlo-restart-windows --yes    no question
 # How: the root unit bapirlo-bootnext-windows.service sets EFI "BootNext" to the genuine Windows
 # Boot Manager (polkit lets your session start just that unit). BootNext is used for ONE boot and
-# then cleared by the firmware, so the next normal restart comes back to Bapirlo OS. Your boot
+# then cleared by the firmware, so the next normal restart comes back to Kuro OS. Your boot
 # order, GRUB and Limine are never changed.
 set -euo pipefail
 UNIT=bapirlo-bootnext-windows.service
@@ -18,7 +18,7 @@ if ! systemctl cat "$UNIT" >/dev/null 2>&1; then
 fi
 if [ "${1:-}" != --yes ]; then
   zenity --question --title "Restart to Windows" --icon bapirlo-windows-drive \
-    --text "Restart into <b>Windows</b> now?\n\nSave your work first — open apps will close.\nThe next normal restart comes back to Bapirlo OS." \
+    --text "Restart into <b>Windows</b> now?\n\nSave your work first — open apps will close.\nThe next normal restart comes back to Kuro OS." \
     --ok-label "Restart to Windows" --cancel-label "Cancel" 2>/dev/null || exit 0
 fi
 if ! systemctl start "$UNIT"; then

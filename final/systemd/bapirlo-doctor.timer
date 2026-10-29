@@ -1,5 +1,5 @@
 [Unit]
-Description=Bapirlo Doctor 90 s after each login
+Description=Kuro Doctor 90 s after each login
 
 [Timer]
 OnStartupSec=90s

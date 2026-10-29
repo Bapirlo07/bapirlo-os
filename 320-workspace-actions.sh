@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Bapirlo OS — add / remove workspaces on demand (NO sudo).
+# Kuro OS — add / remove workspaces on demand (NO sudo).
 #   bash ~/bapirlo-os/320-workspace-actions.sh            # backup + apply
 #   bash ~/bapirlo-os/320-workspace-actions.sh restore    # undo
 #
-# Lives in the Bapirlo Bar extension (bar/bapirlo-bar@bapirlo-os/workspaces.js):
+# Lives in the Kuro Bar extension (bar/bapirlo-bar@bapirlo-os/workspaces.js):
 # - right-click a workspace dot → "Remove workspace" / "Add workspace"
 # - Super+Shift+W (or Ctrl+Super+F4)  remove the CURRENT workspace
 # - Super+Shift+N (or Ctrl+Super+D)   add a workspace right after the current one and go there
@@ -36,7 +36,7 @@ apply() {
   [ -d "$EXT_DIR/$UUID" ] && cp -a "$EXT_DIR/$UUID" "$BK/ext-before"
   echo "$BK" > "$LATEST"; echo "backup -> $BK"
 
-  echo "== Bapirlo Bar with workspace menu + shortcuts"
+  echo "== Kuro Bar with workspace menu + shortcuts"
   glib-compile-schemas --strict "$HERE/bar/$UUID/schemas"
   rm -rf "${EXT_DIR:?}/$UUID"; cp -rL "$HERE/bar/$UUID" "$EXT_DIR/$UUID"   # -L: mpris/art are shared with the media card
 

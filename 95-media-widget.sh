@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — desktop media widget (GNOME Shell extension, NO sudo).
+# Kuro OS — desktop media widget (GNOME Shell extension, NO sudo).
 #   bash ~/bapirlo-os/95-media-widget.sh            # backup + install + enable
 #   bash ~/bapirlo-os/95-media-widget.sh restore    # disable + uninstall + restore extension lists
 #

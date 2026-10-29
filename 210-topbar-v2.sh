@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 2 — bigger top bar (NO sudo). The layout you approved in build/round2/topbar-preview.png.
+# Kuro OS round 2 — bigger top bar (NO sudo). The layout you approved in build/round2/topbar-preview.png.
 #   bash ~/bapirlo-os/210-topbar-v2.sh            # backup + theme + bapirlo-bar + Vitals trim + battery %
 #   bash ~/bapirlo-os/210-topbar-v2.sh restore    # previous theme, bapirlo-bar off/removed, settings back
 # Bar 44px (was 38) · 12pt text · 22px icons · 13pt bold clock. Left: logo · workspace dots | quick launch

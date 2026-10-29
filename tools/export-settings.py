@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — export your live GNOME settings into the repo, minus anything personal.
+"""Kuro OS — export your live GNOME settings into the repo, minus anything personal.
 
   python3 tools/export-settings.py          → config/settings.dconf   (commit this)
   install.sh loads it at the end:  sed "s|@HOME@|$HOME|g" config/settings.dconf | dconf load /
@@ -37,7 +37,7 @@ def dump(path):
 
 
 def main():
-    out = ["# Bapirlo OS — exported GNOME settings (tools/export-settings.py). Personal data removed;",
+    out = ["# Kuro OS — exported GNOME settings (tools/export-settings.py). Personal data removed;",
            "# @HOME@ = your home folder. Load: sed \"s|@HOME@|$HOME|g\" config/settings.dconf | dconf load /", ""]
     dropped = 0
     for base in PATHS:

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — battery charge limit (root helper, run through pkexec by the Control Centre / bapirlo-charge).
+# Kuro OS — battery charge limit (root helper, run through pkexec by the Control Centre / bapirlo-charge).
 #   bapirlo-charge 80      daily: stop charging at 80 % (kinder to the battery)
 #   bapirlo-charge 100     travel: charge to full
 #   bapirlo-charge status  print the limit now in force

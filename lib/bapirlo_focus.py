@@ -1,4 +1,4 @@
-"""Bapirlo OS — focus timer log + controls, shared by bin/bapirlo-focus and the Welcome app.
+"""Kuro OS — focus timer log + controls, shared by bin/bapirlo-focus and the Welcome app.
 
 The timer itself runs in the top bar (bar/bapirlo-bar@bapirlo-os/focus.js); its state is in the bar's
 GSettings keys and it is the only writer of the log ~/.local/state/bapirlo/focus.tsv:

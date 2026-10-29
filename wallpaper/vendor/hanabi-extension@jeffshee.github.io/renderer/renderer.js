@@ -19,7 +19,7 @@
 
 imports.gi.versions.Gtk = '4.0';
 
-// Bapirlo: pick the GPU before Gtk/Gst/libva/Vulkan initialise.
+// Kuro: pick the GPU before Gtk/Gst/libva/Vulkan initialise.
 // On AC power the NVIDIA dGPU decodes + renders (PRIME offload); on battery
 // everything is pinned to the Intel iGPU so the dGPU can sleep. The renderer
 // exits when the power source changes and Hanabi relaunches it in the new mode.
@@ -111,7 +111,7 @@ let settingsSchemaSource = Gio.SettingsSchemaSource.get_default();
 if (settingsSchemaSource.lookup(extSchemaId, false)) {
     extSettings = Gio.Settings.new(extSchemaId);
 } else {
-    // Bapirlo: user-local install keeps the schema in <ext>/schemas (passed as -P).
+    // Kuro: user-local install keeps the schema in <ext>/schemas (passed as -P).
     const pIdx = ARGV.indexOf('-P');
     const schemaDir = pIdx >= 0 && ARGV[pIdx + 1]
         ? GLib.build_filenamev([ARGV[pIdx + 1], 'schemas'])
@@ -162,7 +162,7 @@ let changeWallpaperMode = extSettings ? extSettings.get_int('change-wallpaper-mo
 let changeWallpaperInterval = extSettings ? extSettings.get_int('change-wallpaper-interval') : 15;
 let windowDimension = {width: 1920, height: 1080};
 let windowed = false;
-let fullscreened = false; // Bapirlo: mutter 50 refuses to minimise fullscreen renderer windows
+let fullscreened = false; // Kuro: mutter 50 refuses to minimise fullscreen renderer windows
 let isDebugMode = extSettings ? extSettings.get_boolean('debug-mode') : true;
 let changeWallpaperTimerId = null;
 
@@ -326,7 +326,7 @@ const HanabiRenderer = GObject.registerClass(
         _setupGst() {
             // Software libav decoders have "primary" rank, set Nvidia higher
             // to use NVDEC hardware acceleration.
-            // Bapirlo: on the dGPU NVDEC must outrank VA; on the iGPU keep NVDEC off.
+            // Kuro: on the dGPU NVDEC must outrank VA; on the iGPU keep NVDEC off.
             this._setPluginDecodersRank(
                 'nvcodec',
                 bapirloGpu.gpu === 'nvidia' ? Gst.Rank.PRIMARY + 4 : Gst.Rank.NONE,
@@ -792,7 +792,7 @@ const HanabiRendererWindow = GObject.registerClass(
                 }
             }
 
-            // Bapirlo patch: belt and braces for the minimise — ask again once real frames exist (the
+            // Kuro patch: belt and braces for the minimise — ask again once real frames exist (the
             // wallpaper's clone keeps showing the video). At login the early asks can be dropped while
             // the shell is still starting up, leaving this window over the desk widgets, so also keep
             // watching the surface and re-minimise whenever it comes back un-minimised.

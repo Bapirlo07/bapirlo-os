@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — GSConnect (KDE Connect for GNOME), NO sudo.
+# Kuro OS — GSConnect (KDE Connect for GNOME), NO sudo.
 #   bash ~/bapirlo-os/110-gsconnect.sh            # backup + install + enable
 #   bash ~/bapirlo-os/110-gsconnect.sh restore    # disable + remove + settings back
 # The firewall part is separate (needs sudo):  sudo bash ~/bapirlo-os/111-gsconnect-firewall.sh

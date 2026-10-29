@@ -1,4 +1,4 @@
-// Bapirlo Desk — widgets on the wallpaper (primary screen), behind every window.
+// Kuro Desk — widgets on the wallpaper (primary screen), behind every window.
 //   CLOCK     big time + date
 //   CALENDAR  month grid, today in the accent, a dot under days with events (Google Calendar via EDS)
 //   UP NEXT   the next 7 days: events + tasks due, today/tomorrow/overdue in the accent

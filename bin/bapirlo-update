@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — one-click system update (top-bar Arch Update button / Welcome app "Update").
+# Kuro OS — one-click system update (top-bar Arch Update button / Welcome app "Update").
 # Runs in its own terminal window: lists what will change, then `paru -Syu` (official repos
 # + AUR, as you). The pacman hook takes a Timeshift snapshot right before packages are
 # upgraded (once per run). paru shows AUR PKGBUILD changes for review before building.
@@ -32,7 +32,7 @@ if [ "${1:-}" = --cleanup ]; then
   printf '  Freed %s MB.\n' $(( ($(avail) - before) / 1000000 ))
   exit 0
 fi
-printf '\n  %s%sBAPIRLO OS · UPDATE%s\n\n' "$B" "$R" "$N"
+printf '\n  %s%sKURO OS · UPDATE%s\n\n' "$B" "$R" "$N"
 printf '  %sA Timeshift snapshot is taken automatically before anything is upgraded.%s\n' "$D" "$N"
 printf '  %sOld versions and the previous update snapshot are deleted to save space.%s\n\n' "$D" "$N"
 before=$(avail)
@@ -49,7 +49,7 @@ if [ $rc -eq 0 ]; then
     printf 'A new kernel was installed — reboot when convenient.'
   fi
   echo
-  notify-send -a "Bapirlo OS" -i software-update-available-symbolic "System updated" "All packages are up to date." 2>/dev/null
+  notify-send -a "Kuro OS" -i software-update-available-symbolic "System updated" "All packages are up to date." 2>/dev/null
 else
   printf '  %sUpdate stopped (exit %s) — scroll up for the reason.%s\n' "$R" "$rc" "$N"
 fi

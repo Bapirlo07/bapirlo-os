@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — fix "wrong code" on AirPlay pairing.
+# Kuro OS — fix "wrong code" on AirPlay pairing.
 # Run as yourself (NOT sudo; it asks for the password once):  bash ~/bapirlo-os/920-airplay-pin-fix.sh
 # Why: UxPlay 1.73.7 (the packaged version) rejects every iPhone pairing code with
 # "Client Authentication Failure (client_proof_len 20 invalid)" — a security patch made it
@@ -26,4 +26,4 @@ echo "==> Restarting AirPlay"
 BA=$HOME/bapirlo-os/bin/bapirlo-airplay
 if "$BA" status >/dev/null 2>&1; then "$BA" off; sleep 1; "$BA" on; fi
 echo
-echo "Done. iPhone: Screen Mirroring → Bapirlo OS · code $("$BA" pin)"
+echo "Done. iPhone: Screen Mirroring → Kuro OS · code $("$BA" pin)"

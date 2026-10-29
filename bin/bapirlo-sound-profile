@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — picks the EasyEffects preset for whatever you are listening on.
+"""Kuro OS — picks the EasyEffects preset for whatever you are listening on.
   laptop speakers           → "Bapirlo Speakers"
   headphones / earbuds / BT → "Bapirlo Headphones"
   anything else (HDMI…)     → "Bapirlo Flat"

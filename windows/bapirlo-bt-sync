@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS — make Bluetooth devices work in Windows AND Linux without re-pairing.
+"""Kuro OS — make Bluetooth devices work in Windows AND Linux without re-pairing.
 
 Each pairing creates a new secret key; the device only remembers the LAST one. So:
   1. pair the device in Linux, 2. boot Windows and pair it there (Windows now holds the key the

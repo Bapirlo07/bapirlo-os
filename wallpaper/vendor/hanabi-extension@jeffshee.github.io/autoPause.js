@@ -40,7 +40,7 @@ export class AutoPause {
         this.modules.push(new PauseOnMaximizeOrFullscreenModule(extension));
         this.modules.push(new PauseOnBatteryModule(extension));
         this.modules.push(new PauseOnMprisPlayingModule(extension));
-        this.modules.push(new PauseInOverviewModule(extension));   // Bapirlo OS
+        this.modules.push(new PauseInOverviewModule(extension));   // Kuro OS
         this.modules.forEach(module => module.connect('updated', () => this.eval()));
     }
 
@@ -503,7 +503,7 @@ const PauseOnMprisPlayingModule = GObject.registerClass(
 
 
 /**
- * Pause In Overview (Bapirlo OS patch): the overview covers the wallpaper with a blurred copy anyway.
+ * Pause In Overview (Kuro OS patch): the overview covers the wallpaper with a blurred copy anyway.
  */
 
 const PauseInOverviewModule = GObject.registerClass(

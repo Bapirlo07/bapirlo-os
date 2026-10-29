@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bapirlo OS final-round icons (Guide, Doctor, Restart to Windows) in the round-7 style.
+"""Kuro OS final-round icons (Guide, Doctor, Restart to Windows) in the round-7 style.
 Reuses the templates of round7/icons/make-icons.py; writes scalable/apps + symbolic/apps into OUT."""
 import os, re, sys
 

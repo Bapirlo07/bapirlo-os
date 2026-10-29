@@ -1,4 +1,4 @@
-// Bapirlo OS greeter — primary screen: user, password, session picker, power, LightDM auth flow.
+// Kuro OS greeter — primary screen: user, password, session picker, power, LightDM auth flow.
 "use strict";
 
 const PREFERRED_SESSION = "gnome";   // plain GNOME unless picked otherwise in the chip

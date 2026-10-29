@@ -1,4 +1,4 @@
-// Bapirlo Bar — 3D wallpaper button.
+// Kuro Bar — 3D wallpaper button.
 //   click = 3D depth effect on / off (bapirlo-live setting "depth"). Red "3D" while on, dim while off.
 //   Hidden when bapirlo-live (and so its schema) isn't installed.
 // bapirlo-live re-reads its settings on 'changed', so the switch is instant — no restart.
@@ -25,7 +25,7 @@ function liveSettings() {
 export const DepthButton = GObject.registerClass(
 class BapirloDepthButton extends Group {
     _init() {
-        super._init('Bapirlo 3D wallpaper', 'bapirlo-depth');
+        super._init('Kuro 3D wallpaper', 'bapirlo-depth');
         this._label = new St.Label({text: '3D', style_class: 'bapirlo-depth-label', y_align: Clutter.ActorAlign.CENTER});
         this._btn = new St.Button({
             style_class: 'bapirlo-depth-btn', can_focus: true, track_hover: true,

@@ -1,4 +1,4 @@
-// Bapirlo Bar — shared bits: a panel "group" (a PanelMenu.Button without menu whose children
+// Kuro Bar — shared bits: a panel "group" (a PanelMenu.Button without menu whose children
 // get their own hover instead of one big highlight) and a small tooltip under the bar.
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';

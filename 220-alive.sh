@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS round 2 — "make it feel alive" (NO sudo; needs matugen from 200-round2-install.sh).
+# Kuro OS round 2 — "make it feel alive" (NO sudo; needs matugen from 200-round2-install.sh).
 #   bash ~/bapirlo-os/220-alive.sh            # backup + install + configure + enable
 #   bash ~/bapirlo-os/220-alive.sh restore    # everything back as it was
 #   1. Wallpaper accents (matugen): the 2nd accent of bar / dock / terminal / MangoHud follows the

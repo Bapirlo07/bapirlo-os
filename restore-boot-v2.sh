@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — undo 50-boot-v2.sh exactly, from the backup it made.
+# Kuro OS — undo 50-boot-v2.sh exactly, from the backup it made.
 #   sudo bash ~/bapirlo-os/restore-boot-v2.sh [backup-dir]
 # Default backup-dir: the one recorded in ~/theme-backups/LATEST-BOOT-V2
 set -euo pipefail

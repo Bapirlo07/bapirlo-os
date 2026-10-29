@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bapirlo OS — session restore (Bapirlo Desk, desk/…/session.js).
+# Kuro OS — session restore (Kuro Desk, desk/…/session.js).
 #   bapirlo-session                show the mode and what would come back
 #   bapirlo-session auto|ask|off   after login: reopen by itself / ask first / never
 #   bapirlo-session now            reopen the saved apps right now

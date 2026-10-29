@@ -1,4 +1,4 @@
-// Bapirlo Sounds — gives notifications and login a sound from the "bapirlo" sound theme (GNOME Shell 50).
+// Kuro Sounds — gives notifications and login a sound from the "bapirlo" sound theme (GNOME Shell 50).
 // GNOME only plays a notification sound when the app asks for one; most apps (Discord, Chrome…) don't,
 // so this plays the theme's "message-new-instant" (the sword "shing") for them — politely:
 //   · never in Do Not Disturb, never for apps whose "Sound Alerts" are off in Settings → Notifications
